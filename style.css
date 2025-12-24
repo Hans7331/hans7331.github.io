@@ -265,3 +265,9 @@ footer {
   color: var(--accent);
   background: rgba(56, 189, 248, 0.12);
 }
+
+.link-sep {
+  color: var(--muted);
+  opacity: 0.6;
+  user-select: none;
+}
