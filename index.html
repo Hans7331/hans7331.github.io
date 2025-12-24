@@ -3,62 +3,199 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hans7331</title>
+  <title>Hans Tiwari</title>
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="nav">
-    <div class="logo">Hans7331</div>
+    <div class="logo">Hans Tiwari</div>
     <nav>
       <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
       <a href="#projects">Projects</a>
+      <a href="#publications">Publications</a>
       <a href="#contact">Contact</a>
     </nav>
   </header>
 
   <main>
+    <!-- HERO -->
     <section class="hero">
-      <h1 id="greeting">Welcome, Guest 👋</h1>
+      <h1 id="greeting">Hans Tiwari</h1>
       <p class="subtitle">
-        This is my little corner of the internet.
+        Data Scientist · Machine Learning & AI
       </p>
-    </section>
-
-    <section id="about" class="section">
-      <h2>About Me</h2>
+      <p class="muted">
+        Espoo, Finland ·
+        <a href="mailto:hans.tiwari@gmail.com">hans.tiwari@gmail.com</a>
+      </p>
       <p>
-        Hi, I’m Hans. I like building things, experimenting with ideas,
-        and learning how systems work.
+        <a href="https://www.linkedin.com/in/hans-tiwari" target="_blank">LinkedIn</a> ·
+        <a href="https://github.com/hans7331" target="_blank">GitHub</a>
       </p>
     </section>
 
+    <!-- ABOUT -->
+    <section id="about" class="section">
+      <h2>About</h2>
+      <p>
+        I am a Data Scientist and Python Developer with 4+ years of experience
+        building data-driven and machine learning solutions. I hold a Master’s
+        degree in Machine Learning, Artificial Intelligence, and Data Science
+        from Aalto University.
+      </p>
+      <p>
+        My interests include applied machine learning, geospatial analytics,
+        time series modeling, NLP, and Generative AI / LLM systems.
+        I believe simplicity and efficiency often outperform unnecessary complexity.
+      </p>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills" class="section">
+      <h2>Skills</h2>
+
+      <h3>Programming & Tools</h3>
+      <p>Python, R, SQL, C/C++, AWS, Azure, MySQL, Power BI</p>
+
+      <h3>ML & Data Science</h3>
+      <p>Machine Learning, NLP, Time Series Modeling, Geospatial Analytics, Data Visualization</p>
+
+      <h3>Deep Learning & Generative AI</h3>
+      <p>PyTorch, Transformers, LangChain, LangGraph, FAISS, RAG, LLMs, Ollama</p>
+
+      <h3>Languages</h3>
+      <p>English (Fluent), Hindi (Fluent), Finnish (Basic), German (Basic)</p>
+    </section>
+
+    <!-- EDUCATION -->
+    <section class="section">
+      <h2>Education</h2>
+
+      <p><strong>M.Sc. Machine Learning, Artificial Intelligence & Data Science</strong><br/>
+      Aalto University — GPA: 4.34 / 5.0<br/>
+      2021 – 2025</p>
+
+      <p><strong>B.Tech Electronics and Computer Engineering</strong><br/>
+      Vellore Institute of Technology — CGPA: 9.01 / 10.0<br/>
+      2016 – 2020</p>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience" class="section">
+      <h2>Experience</h2>
+
+      <div class="card">
+        <h3>Data Scientist — SkenarioLabs Oy</h3>
+        <p class="muted">Espoo, Finland · Sept 2023 – Present</p>
+        <ul>
+          <li>Built regression and predictive models for real estate valuation and forecasting</li>
+          <li>Performed climate and physical risk analysis on property portfolios</li>
+          <li>Worked extensively with geospatial data using GeoPandas</li>
+          <li>Designed interactive dashboards using Plotly and Dash</li>
+          <li>Collaborated using AWS, Bitbucket, and JIRA</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Research Assistant — Aalto University</h3>
+        <p class="muted">Apr 2023 – Sept 2023</p>
+        <ul>
+          <li>Thesis research on Spatio-Temporal Video Grounding</li>
+          <li>Designed Transformer-based models in PyTorch</li>
+          <li>Analyzed large-scale video datasets</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Data Scientist — Pricen</h3>
+        <p class="muted">May 2022 – Mar 2023</p>
+        <ul>
+          <li>Built automated reporting pipelines</li>
+          <li>Developed pricing prediction models</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Software Engineer — Quant Investment Firm</h3>
+        <p class="muted">San Francisco · May 2021 – Oct 2021</p>
+        <ul>
+          <li>Statistical analysis and financial modeling</li>
+          <li>Python research using NumPy and SciPy</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- PUBLICATIONS -->
+    <section id="publications" class="section">
+      <h2>Publications</h2>
+      <ul>
+        <li>
+          <a href="https://openreview.net/forum?id=0SjzFxMiHc" target="_blank">
+            Size-Modulated Deformable Attention in STVG Pipelines (ICPR ’24)
+          </a>
+        </li>
+        <li>
+          <a href="https://users.aalto.fi/~jormal/tiwari-et-al-caihu2024.pdf" target="_blank">
+            Spatio-Temporal Video Grounding of Human Actions (CAIHU ’24)
+          </a>
+        </li>
+        <li>
+          <a href="https://www.sciencedirect.com/science/article/pii/S1877050920307262" target="_blank">
+            Kids-Specific URL Classifier using RCNN (ICCIDS ’19)
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <!-- PROJECTS -->
     <section id="projects" class="section">
       <h2>Projects</h2>
+
       <div class="cards">
         <div class="card">
-          <h3>🧠 Project One</h3>
-          <p>Short description of something cool you built.</p>
+          <h3>🎓 Spatio-Temporal Video Grounding (Thesis)</h3>
+          <p>
+            Transformer-based models addressing language ambiguity and object scale sensitivity.
+          </p>
+          <a href="https://aaltodoc.aalto.fi/server/api/core/bitstreams/2e21d1a3-dc8e-4c2d-82bc-f96e34f981da/content" target="_blank">
+            Read Thesis →
+          </a>
         </div>
+
         <div class="card">
-          <h3>🚀 Project Two</h3>
-          <p>Another experiment, prototype, or idea.</p>
+          <h3>Domain-Specific Knowledge Assistant (RAG)</h3>
+          <p>End-to-end Retrieval-Augmented Generation system with vector search.</p>
+          <a href="https://github.com/Hans7331/domain-knowledge-assistant-rag" target="_blank">
+            GitHub →
+          </a>
+        </div>
+
+        <div class="card">
+          <h3>LLM-Powered Analytics Assistant</h3>
+          <p>LLM-driven querying and explanation of structured tabular data.</p>
+          <a href="https://github.com/Hans7331/llm-analytics-assistant" target="_blank">
+            GitHub →
+          </a>
         </div>
       </div>
     </section>
 
+    <!-- CONTACT -->
     <section id="contact" class="section">
       <h2>Contact</h2>
       <p>
-        Find me on
+        📧 <a href="mailto:hans.tiwari@gmail.com">hans.tiwari@gmail.com</a><br/>
+        🔗 <a href="https://www.linkedin.com/in/hans-tiwari" target="_blank">LinkedIn</a> ·
         <a href="https://github.com/hans7331" target="_blank">GitHub</a>
-        or reach out directly.
       </p>
     </section>
   </main>
 
   <footer>
-    <p>© <span id="year"></span> Hans7331</p>
+    <p>© <span id="year"></span> Hans Tiwari</p>
   </footer>
 
   <script src="script.js"></script>
