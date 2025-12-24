@@ -185,75 +185,80 @@ footer {
   color: var(--muted);
 }
 
-/* SKILLS ORBIT */
-.skills-orbit {
-  display: flex;
-  justify-content: center;
-  padding: 6rem 2rem;
-}
-
-.orbit-container {
+/* HERO ORBIT */
+.hero-orbit {
   position: relative;
-  width: 360px;
-  height: 360px;
-}
-
-.orbit-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(255,255,255,0.06);
-  border-radius: 50%;
-  width: 110px;
-  height: 110px;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  color: var(--accent);
-  box-shadow: 0 0 25px rgba(56,189,248,0.25);
 }
 
+.hero-center {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+/* ORBIT PATH */
 .orbit {
   position: absolute;
-  width: 100%;
-  height: 100%;
-  animation: spin 30s linear infinite;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  animation: orbit-spin 40s linear infinite;
 }
 
+/* SKILLS */
 .skill {
   position: absolute;
   top: 50%;
   left: 50%;
   transform:
     rotate(calc(360deg / 10 * var(--i)))
-    translate(160px)
+    translate(260px)
     rotate(calc(-360deg / 10 * var(--i)));
-  background: rgba(255,255,255,0.04);
-  padding: 0.45rem 0.75rem;
+  background: rgba(255,255,255,0.05);
+  padding: 0.45rem 0.8rem;
   border-radius: 999px;
   font-size: 0.85rem;
+  white-space: nowrap;
   color: var(--text);
   transition: transform 0.25s ease, background 0.25s ease;
-  white-space: nowrap;
 }
 
+/* HOVER EFFECT */
 .skill:hover {
-  background: rgba(56,189,248,0.2);
+  background: rgba(56,189,248,0.25);
   transform:
     rotate(calc(360deg / 10 * var(--i)))
-    translate(160px)
+    translate(260px)
     rotate(calc(-360deg / 10 * var(--i)))
     scale(1.15);
 }
 
-/* Pause rotation on hover */
-.orbit:hover {
+/* ORBIT ANIMATION */
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Pause orbit on hover (optional but nice) */
+.hero-orbit:hover .orbit {
   animation-play-state: paused;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .orbit {
+    width: 360px;
+    height: 360px;
+  }
+
+  .skill {
+    transform:
+      rotate(calc(360deg / 10 * var(--i)))
+      translate(180px)
+      rotate(calc(-360deg / 10 * var(--i)));
+  }
 }
