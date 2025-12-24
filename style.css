@@ -234,3 +234,12 @@ footer {
   background: rgba(56,189,248,0.2);
   color: var(--accent);
 }
+
+.skills-about {
+  max-width: 760px;
+  margin: 0 auto 2rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
