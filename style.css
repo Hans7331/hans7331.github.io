@@ -208,3 +208,29 @@ footer {
   color: var(--accent);
 }
 
+/* SKILLS SECTION */
+.skills-section {
+  padding-top: 0;
+  margin-top: -2rem;
+}
+
+.skills-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  justify-content: center;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.skills-line span {
+  background: rgba(255,255,255,0.04);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.skills-line span:hover {
+  background: rgba(56,189,248,0.2);
+  color: var(--accent);
+}
