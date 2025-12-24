@@ -107,18 +107,44 @@ a {
 }
 
 /* EXPERIENCE */
-.timeline .item {
-  margin-bottom: 2.5rem;
+.experience {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
 }
 
-.timeline span {
+.exp-item {
+  max-width: 720px;
+}
+
+.exp-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  align-items: baseline;
+}
+
+.role {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.company {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.time {
   color: var(--muted);
   font-size: 0.9rem;
 }
 
-.timeline ul {
+.exp-desc {
   margin-top: 0.5rem;
+  color: var(--muted);
+  line-height: 1.6;
 }
+
 
 /* PROJECTS */
 .grid {
