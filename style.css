@@ -243,3 +243,25 @@ footer {
   font-size: 1rem;
   line-height: 1.6;
 }
+
+/* HERO SECONDARY LINKS */
+.hero-links {
+  margin-top: 1.25rem;
+  display: flex;
+  gap: 1.25rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.link-btn {
+  font-size: 0.9rem;
+  color: var(--muted);
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.link-btn:hover {
+  color: var(--accent);
+  background: rgba(56, 189, 248, 0.12);
+}
