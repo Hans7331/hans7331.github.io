@@ -165,6 +165,19 @@ a {
   background: rgba(255,255,255,0.08);
 }
 
+.card.minimal {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.card.minimal:hover {
+  color: var(--accent);
+}
+
+
 /* FOOTER */
 footer {
   text-align: center;
