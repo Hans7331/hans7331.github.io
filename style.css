@@ -1,8 +1,8 @@
 :root {
-  --bg: #0f172a;
-  --bg-soft: #020617;
+  --bg: #0b0f1a;
+  --bg-soft: #12172a;
   --text: #e5e7eb;
-  --muted: #94a3b8;
+  --muted: #9ca3af;
   --accent: #38bdf8;
 }
 
@@ -10,12 +10,15 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
   background: linear-gradient(180deg, var(--bg), var(--bg-soft));
   color: var(--text);
-  line-height: 1.6;
 }
 
 a {
@@ -23,11 +26,7 @@ a {
   text-decoration: none;
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
-/* Navigation */
+/* NAV */
 .nav {
   display: flex;
   justify-content: space-between;
@@ -49,58 +48,100 @@ a:hover {
   color: var(--text);
 }
 
-/* Hero */
+/* HERO */
 .hero {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  padding: 6rem 2rem 4rem;
+  padding: 2rem;
 }
 
 .hero h1 {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-  margin-bottom: 1rem;
+  font-size: clamp(3rem, 6vw, 4rem);
 }
 
-.subtitle {
+.accent {
+  color: var(--accent);
+}
+
+.hero-subtitle {
   color: var(--muted);
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  margin-top: 1rem;
 }
 
-/* Sections */
+/* BUTTONS */
+.hero-buttons {
+  margin-top: 2.5rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  margin: 0 0.5rem;
+  font-weight: 600;
+}
+
+.primary {
+  background: var(--accent);
+  color: #020617;
+}
+
+.secondary {
+  border: 1px solid var(--accent);
+}
+
+/* SECTIONS */
 .section {
   max-width: 900px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 5rem 2rem;
 }
 
 .section h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Cards */
-.cards {
+/* EXPERIENCE */
+.timeline .item {
+  margin-bottom: 2.5rem;
+}
+
+.timeline span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.timeline ul {
+  margin-top: 0.5rem;
+}
+
+/* PROJECTS */
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
-  margin-top: 2rem;
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255,255,255,0.04);
   border-radius: 12px;
   padding: 1.5rem;
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-6px);
+  background: rgba(255,255,255,0.08);
 }
 
-/* Footer */
+/* FOOTER */
 footer {
   text-align: center;
   padding: 2rem;
   color: var(--muted);
-  font-size: 0.9rem;
 }

@@ -2,200 +2,132 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hans Tiwari</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hans Tiwari · Data Scientist</title>
 
   <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <!-- NAV -->
   <header class="nav">
-    <div class="logo">Hans Tiwari</div>
+    <div class="logo">Hans</div>
     <nav>
       <a href="#about">About</a>
-      <a href="#skills">Skills</a>
       <a href="#experience">Experience</a>
       <a href="#projects">Projects</a>
-      <a href="#publications">Publications</a>
       <a href="#contact">Contact</a>
     </nav>
   </header>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero">
-      <h1 id="greeting">Hans Tiwari</h1>
-      <p class="subtitle">
-        Data Scientist · Machine Learning & AI
-      </p>
-      <p class="muted">
-        Espoo, Finland ·
-        <a href="mailto:hans.tiwari@gmail.com">hans.tiwari@gmail.com</a>
-      </p>
-      <p>
-        <a href="https://www.linkedin.com/in/hans-tiwari" target="_blank">LinkedIn</a> ·
-        <a href="https://github.com/hans7331" target="_blank">GitHub</a>
-      </p>
-    </section>
+  <!-- HERO -->
+  <section class="hero">
+    <h1>
+      Hi, I’m <span class="accent">Hans</span> 👋
+    </h1>
+    <p class="hero-subtitle">
+      Data Scientist · Machine Learning · AI Systems
+    </p>
 
-    <!-- ABOUT -->
-    <section id="about" class="section">
-      <h2>About</h2>
-      <p>
-        I am a Data Scientist and Python Developer with 4+ years of experience
-        building data-driven and machine learning solutions. I hold a Master’s
-        degree in Machine Learning, Artificial Intelligence, and Data Science
-        from Aalto University.
-      </p>
-      <p>
-        My interests include applied machine learning, geospatial analytics,
-        time series modeling, NLP, and Generative AI / LLM systems.
-        I believe simplicity and efficiency often outperform unnecessary complexity.
-      </p>
-    </section>
+    <div class="hero-buttons">
+      <a href="#projects" class="btn primary">View Projects</a>
+      <a href="#contact" class="btn secondary">Contact</a>
+    </div>
+  </section>
 
-    <!-- SKILLS -->
-    <section id="skills" class="section">
-      <h2>Skills</h2>
+  <!-- ABOUT -->
+  <section id="about" class="section">
+    <h2>About</h2>
+    <p>
+      I’m a Data Scientist and Python Developer with 4+ years of experience
+      building data-driven and machine learning systems.
+      I hold a Master’s degree in Machine Learning, Artificial Intelligence,
+      and Data Science from Aalto University.
+    </p>
+    <p>
+      My interests include applied ML, geospatial analytics, time series,
+      NLP, and Generative AI / LLM systems.
+      I value simplicity, robustness, and production-ready solutions.
+    </p>
+  </section>
 
-      <h3>Programming & Tools</h3>
-      <p>Python, R, SQL, C/C++, AWS, Azure, MySQL, Power BI</p>
+  <!-- EXPERIENCE -->
+  <section id="experience" class="section">
+    <h2>Experience</h2>
 
-      <h3>ML & Data Science</h3>
-      <p>Machine Learning, NLP, Time Series Modeling, Geospatial Analytics, Data Visualization</p>
+    <div class="timeline">
 
-      <h3>Deep Learning & Generative AI</h3>
-      <p>PyTorch, Transformers, LangChain, LangGraph, FAISS, RAG, LLMs, Ollama</p>
-
-      <h3>Languages</h3>
-      <p>English (Fluent), Hindi (Fluent), Finnish (Basic), German (Basic)</p>
-    </section>
-
-    <!-- EDUCATION -->
-    <section class="section">
-      <h2>Education</h2>
-
-      <p><strong>M.Sc. Machine Learning, Artificial Intelligence & Data Science</strong><br/>
-      Aalto University — GPA: 4.34 / 5.0<br/>
-      2021 – 2025</p>
-
-      <p><strong>B.Tech Electronics and Computer Engineering</strong><br/>
-      Vellore Institute of Technology — CGPA: 9.01 / 10.0<br/>
-      2016 – 2020</p>
-    </section>
-
-    <!-- EXPERIENCE -->
-    <section id="experience" class="section">
-      <h2>Experience</h2>
-
-      <div class="card">
-        <h3>Data Scientist — SkenarioLabs Oy</h3>
-        <p class="muted">Espoo, Finland · Sept 2023 – Present</p>
+      <div class="item">
+        <h3>Data Scientist · SkenarioLabs Oy</h3>
+        <span>Espoo · 2023 — Present</span>
         <ul>
-          <li>Built regression and predictive models for real estate valuation and forecasting</li>
-          <li>Performed climate and physical risk analysis on property portfolios</li>
-          <li>Worked extensively with geospatial data using GeoPandas</li>
-          <li>Designed interactive dashboards using Plotly and Dash</li>
-          <li>Collaborated using AWS, Bitbucket, and JIRA</li>
+          <li>Predictive modeling for real estate valuation</li>
+          <li>Climate & physical risk analysis on portfolios</li>
+          <li>Geospatial modeling with GeoPandas</li>
+          <li>Interactive dashboards (Plotly, Dash)</li>
         </ul>
       </div>
 
-      <div class="card">
-        <h3>Research Assistant — Aalto University</h3>
-        <p class="muted">Apr 2023 – Sept 2023</p>
+      <div class="item">
+        <h3>Research Assistant · Aalto University</h3>
+        <span>2023</span>
         <ul>
-          <li>Thesis research on Spatio-Temporal Video Grounding</li>
-          <li>Designed Transformer-based models in PyTorch</li>
-          <li>Analyzed large-scale video datasets</li>
+          <li>Spatio-Temporal Video Grounding research</li>
+          <li>Transformer models in PyTorch</li>
         </ul>
       </div>
 
-      <div class="card">
-        <h3>Data Scientist — Pricen</h3>
-        <p class="muted">May 2022 – Mar 2023</p>
+      <div class="item">
+        <h3>Data Scientist · Pricen</h3>
+        <span>2022 — 2023</span>
         <ul>
-          <li>Built automated reporting pipelines</li>
-          <li>Developed pricing prediction models</li>
+          <li>Automated analytics pipelines</li>
+          <li>Pricing prediction models</li>
         </ul>
       </div>
 
-      <div class="card">
-        <h3>Software Engineer — Quant Investment Firm</h3>
-        <p class="muted">San Francisco · May 2021 – Oct 2021</p>
-        <ul>
-          <li>Statistical analysis and financial modeling</li>
-          <li>Python research using NumPy and SciPy</li>
-        </ul>
-      </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- PUBLICATIONS -->
-    <section id="publications" class="section">
-      <h2>Publications</h2>
-      <ul>
-        <li>
-          <a href="https://openreview.net/forum?id=0SjzFxMiHc" target="_blank">
-            Size-Modulated Deformable Attention in STVG Pipelines (ICPR ’24)
-          </a>
-        </li>
-        <li>
-          <a href="https://users.aalto.fi/~jormal/tiwari-et-al-caihu2024.pdf" target="_blank">
-            Spatio-Temporal Video Grounding of Human Actions (CAIHU ’24)
-          </a>
-        </li>
-        <li>
-          <a href="https://www.sciencedirect.com/science/article/pii/S1877050920307262" target="_blank">
-            Kids-Specific URL Classifier using RCNN (ICCIDS ’19)
-          </a>
-        </li>
-      </ul>
-    </section>
+  <!-- PROJECTS -->
+  <section id="projects" class="section">
+    <h2>Projects</h2>
 
-    <!-- PROJECTS -->
-    <section id="projects" class="section">
-      <h2>Projects</h2>
+    <div class="grid">
 
-      <div class="cards">
-        <div class="card">
-          <h3>🎓 Spatio-Temporal Video Grounding (Thesis)</h3>
-          <p>
-            Transformer-based models addressing language ambiguity and object scale sensitivity.
-          </p>
-          <a href="https://aaltodoc.aalto.fi/server/api/core/bitstreams/2e21d1a3-dc8e-4c2d-82bc-f96e34f981da/content" target="_blank">
-            Read Thesis →
-          </a>
-        </div>
+      <a class="card" href="https://github.com/Hans7331/domain-knowledge-assistant-rag" target="_blank">
+        <h3>Domain Knowledge Assistant (RAG)</h3>
+        <p>End-to-end Retrieval-Augmented Generation system with vector search.</p>
+      </a>
 
-        <div class="card">
-          <h3>Domain-Specific Knowledge Assistant (RAG)</h3>
-          <p>End-to-end Retrieval-Augmented Generation system with vector search.</p>
-          <a href="https://github.com/Hans7331/domain-knowledge-assistant-rag" target="_blank">
-            GitHub →
-          </a>
-        </div>
+      <a class="card" href="https://github.com/Hans7331/llm-analytics-assistant" target="_blank">
+        <h3>LLM-Powered Analytics Assistant</h3>
+        <p>LLM planning + execution over structured tabular data.</p>
+      </a>
 
-        <div class="card">
-          <h3>LLM-Powered Analytics Assistant</h3>
-          <p>LLM-driven querying and explanation of structured tabular data.</p>
-          <a href="https://github.com/Hans7331/llm-analytics-assistant" target="_blank">
-            GitHub →
-          </a>
-        </div>
-      </div>
-    </section>
+      <a class="card" href="https://aaltodoc.aalto.fi/server/api/core/bitstreams/2e21d1a3-dc8e-4c2d-82bc-f96e34f981da/content" target="_blank">
+        <h3>Spatio-Temporal Video Grounding</h3>
+        <p>Master’s thesis using Transformer-based models.</p>
+      </a>
 
-    <!-- CONTACT -->
-    <section id="contact" class="section">
-      <h2>Contact</h2>
-      <p>
-        📧 <a href="mailto:hans.tiwari@gmail.com">hans.tiwari@gmail.com</a><br/>
-        🔗 <a href="https://www.linkedin.com/in/hans-tiwari" target="_blank">LinkedIn</a> ·
-        <a href="https://github.com/hans7331" target="_blank">GitHub</a>
-      </p>
-    </section>
-  </main>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <h2>Contact</h2>
+    <p>
+      📧 <a href="mailto:hans.tiwari@gmail.com">hans.tiwari@gmail.com</a><br/>
+      🔗 <a href="https://github.com/hans7331" target="_blank">GitHub</a> ·
+      <a href="https://www.linkedin.com/in/hans-tiwari" target="_blank">LinkedIn</a>
+    </p>
+  </section>
 
   <footer>
-    <p>© <span id="year"></span> Hans Tiwari</p>
+    © <span id="year"></span> Hans Tiwari
   </footer>
 
   <script src="script.js"></script>
