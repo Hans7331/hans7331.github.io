@@ -117,15 +117,16 @@ English (Fluent), Hindi (Fluent), Finnish (Basic), German (Basic)
 
 ## Publications
 
-- [**Size-Modulated Deformable Attention in Spatio-Temporal Video Grounding Pipelines** (2024)](https://openreview.net/forum?id=0SjzFxMiHc)
+- [**Size-Modulated Deformable Attention in Spatio-Temporal Video Grounding Pipelines**](https://openreview.net/forum?id=0SjzFxMiHc) (**ICPR ’24**)
 
-- [**Spatio-Temporal Video Grounding of Human Actions for Human-in-the-Loop AI** (2024)](https://users.aalto.fi/~jormal/tiwari-et-al-caihu2024.pdf)
+- [**Spatio-Temporal Video Grounding of Human Actions for Human-in-the-Loop AI**](https://users.aalto.fi/~jormal/tiwari-et-al-caihu2024.pdf) (**CAIHU ’24**)
 
-- [**Design of Kids-Specific URL Classifier using RCNN** (2019)](https://www.sciencedirect.com/science/article/pii/S1877050920307262)
+- [**Design of Kids-Specific URL Classifier using RCNN**](https://www.sciencedirect.com/science/article/pii/S1877050920307262) (**ICCIDS ’19**, Procedia Computer Science)
 
-- [**Bidirectional GRU-Based Attention Model for Kid-Specific URL Classification** (2019)](https://www.igi-global.com/chapter/bidirectional-gru-based-attention-model-for-kid-specific-url-classification/240336)
+- [**Bidirectional GRU-Based Attention Model for Kid-Specific URL Classification**](https://www.igi-global.com/chapter/bidirectional-gru-based-attention-model-for-kid-specific-url-classification/240336) (**IGI Global ’19**)
 
-- [**Internet of Vehicles Based Voice Controlled Autonomous Vehicle** (2019)](https://www.ijrte.org/wp-content/uploads/papers/v7i6/F2319037619.pdf)
+- [**Internet of Vehicles Based Voice Controlled Autonomous Vehicle**](https://www.ijrte.org/wp-content/uploads/papers/v7i6/F2319037619.pdf) (**IJRTE ’19**)
+
 
 ---
 
