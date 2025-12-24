@@ -244,30 +244,36 @@ footer {
   line-height: 1.6;
 }
 
-/* HERO SECONDARY LINKS */
+/* Ensure hero buttons and links don't collide */
+.hero-buttons {
+  margin-top: 2rem;
+}
+
+/* Secondary links under hero */
 .hero-links {
   margin-top: 1.25rem;
   display: flex;
-  gap: 1.25rem;
+  align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.9rem;
 }
 
+/* Link styling */
 .link-btn {
-  font-size: 0.9rem;
   color: var(--muted);
-  padding: 0.35rem 0.75rem;
-  border-radius: 6px;
-  transition: color 0.2s ease, background 0.2s ease;
+  padding: 0.25rem 0.4rem;
+  transition: color 0.2s ease;
 }
 
 .link-btn:hover {
   color: var(--accent);
-  background: rgba(56, 189, 248, 0.12);
 }
 
+/* Dot separator */
 .link-sep {
   color: var(--muted);
   opacity: 0.6;
   user-select: none;
 }
+
