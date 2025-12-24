@@ -185,80 +185,26 @@ footer {
   color: var(--muted);
 }
 
-/* HERO ORBIT */
-.hero-orbit {
-  position: relative;
-  min-height: 100vh;
+/* HERO SKILLS LINE */
+.hero-skills {
+  margin: 1.2rem 0 1.6rem;
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.2rem;
   justify-content: center;
+  font-size: 0.9rem;
+  color: var(--muted);
 }
 
-.hero-center {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-}
-
-/* ORBIT PATH */
-.orbit {
-  position: absolute;
-  width: 520px;
-  height: 520px;
-  border-radius: 50%;
-  animation: orbit-spin 40s linear infinite;
-}
-
-/* SKILLS */
-.skill {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform:
-    rotate(calc(360deg / 10 * var(--i)))
-    translate(260px)
-    rotate(calc(-360deg / 10 * var(--i)));
-  background: rgba(255,255,255,0.05);
-  padding: 0.45rem 0.8rem;
+.hero-skills span {
+  background: rgba(255,255,255,0.04);
+  padding: 0.35rem 0.7rem;
   border-radius: 999px;
-  font-size: 0.85rem;
-  white-space: nowrap;
-  color: var(--text);
-  transition: transform 0.25s ease, background 0.25s ease;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
-/* HOVER EFFECT */
-.skill:hover {
-  background: rgba(56,189,248,0.25);
-  transform:
-    rotate(calc(360deg / 10 * var(--i)))
-    translate(260px)
-    rotate(calc(-360deg / 10 * var(--i)))
-    scale(1.15);
+.hero-skills span:hover {
+  background: rgba(56,189,248,0.2);
+  color: var(--accent);
 }
 
-/* ORBIT ANIMATION */
-@keyframes orbit-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-/* Pause orbit on hover (optional but nice) */
-.hero-orbit:hover .orbit {
-  animation-play-state: paused;
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .orbit {
-    width: 360px;
-    height: 360px;
-  }
-
-  .skill {
-    transform:
-      rotate(calc(360deg / 10 * var(--i)))
-      translate(180px)
-      rotate(calc(-360deg / 10 * var(--i)));
-  }
-}
