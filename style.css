@@ -26,7 +26,8 @@ a {
   text-decoration: none;
 }
 
-/* NAV */
+/* ================= NAV ================= */
+
 .nav {
   display: flex;
   justify-content: space-between;
@@ -48,9 +49,10 @@ a {
   color: var(--text);
 }
 
-/* HERO */
+/* ================= HERO ================= */
+
 .hero {
-  min-height: 80vh;
+  min-height: 85vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -61,28 +63,27 @@ a {
 
 .hero h1 {
   font-size: clamp(3rem, 6vw, 4rem);
-}
-
-.accent {
-  color: var(--accent);
+  margin: 0;
 }
 
 .hero-subtitle {
   color: var(--muted);
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   margin-top: 1rem;
 }
 
-/* BUTTONS */
+/* Buttons */
 .hero-buttons {
   margin-top: 2.5rem;
+  display: flex;
+  gap: 1rem;
 }
 
 .btn {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  margin: 0 0.5rem;
   font-weight: 600;
+  display: inline-block;
 }
 
 .primary {
@@ -92,9 +93,35 @@ a {
 
 .secondary {
   border: 1px solid var(--accent);
+  color: var(--accent);
 }
 
-/* SECTIONS */
+/* Secondary hero links */
+.hero-links {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.link-btn {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.link-btn:hover {
+  color: var(--accent);
+}
+
+.link-sep {
+  color: var(--muted);
+  opacity: 0.6;
+  user-select: none;
+}
+
+/* ================= SECTIONS ================= */
+
 .section {
   max-width: 900px;
   margin: 0 auto;
@@ -106,7 +133,44 @@ a {
   margin-bottom: 1.5rem;
 }
 
-/* EXPERIENCE */
+/* ================= SKILLS ================= */
+
+.skills-section {
+  padding-top: 3rem;   /* ← positive spacing only */
+}
+
+.skills-about {
+  max-width: 640px;
+  margin: 0 auto 2.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.skills-line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem 0.9rem;
+}
+
+.skills-line span {
+  background: rgba(255, 255, 255, 0.035);
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.skills-line span:hover {
+  background: rgba(56, 189, 248, 0.18);
+  color: var(--accent);
+}
+
+/* ================= EXPERIENCE ================= */
+
 .experience {
   display: flex;
   flex-direction: column;
@@ -145,8 +209,8 @@ a {
   line-height: 1.6;
 }
 
+/* ================= PROJECTS / PUBLICATIONS ================= */
 
-/* PROJECTS */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -177,103 +241,10 @@ a {
   color: var(--accent);
 }
 
+/* ================= FOOTER ================= */
 
-/* FOOTER */
 footer {
   text-align: center;
   padding: 2rem;
   color: var(--muted);
 }
-
-/* HERO SKILLS LINE */
-.hero-skills {
-  margin: 1.2rem 0 1.6rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.2rem;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: var(--muted);
-}
-
-.hero-skills span {
-  background: rgba(255,255,255,0.04);
-  padding: 0.35rem 0.7rem;
-  border-radius: 999px;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.hero-skills span:hover {
-  background: rgba(56,189,248,0.2);
-  color: var(--accent);
-}
-
-/* SKILLS SECTION */
-.skills-section {
-  padding-top: 0;
-  margin-top: -2rem;
-}
-
-.skills-line {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
-  justify-content: center;
-  font-size: 0.95rem;
-  color: var(--muted);
-}
-
-.skills-line span {
-  background: rgba(255,255,255,0.04);
-  padding: 0.4rem 0.8rem;
-  border-radius: 999px;
-  transition: background 0.2s ease, color 0.2s ease;
-}
-
-.skills-line span:hover {
-  background: rgba(56,189,248,0.2);
-  color: var(--accent);
-}
-
-.skills-about {
-  max-width: 760px;
-  margin: 0 auto 2rem;
-  text-align: center;
-  color: var(--muted);
-  font-size: 1rem;
-  line-height: 1.6;
-}
-
-/* Ensure hero buttons and links don't collide */
-.hero-buttons {
-  margin-top: 2rem;
-}
-
-/* Secondary links under hero */
-.hero-links {
-  margin-top: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  font-size: 0.9rem;
-}
-
-/* Link styling */
-.link-btn {
-  color: var(--muted);
-  padding: 0.25rem 0.4rem;
-  transition: color 0.2s ease;
-}
-
-.link-btn:hover {
-  color: var(--accent);
-}
-
-/* Dot separator */
-.link-sep {
-  color: var(--muted);
-  opacity: 0.6;
-  user-select: none;
-}
-
