@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Beyond Attention: Why Mamba and State Space Models Might Replace Transformers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An in-depth technical exploration of Mamba and State Space Models as a next-generation alternative to Transformers. Includes complexity analysis, diagrams, and intuition.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+        h1, h2, h3 {
+            color: #f8fafc;
+        }
+        h1 {
+            font-size: 2.8em;
+            font-weight: 800;
+        }
+        h2 {
+            margin-top: 60px;
+            font-size: 1.8em;
+        }
+        p {
+            color: #cbd5e1;
+        }
+        code {
+            background: #1e293b;
+            padding: 4px 6px;
+            border-radius: 6px;
+        }
+        .highlight {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        svg {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            width: 100%;
+        }
+        footer {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 1px solid #334155;
+            font-size: 0.9em;
+            color: #94a3b8;
+        }
+        a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>Beyond Attention: Why Mamba and State Space Models Might Replace Transformers</h1>
+
+<p>
+Transformers dominate AI. But they are expensive. Quadratic expensive.
+What if we could model long sequences without attention?
+</p>
+
+<p>
+Enter <strong>Mamba</strong> — a new class of selective State Space Models (SSMs) that challenge the Transformer’s dominance.
+</p>
+
+---
+
+<h2>1. The Problem with Attention</h2>
+
+<p>
+The self-attention mechanism computes:
+</p>
+
+<div class="highlight">
+\( Attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{d}})V \)
+</div>
+
+<p>
+This requires computing pairwise interactions between tokens.
+If sequence length is \( n \), complexity becomes:
+</p>
+
+<div class="highlight">
+\( O(n^2) \)
+</div>
+
+<p>
+For 8K tokens? Fine.  
+For 128K? Painful.  
+For million-token context? Prohibitive.
+</p>
+
+---
+
+<h2>2. What is a State Space Model?</h2>
+
+<p>
+Instead of comparing every token to every other token, SSMs model sequences as a dynamical system:
+</p>
+
+<div class="highlight">
+\[
+x'(t) = Ax(t) + Bu(t)
+\]
+\[
+y(t) = Cx(t)
+\]
+</div>
+
+<p>
+Where:
+</p>
+<ul>
+<li><strong>u(t)</strong> = input sequence</li>
+<li><strong>x(t)</strong> = hidden state</li>
+<li><strong>y(t)</strong> = output</li>
+</ul>
+
+<p>
+This turns sequence modeling into a recurrent update — linear in time.
+</p>
+
+---
+
+<h2>3. Visualizing Transformer vs Mamba</h2>
+
+<h3>Transformer (All-to-All Attention)</h3>
+
+<svg viewBox="0 0 600 200">
+    <circle cx="100" cy="100" r="20" fill="#38bdf8"/>
+    <circle cx="250" cy="100" r="20" fill="#38bdf8"/>
+    <circle cx="400" cy="100" r="20" fill="#38bdf8"/>
+    <circle cx="550" cy="100" r="20" fill="#38bdf8"/>
+
+    <line x1="100" y1="100" x2="250" y2="100" stroke="white"/>
+    <line x1="100" y1="100" x2="400" y2="100" stroke="white"/>
+    <line x1="100" y1="100" x2="550" y2="100" stroke="white"/>
+    <line x1="250" y1="100" x2="400" y2="100" stroke="white"/>
+    <line x1="250" y1="100" x2="550" y2="100" stroke="white"/>
+    <line x1="400" y1="100" x2="550" y2="100" stroke="white"/>
+</svg>
+
+<p>Every token attends to every other token → quadratic cost.</p>
+
+---
+
+<h3>Mamba (Selective State Propagation)</h3>
+
+<svg viewBox="0 0 600 200">
+    <circle cx="100" cy="100" r="20" fill="#22c55e"/>
+    <circle cx="250" cy="100" r="20" fill="#22c55e"/>
+    <circle cx="400" cy="100" r="20" fill="#22c55e"/>
+    <circle cx="550" cy="100" r="20" fill="#22c55e"/>
+
+    <line x1="100" y1="100" x2="250" y2="100" stroke="white"/>
+    <line x1="250" y1="100" x2="400" y2="100" stroke="white"/>
+    <line x1="400" y1="100" x2="550" y2="100" stroke="white"/>
+</svg>
+
+<p>
+Information flows forward with learned selective gating.
+Linear complexity.
+</p>
+
+---
+
+<h2>4. The Mamba Breakthrough</h2>
+
+<p>
+Classic SSMs struggled with content-based reasoning.
+Mamba introduces:
+</p>
+
+<ul>
+<li>Selective state updates</li>
+<li>Input-dependent parameterization</li>
+<li>Hardware-aware parallel scan implementation</li>
+</ul>
+
+<p>
+This allows it to:
+</p>
+
+<ul>
+<li>Compete with Transformers on language modeling</li>
+<li>Scale to long sequences efficiently</li>
+<li>Reduce memory footprint dramatically</li>
+</ul>
+
+---
+
+<h2>5. Complexity Comparison</h2>
+
+<div class="highlight">
+Transformer: \( O(n^2) \)  
+Mamba: \( O(n) \)
+</div>
+
+<p>
+For long sequences (audio, genomics, time-series, codebases), this difference becomes enormous.
+</p>
+
+---
+
+<h2>6. Why This Might Matter More Than You Think</h2>
+
+<p>
+If attention is not necessary for strong reasoning:
+</p>
+
+<ul>
+<li>Edge AI becomes viable</li>
+<li>Long-context models become cheap</li>
+<li>Memory bottlenecks shrink</li>
+</ul>
+
+<p>
+We might be witnessing the first serious architectural challenge to the Transformer era.
+</p>
+
+---
+
+<h2>7. The Bigger Question</h2>
+
+<p>
+Attention gave us scale.
+State space models may give us efficiency.
+</p>
+
+<p>
+The real question isn’t “Will Mamba replace Transformers?”
+</p>
+
+<p>
+It’s:
+</p>
+
+<div class="highlight">
+Can selective state models capture relational reasoning without quadratic attention?
+</div>
+
+---
+
+<h2>References</h2>
+
+<ul>
+<li>Mamba: Linear-Time Sequence Modeling with Selective State Spaces (2024)</li>
+<li>S4: Structured State Space for Sequence Modeling</li>
+<li>Recent work on hybrid Transformer-SSM architectures</li>
+</ul>
+
+---
+
+<footer>
+Hans Tiwari • 2026  
+Part of the AI-Broken-Down Series  
+Hosted on GitHub Pages
+</footer>
+
+</div>
+</body>
+</html>
