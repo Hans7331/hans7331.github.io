@@ -47,7 +47,7 @@ function render(){
         <th>${tokens[focus]}</th>
         ${weights.map((weight)=>{
           const alpha = Math.max(.08, weight);
-          return `<td style="background:rgba(8,121,111,${alpha});color:${weight > .22 ? '#fff' : '#17201d'}">${weight.toFixed(2)}</td>`;
+          return `<td style="background:rgba(45,212,191,${alpha});color:${weight > .22 ? '#f8fbff' : '#dce5f2'}">${weight.toFixed(2)}</td>`;
         }).join('')}
       </tr>
     </tbody>
