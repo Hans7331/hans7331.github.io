@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Poisson Regression — viz-ard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="article-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <a class="back" href="index.html">Back to all posts</a>
+          <h1>Poisson Regression</h1>
+          <p class="lede">Poisson regression is built for counts. Instead of predicting a value directly, it predicts a positive event rate, then treats the observed count as a draw from that rate.</p>
+        </div>
+      </header>
+
+      <div class="article-grid">
+        <article class="article-body">
+          <section>
+            <h2>The Model</h2>
+            <p>The log link is the central move. A straight line can go negative, but a count rate cannot. By modeling the log of lambda as linear and exponentiating it, the model keeps the expected count positive for every x.</p>
+            <div class="formula">
+              <span data-tex="Y_i \sim \mathrm{Poisson}(\lambda_i), \quad \log(\lambda_i)=\beta_0+\beta_1x_i">Y_i \sim \mathrm{Poisson}(\lambda_i), \quad \log(\lambda_i)=\beta_0+\beta_1x_i</span>
+            </div>
+          </section>
+
+          <section class="interactive split" aria-label="Poisson regression interactive">
+            <div class="controls stack">
+              <label>
+                <span>Baseline rate <output id="baselineValue">1.2</output></span>
+                <input id="baseline" type="range" min="0.2" max="3" step="0.1" value="1.2">
+              </label>
+              <label>
+                <span>Log-rate slope <output id="rateSlopeValue">0.18</output></span>
+                <input id="rateSlope" type="range" min="-0.18" max="0.25" step="0.01" value="0.18">
+              </label>
+              <label>
+                <span>Exposure <output id="exposureValue">1.0</output></span>
+                <input id="exposure" type="range" min="0.2" max="2" step="0.1" value="1">
+              </label>
+              <label>
+                <span>Observations <output id="countValue">36</output></span>
+                <input id="observationCount" type="range" min="16" max="96" step="4" value="36">
+              </label>
+              <button id="resample" type="button">Resample counts</button>
+            </div>
+
+            <div>
+              <div class="plot">
+                <canvas id="poissonRegressionChart" width="860" height="380"></canvas>
+              </div>
+
+              <div class="rate-panels">
+                <div class="rate-panel"><span>Rate ratio per x</span><strong id="rateRatio">--</strong></div>
+                <div class="rate-panel"><span>Mean predicted count</span><strong id="meanCount">--</strong></div>
+                <div class="rate-panel"><span>Prediction at x = 10</span><strong id="countPrediction">--</strong></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>Reading The Chart</h2>
+            <p>The dots are sampled counts. The curve is the expected count from the model. Because the line is exponentiated, a constant slope on the log scale becomes multiplicative growth or decay on the count scale.</p>
+            <p>The rate ratio is the easiest interpretation: if the rate ratio is 1.20, then one more unit of x multiplies the expected count by 1.20.</p>
+          </section>
+        </article>
+
+        <aside class="side-note">
+          <h3>Use It When</h3>
+          <ul>
+            <li>The target is a count: clicks, defects, arrivals, incidents.</li>
+            <li>Counts are non-negative integers.</li>
+            <li>Exposure matters, such as time watched or distance driven.</li>
+          </ul>
+        </aside>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/poisson.js"></script>
+  </body>
+</html>

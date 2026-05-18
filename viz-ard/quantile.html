@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Quantile Regression — viz-ard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="article-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <a class="back" href="index.html">Back to all posts</a>
+          <h1>Quantile Regression</h1>
+          <p class="lede">Quantile regression predicts a chosen point in the conditional distribution. The median answers a different question from the 90th percentile, and that matters when the tail risk is the thing you care about.</p>
+        </div>
+      </header>
+
+      <div class="article-grid wide">
+        <article class="article-body">
+          <section>
+            <h2>The Pinball Loss</h2>
+            <p>The loss is asymmetric. If you ask for the 90th percentile, under-predicting is much more expensive than over-predicting. That asymmetry pushes the fitted line toward the requested quantile.</p>
+            <div class="formula">
+              <span data-tex="L_\tau(y,\hat y)=\max(\tau(y-\hat y),(\tau-1)(y-\hat y))">L_\tau(y,\hat y)=\max(\tau(y-\hat y),(\tau-1)(y-\hat y))</span>
+            </div>
+          </section>
+
+          <section class="interactive" aria-label="Quantile regression loss lab">
+            <div class="controls">
+              <label>
+                <span>Quantile tau <output id="tauValue">0.50</output></span>
+                <input id="tau" type="range" min="0.1" max="0.9" step="0.05" value="0.5">
+              </label>
+              <label>
+                <span>Prediction y-hat <output id="predictionValue">10.0</output></span>
+                <input id="prediction" type="range" min="5" max="15" step="0.5" value="10">
+              </label>
+            </div>
+
+            <div class="pinball-grid">
+              <div class="pinball-card">
+                <h3>Actual outcomes</h3>
+                <p class="section-intro">A skewed set of possible delivery times.</p>
+                <div id="actualBars" class="loss-scale"></div>
+              </div>
+              <div class="pinball-card">
+                <h3>Pinball losses</h3>
+                <p class="section-intro">Loss grows differently above and below the prediction.</p>
+                <div id="lossBars" class="loss-scale"></div>
+              </div>
+              <div class="pinball-card">
+                <h3>Interpretation</h3>
+                <p id="quantileSummary">--</p>
+                <div class="metric"><span>Total loss</span><strong id="totalLoss">--</strong></div>
+              </div>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/quantile.js"></script>
+  </body>
+</html>

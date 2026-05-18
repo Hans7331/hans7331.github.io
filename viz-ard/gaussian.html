@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gaussian Regression — viz-ard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="article-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <a class="back" href="index.html">Back to all posts</a>
+          <h1>Gaussian Regression</h1>
+          <p class="lede">Gaussian regression models a continuous outcome as a mean function plus normally distributed noise. The line is the expected value; the spread is how much individual observations vary around it.</p>
+        </div>
+      </header>
+
+      <div class="article-grid">
+        <article class="article-body">
+          <section>
+            <h2>The Model</h2>
+            <p>For a single feature, the model says each target value is drawn from a normal distribution whose center moves linearly with the input. That makes ordinary least squares more than a curve-fitting trick: under Gaussian noise, minimizing squared error is the same direction as maximizing likelihood.</p>
+            <div class="formula">
+              <span data-tex="y_i \sim \mathcal{N}(\mu_i,\sigma^2), \quad \mu_i=\beta_0+\beta_1x_i">y_i \sim \mathcal{N}(\mu_i,\sigma^2), \quad \mu_i=\beta_0+\beta_1x_i</span>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>Five Continuous Regression Examples</h2>
+            <div class="example-grid">
+              <div class="example-card"><strong>Housing</strong><p>Predict sale price from location, size, and age.</p></div>
+              <div class="example-card"><strong>Medicine</strong><p>Estimate blood pressure from dosage and patient features.</p></div>
+              <div class="example-card"><strong>Operations</strong><p>Forecast delivery time from route distance and load.</p></div>
+              <div class="example-card"><strong>Energy</strong><p>Model electricity demand from temperature and hour.</p></div>
+              <div class="example-card"><strong>Product</strong><p>Predict revenue from traffic and conversion signals.</p></div>
+            </div>
+          </section>
+
+          <section class="interactive" aria-label="Gaussian regression interactive">
+            <div class="controls">
+              <label>
+                <span>Slope beta one <output id="slopeValue">1.2</output></span>
+                <input id="slope" type="range" min="-2" max="3" step="0.1" value="1.2">
+              </label>
+              <label>
+                <span>Intercept beta zero <output id="interceptValue">2.0</output></span>
+                <input id="intercept" type="range" min="-4" max="8" step="0.2" value="2">
+              </label>
+              <label>
+                <span>Noise sigma <output id="noiseValue">1.4</output></span>
+                <input id="noise" type="range" min="0.2" max="4" step="0.1" value="1.4">
+              </label>
+              <label>
+                <span>Sample size <output id="sampleValue">44</output></span>
+                <input id="sampleSize" type="range" min="16" max="120" step="4" value="44">
+              </label>
+              <button id="resample" type="button">Resample data</button>
+            </div>
+
+            <div class="plot">
+              <canvas id="gaussianRegressionChart" width="860" height="380"></canvas>
+            </div>
+
+            <div class="metrics">
+              <div class="metric"><span>Fitted line</span><strong id="fitEquation">--</strong></div>
+              <div class="metric"><span>RMSE</span><strong id="rmse">--</strong></div>
+              <div class="metric"><span>Prediction at x = 8</span><strong id="prediction">--</strong></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>Reading The Chart</h2>
+            <p>The dots are sampled observations. The solid line is the fitted conditional mean. The pale band marks roughly two noise standard deviations above and below the mean, so wider bands mean less certainty about individual outcomes.</p>
+            <p>When sigma grows, the fitted line can still estimate the average trend, but individual predictions become less precise. When the slope changes, the expected value changes faster as x increases.</p>
+          </section>
+        </article>
+
+        <aside class="side-note">
+          <h3>Use It When</h3>
+          <ul>
+            <li>The target is continuous: price, height, time, temperature, revenue.</li>
+            <li>Residuals are roughly symmetric around zero.</li>
+            <li>You care about both average trend and prediction uncertainty.</li>
+          </ul>
+        </aside>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/gaussian.js"></script>
+  </body>
+</html>

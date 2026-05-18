@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Mamba and State Space Models — viz-ard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="article-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <a class="back" href="index.html">Back to all posts</a>
+          <h1>Mamba / State Space Models</h1>
+          <p class="lede">State-space sequence models keep a compact hidden state and scan through tokens. Instead of comparing every token to every other token, the model updates memory step by step.</p>
+        </div>
+      </header>
+
+      <div class="article-grid">
+        <article class="article-body">
+          <section>
+            <h2>The Recurrence</h2>
+            <p>A state-space model carries a state forward. Mamba-style models make parts of that update depend on the current token, so the model can selectively remember or forget information as it scans.</p>
+            <div class="formula">
+              <span data-tex="h_t=A(x_t)h_{t-1}+B(x_t)x_t,\quad y_t=C(x_t)h_t">h_t=A(x_t)h_{t-1}+B(x_t)x_t,\quad y_t=C(x_t)h_t</span>
+            </div>
+          </section>
+
+          <section class="interactive" aria-label="Mamba state trace lab">
+            <div class="controls">
+              <label>
+                <span>Input sequence</span>
+                <select id="sequence">
+                  <option value="topic">topic shift in a paragraph</option>
+                  <option value="code">variable reuse in code</option>
+                  <option value="noise">signal mixed with noise</option>
+                </select>
+              </label>
+              <label>
+                <span>Memory retention <output id="retentionValue">0.70</output></span>
+                <input id="retention" type="range" min="0.2" max="0.95" step="0.05" value="0.7">
+              </label>
+              <label>
+                <span>Input gate <output id="gateValue">0.60</output></span>
+                <input id="gate" type="range" min="0.1" max="1" step="0.05" value="0.6">
+              </label>
+            </div>
+
+            <h2>State Scan</h2>
+            <p class="section-intro">Each card is one scan step. The state is carried forward, decayed by retention, and updated by the token input.</p>
+            <div id="stateRow" class="state-row"></div>
+          </section>
+        </article>
+
+        <aside class="side-note">
+          <h3>Attention vs SSM</h3>
+          <ul>
+            <li>Attention reads across token pairs.</li>
+            <li>State-space models scan with a compact state.</li>
+            <li>Mamba adds input-dependent selection to that scan.</li>
+            <li>The design is attractive for long sequences.</li>
+          </ul>
+        </aside>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/mamba.js"></script>
+  </body>
+</html>

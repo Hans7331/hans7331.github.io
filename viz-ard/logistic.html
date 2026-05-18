@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Logistic Regression — viz-ard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="article-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <a class="back" href="index.html">Back to all posts</a>
+          <h1>Logistic Regression</h1>
+          <p class="lede">Logistic regression turns a linear score into a probability. The important object is not a straight-line prediction; it is the decision boundary created after the sigmoid squashes any score into the range from zero to one.</p>
+        </div>
+      </header>
+
+      <div class="article-grid wide">
+        <article class="article-body">
+          <section>
+            <h2>The Model</h2>
+            <p>The model first computes a log-odds score. The sigmoid transforms that score into a probability, and a threshold turns the probability into a class decision.</p>
+            <div class="formula">
+              <span data-tex="p(y=1\mid x)=\sigma(\beta_0+\beta_1x)=\frac{1}{1+e^{-(\beta_0+\beta_1x)}}">p(y=1\mid x)=\sigma(\beta_0+\beta_1x)=\frac{1}{1+e^{-(\beta_0+\beta_1x)}}</span>
+            </div>
+          </section>
+
+          <section class="interactive probability-lab" aria-label="Logistic regression probability lab">
+            <div>
+              <div class="sigmoid-stage">
+                <div>
+                  <h2 id="probabilityHeadline">--</h2>
+                  <p id="probabilityCopy">--</p>
+                  <div class="probability-meter" aria-label="Predicted probability">
+                    <div id="probabilityFill" class="probability-fill"></div>
+                  </div>
+                  <div class="decision-row">
+                    <div id="negativeBox" class="decision-box"><strong>Class 0</strong><p>Below threshold</p></div>
+                    <div id="positiveBox" class="decision-box"><strong>Class 1</strong><p>At or above threshold</p></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="controls stack">
+              <label>
+                <span>Input x <output id="xValue">1.0</output></span>
+                <input id="x" type="range" min="-6" max="6" step="0.1" value="1">
+              </label>
+              <label>
+                <span>Intercept beta zero <output id="interceptValue">-0.4</output></span>
+                <input id="intercept" type="range" min="-5" max="5" step="0.1" value="-0.4">
+              </label>
+              <label>
+                <span>Slope beta one <output id="slopeValue">1.1</output></span>
+                <input id="slope" type="range" min="-3" max="3" step="0.1" value="1.1">
+              </label>
+              <label>
+                <span>Decision threshold <output id="thresholdValue">0.50</output></span>
+                <input id="threshold" type="range" min="0.05" max="0.95" step="0.05" value="0.5">
+              </label>
+              <div class="metric"><span>Log-odds score</span><strong id="logOdds">--</strong></div>
+              <div class="metric"><span>Odds</span><strong id="odds">--</strong></div>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>Use Cases</h2>
+            <div class="example-grid">
+              <div class="example-card"><strong>Churn</strong><p>Will a customer leave this month?</p></div>
+              <div class="example-card"><strong>Fraud</strong><p>Is this transaction suspicious?</p></div>
+              <div class="example-card"><strong>Medicine</strong><p>Does a patient need follow-up care?</p></div>
+              <div class="example-card"><strong>Search</strong><p>Will a user click this result?</p></div>
+              <div class="example-card"><strong>Quality</strong><p>Will an item pass inspection?</p></div>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/logistic.js"></script>
+  </body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ridge Regression — viz-ard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="article-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <a class="back" href="index.html">Back to all posts</a>
+          <h1>Ridge Regression</h1>
+          <p class="lede">Ridge regression keeps a linear model but adds a penalty for large coefficients. It is useful when features are correlated and an unregularized fit spreads weight in unstable ways.</p>
+        </div>
+      </header>
+
+      <div class="article-grid">
+        <article class="article-body">
+          <section>
+            <h2>The Penalty</h2>
+            <p>The model still tries to fit the data, but it pays an extra cost for large weights. Larger penalties shrink coefficients toward zero without selecting them out completely.</p>
+            <div class="formula">
+              <span data-tex="\min_\beta \sum_i (y_i-x_i^\top\beta)^2+\lambda\sum_j\beta_j^2">\min_\beta \sum_i (y_i-x_i^\top\beta)^2+\lambda\sum_j\beta_j^2</span>
+            </div>
+          </section>
+
+          <section class="interactive split" aria-label="Ridge regression shrinkage lab">
+            <div class="controls stack">
+              <label>
+                <span>Penalty lambda <output id="lambdaValue">2.0</output></span>
+                <input id="lambda" type="range" min="0" max="10" step="0.2" value="2">
+              </label>
+              <label>
+                <span>Feature correlation <output id="correlationValue">0.50</output></span>
+                <input id="correlation" type="range" min="0" max="0.95" step="0.05" value="0.5">
+              </label>
+              <div class="metric"><span>Effective degrees of freedom</span><strong id="degreesFreedom">--</strong></div>
+              <div class="metric"><span>Coefficient norm</span><strong id="coefNorm">--</strong></div>
+            </div>
+
+            <div>
+              <h2>Coefficient Shrinkage</h2>
+              <p class="section-intro">The bars compare unregularized coefficients with the ridge-shrunk values. Correlation makes the unregularized weights less stable; lambda pulls them back.</p>
+              <div id="coefficientList" class="coefficient-list"></div>
+            </div>
+          </section>
+        </article>
+
+        <aside class="side-note">
+          <h3>What Changes</h3>
+          <ul>
+            <li>Predictions stay linear.</li>
+            <li>Large coefficients become expensive.</li>
+            <li>Correlated features share weight more smoothly.</li>
+            <li>Unlike lasso, ridge usually keeps every feature active.</li>
+          </ul>
+        </aside>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/ridge.js"></script>
+  </body>
+</html>

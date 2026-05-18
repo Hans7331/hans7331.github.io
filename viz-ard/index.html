@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>viz-ard — interactive model articles</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="site-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <h1>Model articles grouped by what they explain.</h1>
+          <p>Regression and LLM topics are separated first. Each article uses the interaction that fits the idea: curves for likelihoods, bars for coefficients, heatmaps for attention, retrieval cards for RAG, and state traces for Mamba.</p>
+        </div>
+      </header>
+
+      <nav class="category-nav" aria-label="Topic groups">
+        <a href="#regression">Regression</a>
+        <a href="#llm">LLM Systems</a>
+      </nav>
+
+      <section id="regression" class="topic-section">
+        <div class="section-heading">
+          <div>
+            <h2>Regression</h2>
+            <p class="section-intro">Five examples of the regression family: continuous values, binary probabilities, counts, shrinkage, and conditional quantiles.</p>
+          </div>
+          <span class="pill">y, p, lambda, beta, q</span>
+        </div>
+
+        <div class="topic-grid" aria-label="Regression articles">
+          <a class="topic-card" href="gaussian.html">
+            <span class="symbol">y</span>
+            <div>
+              <h3>Gaussian Regression</h3>
+              <p>A line plus residual noise for continuous targets.</p>
+            </div>
+            <div class="topic-meta"><span>continuous</span><span>chart lab</span></div>
+          </a>
+
+          <a class="topic-card" href="logistic.html">
+            <span class="symbol rose">p</span>
+            <div>
+              <h3>Logistic Regression</h3>
+              <p>A probability model for yes/no decisions.</p>
+            </div>
+            <div class="topic-meta"><span>classification</span><span>threshold lab</span></div>
+          </a>
+
+          <a class="topic-card" href="poisson.html">
+            <span class="symbol rust">λ</span>
+            <div>
+              <h3>Poisson Regression</h3>
+              <p>Rates and counts with a log link.</p>
+            </div>
+            <div class="topic-meta"><span>counts</span><span>rate curve</span></div>
+          </a>
+
+          <a class="topic-card" href="ridge.html">
+            <span class="symbol indigo">β</span>
+            <div>
+              <h3>Ridge Regression</h3>
+              <p>Coefficient shrinkage when features compete.</p>
+            </div>
+            <div class="topic-meta"><span>regularization</span><span>bars</span></div>
+          </a>
+
+          <a class="topic-card" href="quantile.html">
+            <span class="symbol gold">q</span>
+            <div>
+              <h3>Quantile Regression</h3>
+              <p>Predict the median or tail instead of only the mean.</p>
+            </div>
+            <div class="topic-meta"><span>robustness</span><span>loss lab</span></div>
+          </a>
+        </div>
+      </section>
+
+      <section id="llm" class="topic-section">
+        <div class="section-heading">
+          <div>
+            <h2>LLM Systems</h2>
+            <p class="section-intro">Five model and system concepts: token prediction, attention routing, retrieval grounding, preference optimization, and state-space sequence modeling.</p>
+          </div>
+          <span class="pill">tok, QK, R, A, S</span>
+        </div>
+
+        <div class="topic-grid llm" aria-label="LLM articles">
+          <a class="topic-card" href="llm.html">
+            <span class="symbol indigo">tok</span>
+            <div>
+              <h3>LLM Basics</h3>
+              <p>Next-token prediction and why probabilities become text.</p>
+            </div>
+            <div class="topic-meta"><span>language model</span><span>token bars</span></div>
+          </a>
+
+          <a class="topic-card" href="attention.html">
+            <span class="symbol gold">QK</span>
+            <div>
+              <h3>Attention</h3>
+              <p>How tokens choose which other tokens to read from.</p>
+            </div>
+            <div class="topic-meta"><span>transformers</span><span>heatmap</span></div>
+          </a>
+
+          <a class="topic-card" href="rag.html">
+            <span class="symbol">R</span>
+            <div>
+              <h3>RAG</h3>
+              <p>Retrieval before generation for grounded answers.</p>
+            </div>
+            <div class="topic-meta"><span>systems</span><span>retrieval cards</span></div>
+          </a>
+
+          <a class="topic-card" href="grpo.html">
+            <span class="symbol rose">A</span>
+            <div>
+              <h3>GRPO</h3>
+              <p>Group-relative rewards for policy optimization.</p>
+            </div>
+            <div class="topic-meta"><span>RL</span><span>completion cards</span></div>
+          </a>
+
+          <a class="topic-card" href="mamba.html">
+            <span class="symbol rust">S</span>
+            <div>
+              <h3>Mamba / SSMs</h3>
+              <p>State-space models that scan sequence history.</p>
+            </div>
+            <div class="topic-meta"><span>sequence model</span><span>state trace</span></div>
+          </a>
+        </div>
+      </section>
+
+      <footer>
+        <small>Static HTML, CSS, and JavaScript. Open any article directly or run the Vite dev server.</small>
+      </footer>
+    </main>
+
+    <script src="assets/js/main.js"></script>
+  </body>
+</html>

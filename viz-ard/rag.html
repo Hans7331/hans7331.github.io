@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>RAG — viz-ard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="article-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <a class="back" href="index.html">Back to all posts</a>
+          <h1>RAG</h1>
+          <p class="lede">Retrieval Augmented Generation gives a language model a small, relevant set of external passages before it answers. The model still writes the answer, but the answer is grounded in retrieved context.</p>
+        </div>
+      </header>
+
+      <div class="article-grid">
+        <article class="article-body">
+          <section>
+            <h2>The Pipeline</h2>
+            <p>A RAG system turns a user question into a search query, retrieves matching chunks from a knowledge base, and sends the strongest chunks into the model context. Good RAG is mostly about retrieval quality, chunk quality, ranking, and making unsupported answers visible.</p>
+            <div class="formula">
+              <span data-tex="\mathrm{answer}=\mathrm{LLM}(q,D_{1:k})">\mathrm{answer}=\mathrm{LLM}(q,D_{1:k})</span>
+            </div>
+          </section>
+
+          <section class="interactive" aria-label="RAG interactive">
+            <div class="controls">
+              <label>
+                <span>Question</span>
+                <select id="query">
+                  <option value="gaussian">How does Gaussian regression represent uncertainty?</option>
+                  <option value="poisson">Why does Poisson regression use a log link?</option>
+                  <option value="attention">What does attention retrieve from tokens?</option>
+                  <option value="grpo">What does GRPO compare inside a group?</option>
+                  <option value="mamba">How is a state-space model different from attention?</option>
+                  <option value="rag">How does RAG reduce hallucination risk?</option>
+                </select>
+              </label>
+              <label>
+                <span>Top k <output id="topKValue">3</output></span>
+                <input id="topK" type="range" min="1" max="5" step="1" value="3">
+              </label>
+              <label>
+                <span>Minimum score <output id="thresholdValue">0.10</output></span>
+                <input id="threshold" type="range" min="0" max="0.5" step="0.05" value="0.1">
+              </label>
+            </div>
+
+            <div class="flow" aria-label="RAG stages">
+              <div class="flow-step"><h3>Query</h3><p id="queryText">--</p></div>
+              <div class="flow-step"><h3>Retrieve</h3><p id="retrievalSummary">--</p></div>
+              <div class="flow-step"><h3>Answer</h3><p id="groundingSummary">--</p></div>
+            </div>
+
+            <div id="docs" class="doc-list" aria-label="Retrieved passages"></div>
+            <div class="answer">
+              <h3>Grounded Answer</h3>
+              <p id="answer">--</p>
+            </div>
+          </section>
+
+          <section class="section">
+            <h2>Where It Fails</h2>
+            <p>RAG does not make the model automatically correct. If retrieval misses the right passage, retrieves stale context, or stuffs the prompt with weak chunks, the generated answer can still be wrong. The retrieval layer gives the model evidence; it does not replace evaluation.</p>
+          </section>
+        </article>
+
+        <aside class="side-note">
+          <h3>Useful Checks</h3>
+          <ul>
+            <li>Does the retrieved text actually answer the question?</li>
+            <li>Are chunks small enough to be specific?</li>
+            <li>Can the system say when evidence is missing?</li>
+            <li>Are citations tied to the exact retrieved passages?</li>
+          </ul>
+        </aside>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/rag.js"></script>
+  </body>
+</html>

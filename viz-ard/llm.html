@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LLM Basics — viz-ard</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+  </head>
+  <body>
+    <main class="container">
+      <header class="article-header">
+        <a class="brand" href="index.html">viz-ard</a>
+        <div class="site-title">
+          <a class="back" href="index.html">Back to all posts</a>
+          <h1>LLM Basics</h1>
+          <p class="lede">A large language model repeatedly predicts the next token. The generated text looks like prose, but the primitive operation is a probability distribution over tokens at every step.</p>
+        </div>
+      </header>
+
+      <div class="article-grid wide">
+        <article class="article-body">
+          <section>
+            <h2>Next Token Prediction</h2>
+            <p>The model reads a context window and returns scores called logits. Softmax turns those scores into probabilities, and decoding chooses one token from that distribution.</p>
+            <div class="formula">
+              <span data-tex="P(t_{n+1}\mid t_1,\ldots,t_n)=\mathrm{softmax}(z)">P(t_{n+1}\mid t_1,\ldots,t_n)=\mathrm{softmax}(z)</span>
+            </div>
+          </section>
+
+          <section class="interactive split" aria-label="LLM next-token lab">
+            <div class="controls stack">
+              <label>
+                <span>Prompt</span>
+                <select id="prompt">
+                  <option value="code">Write a Python function to</option>
+                  <option value="story">The old telescope revealed</option>
+                  <option value="math">The derivative of x squared is</option>
+                </select>
+              </label>
+              <label>
+                <span>Temperature <output id="temperatureValue">0.8</output></span>
+                <input id="temperature" type="range" min="0.2" max="1.8" step="0.1" value="0.8">
+              </label>
+              <button id="sample" type="button">Sample next token</button>
+              <div class="metric"><span>Selected token</span><strong id="selectedToken">--</strong></div>
+            </div>
+
+            <div>
+              <h2>Context Window</h2>
+              <div id="tokenStream" class="token-stream"></div>
+              <h2>Next Token Probabilities</h2>
+              <div id="tokenOptions" class="next-token-options"></div>
+            </div>
+          </section>
+        </article>
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/llm.js"></script>
+  </body>
+</html>
