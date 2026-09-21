@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f5f1e8">
+    <meta name="description" content="A calm, mobile-friendly Swedish vocabulary flashcard app.">
+    <title>Ord — Swedish flashcards</title>
+    <style>
+:root {
+  color-scheme: light;
+  --canvas: #f4f0e7;
+  --canvas-deep: #e9e3d8;
+  --surface: #fffdf8;
+  --surface-raised: #ffffff;
+  --ink: #182525;
+  --ink-soft: #5e6966;
+  --line: #d9d5cb;
+  --teal: #184f4b;
+  --teal-bright: #2f7770;
+  --coral: #e7684d;
+  --coral-soft: #f7ded5;
+  --yellow: #f2ca72;
+  --green: #4d8b71;
+  --shadow: 0 22px 60px rgba(32, 45, 42, 0.11), 0 3px 12px rgba(32, 45, 42, 0.06);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  --page: min(1080px, calc(100% - 40px));
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #111918;
+  --canvas-deep: #0c1211;
+  --surface: #192322;
+  --surface-raised: #202c2a;
+  --ink: #f5f2e9;
+  --ink-soft: #a9b4b0;
+  --line: #34413e;
+  --teal: #8bc5bc;
+  --teal-bright: #9ed6cd;
+  --coral: #f08a72;
+  --coral-soft: #452c27;
+  --yellow: #eac16b;
+  --green: #78b497;
+  --shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+}
+
+* { box-sizing: border-box; }
+
+html { min-height: 100%; }
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 14% -5%, color-mix(in srgb, var(--yellow) 22%, transparent) 0 14%, transparent 36%),
+    radial-gradient(circle at 92% 32%, color-mix(in srgb, var(--teal) 10%, transparent) 0 10%, transparent 28%),
+    var(--canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+button, select { font: inherit; }
+button, a, select { -webkit-tap-highlight-color: transparent; }
+button { color: inherit; }
+
+button:focus-visible,
+select:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--coral) 75%, white);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 100;
+  left: 16px;
+  top: 12px;
+  padding: 10px 14px;
+  color: white;
+  background: var(--teal);
+  border-radius: 8px;
+  transform: translateY(-160%);
+}
+
+.skip-link:focus { transform: none; }
+
+.site-header,
+.site-footer,
+.app-shell {
+  width: var(--page);
+  margin-inline: auto;
+}
+
+.site-header {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  color: #fffaf0;
+  background: var(--teal);
+  border-radius: 13px 13px 13px 4px;
+  font: 700 20px/1 Georgia, serif;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--teal) 25%, transparent);
+}
+
+.brand strong {
+  display: block;
+  font: 700 25px/1 Georgia, "Times New Roman", serif;
+  letter-spacing: -0.04em;
+}
+
+.brand small {
+  display: block;
+  margin-top: 4px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.header-actions { display: flex; align-items: center; gap: 10px; }
+
+.streak-pill {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 15px;
+  color: var(--teal);
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.streak-pill > span:first-child { color: var(--coral); }
+
+.icon-button {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.icon-button:hover { background: var(--surface-raised); border-color: var(--teal); }
+.icon-button svg { width: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+
+.app-shell { padding: 38px 0 34px; }
+
+.study-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 32px;
+  max-width: 790px;
+  margin: 0 auto 24px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--coral);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.study-header h1 {
+  margin: 0;
+  font: 500 clamp(27px, 4vw, 40px)/1.08 Georgia, "Times New Roman", serif;
+  letter-spacing: -0.035em;
+}
+
+.deck-control { min-width: 210px; }
+.deck-control label {
+  display: block;
+  margin: 0 0 7px 2px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+select {
+  min-height: 44px;
+  padding: 0 38px 0 13px;
+  color: var(--ink);
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.deck-control select { width: 100%; }
+
+.session-progress {
+  max-width: 790px;
+  margin: 0 auto 22px;
+}
+
+.progress-copy {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 8px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.progress-copy strong { color: var(--ink); }
+
+.progress-track {
+  height: 6px;
+  overflow: hidden;
+  background: var(--canvas-deep);
+  border-radius: 99px;
+}
+
+.progress-track span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--coral), var(--yellow));
+  border-radius: inherit;
+  transition: width 360ms ease;
+}
+
+.study-area { max-width: 790px; margin: 0 auto; }
+
+.flashcard {
+  position: relative;
+  min-height: 435px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--line) 78%, transparent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.flashcard[role="button"] { cursor: pointer; }
+.flashcard[role="button"]:hover { transform: translateY(-2px); }
+.flashcard.is-revealed { min-height: 570px; }
+
+.card-accent {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 7px;
+  background: linear-gradient(180deg, var(--coral), var(--yellow));
+}
+
+.card-front,
+.card-back {
+  min-height: inherit;
+  padding: 28px 34px 24px 40px;
+}
+
+.card-front {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-front[hidden], .card-back[hidden] { display: none; }
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 10%, transparent);
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.card-number { margin-left: auto; font-variant-numeric: tabular-nums; }
+
+.word-stage {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: 34px 12px 45px;
+  text-align: center;
+}
+
+.prompt,
+.answer-label {
+  margin: 0 0 10px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.word-row { display: flex; align-items: center; justify-content: center; gap: 16px; }
+
+.word-row h2,
+.answer-heading h2 {
+  margin: 0;
+  font: 600 clamp(45px, 8vw, 72px)/1 Georgia, "Times New Roman", serif;
+  letter-spacing: -0.045em;
+  overflow-wrap: anywhere;
+}
+
+.speak-button {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 9%, transparent);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.speak-button:hover { background: color-mix(in srgb, var(--teal) 16%, transparent); }
+.speak-button svg, .text-button svg, .secondary-button svg {
+  width: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ipa { margin: 15px 0 0; color: var(--ink-soft); font-size: 15px; }
+
+.reveal-cue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.tap-icon { color: var(--coral); font-size: 18px; }
+kbd {
+  min-width: 25px;
+  padding: 3px 7px;
+  color: var(--ink-soft);
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  font: 650 10px/1.2 inherit;
+  text-align: center;
+}
+
+.card-back { animation: reveal-in 250ms ease both; }
+
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.answer-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.answer-heading h2 { font-size: clamp(32px, 5vw, 46px); }
+
+.translation-block {
+  margin: 22px 0 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.meaning {
+  margin: 0;
+  color: var(--teal);
+  font: 600 clamp(24px, 4vw, 34px)/1.15 Georgia, "Times New Roman", serif;
+}
+
+.sentence-card {
+  padding: 18px 20px;
+  background: color-mix(in srgb, var(--canvas) 70%, var(--surface));
+  border-radius: var(--radius-md);
+}
+
+.sentence-topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.sentence-topline > span {
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  color: var(--teal);
+  background: transparent;
+  border: 0;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.text-button svg { width: 17px; }
+.swedish-sentence { margin: 12px 0 5px; font: 600 18px/1.45 Georgia, serif; }
+.english-sentence { margin: 0; color: var(--ink-soft); font-size: 14px; line-height: 1.5; }
+mark { padding: 1px 3px; color: inherit; background: color-mix(in srgb, var(--yellow) 55%, transparent); border-radius: 4px; }
+
+.word-details { margin-top: 18px; }
+.form-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.form-chip {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 11px;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 13px;
+}
+.form-chip small { color: var(--ink-soft); font-size: 9px; }
+
+.memory-area { margin-top: 18px; border: 1px dashed color-mix(in srgb, var(--coral) 45%, var(--line)); border-radius: 14px; }
+.memory-button {
+  width: 100%;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 0 15px;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+.memory-button > span:first-child { color: var(--coral); }
+.memory-button > span:last-child { color: var(--ink-soft); font-size: 18px; }
+.memory-hint { margin: 0; padding: 0 15px 15px 39px; color: var(--ink-soft); font-size: 13px; line-height: 1.5; }
+
+.source-link {
+  display: inline-block;
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-size: 10px;
+  text-decoration: none;
+}
+.source-link:hover { color: var(--teal); text-decoration: underline; }
+
+.rating-panel { padding: 20px 4px 0; animation: reveal-in 220ms ease both; }
+.rating-panel > p { margin: 0 0 10px; color: var(--ink-soft); font-size: 12px; text-align: center; }
+.rating-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+.rating {
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+.rating:hover { transform: translateY(-2px); }
+.rating.again:hover { border-color: var(--coral); background: var(--coral-soft); }
+.rating.hard:hover { border-color: var(--yellow); }
+.rating.good:hover, .rating.easy:hover { border-color: var(--green); background: color-mix(in srgb, var(--green) 10%, var(--surface)); }
+
+.pre-reveal-actions {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 3px 0;
+}
+.secondary-button {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  color: var(--ink-soft);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.secondary-button:hover { color: var(--teal); border-color: var(--teal); }
+.secondary-button svg { width: 17px; }
+.shortcut-hint { color: var(--ink-soft); font-size: 11px; }
+
+.site-footer {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: env(safe-area-inset-bottom);
+  color: var(--ink-soft);
+  border-top: 1px solid var(--line);
+  font-size: 11px;
+}
+.site-footer button { padding: 10px 0; color: var(--ink-soft); background: transparent; border: 0; cursor: pointer; }
+.site-footer button:hover { color: var(--teal); text-decoration: underline; }
+
+.modal {
+  width: min(520px, calc(100% - 28px));
+  max-height: min(760px, calc(100vh - 28px));
+  padding: 0;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28);
+}
+.modal::backdrop { background: rgba(13, 24, 22, 0.55); backdrop-filter: blur(4px); }
+.modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 25px 25px 18px; border-bottom: 1px solid var(--line); }
+.modal-header h2 { margin: 0; font: 600 28px/1.1 Georgia, serif; }
+.modal-header .icon-button { border: 0; background: var(--canvas); font-size: 25px; }
+.modal-body { padding: 8px 25px 25px; }
+.setting-row { min-height: 74px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); }
+.setting-row span { display: flex; flex-direction: column; gap: 5px; }
+.setting-row small { color: var(--ink-soft); }
+.keyboard-help { padding: 20px 0; }
+.keyboard-help p { margin: 9px 0 0; color: var(--ink-soft); font-size: 12px; }
+.danger-button { width: 100%; min-height: 46px; color: var(--coral); background: transparent; border: 1px solid color-mix(in srgb, var(--coral) 55%, var(--line)); border-radius: 12px; cursor: pointer; }
+.danger-button:hover { background: var(--coral-soft); }
+.sources-modal { width: min(620px, calc(100% - 28px)); }
+.sources-copy { overflow-y: auto; line-height: 1.55; }
+.sources-copy > p { color: var(--ink-soft); }
+.sources-copy section { padding: 14px 0; border-top: 1px solid var(--line); }
+.sources-copy h3 { margin: 0 0 5px; font: 600 18px Georgia, serif; }
+.sources-copy section p { margin: 0 0 8px; color: var(--ink-soft); font-size: 13px; }
+.sources-copy a { color: var(--teal); font-weight: 700; font-size: 12px; }
+.fine-print { font-size: 11px; }
+
+.toast {
+  position: fixed;
+  z-index: 80;
+  left: 50%;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  max-width: calc(100% - 32px);
+  padding: 11px 16px;
+  color: white;
+  background: #182525;
+  border-radius: 99px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 12px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+noscript { display: block; padding: 20px; color: white; background: #8d2c20; text-align: center; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --canvas: #111918;
+    --canvas-deep: #0c1211;
+    --surface: #192322;
+    --surface-raised: #202c2a;
+    --ink: #f5f2e9;
+    --ink-soft: #a9b4b0;
+    --line: #34413e;
+    --teal: #8bc5bc;
+    --teal-bright: #9ed6cd;
+    --coral: #f08a72;
+    --coral-soft: #452c27;
+    --yellow: #eac16b;
+    --green: #78b497;
+    --shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+  }
+}
+
+@media (max-width: 680px) {
+  :root { --page: min(100% - 24px, 560px); --radius-lg: 22px; }
+  .site-header { min-height: 72px; }
+  .brand small, .streak-pill span:last-child { display: none; }
+  .streak-pill { width: 42px; padding: 0; justify-content: center; }
+  .app-shell { padding-top: 22px; }
+  .study-header { grid-template-columns: 1fr; gap: 18px; margin-bottom: 20px; }
+  .study-header h1 { max-width: 330px; font-size: 30px; }
+  .deck-control { min-width: 0; }
+  .progress-copy #progress-message { display: none; }
+  .flashcard { min-height: 390px; }
+  .flashcard.is-revealed { min-height: 565px; }
+  .card-front, .card-back { padding: 22px 20px 20px 26px; }
+  .word-stage { padding-inline: 0; }
+  .word-row { gap: 11px; }
+  .word-row h2 { font-size: clamp(42px, 14vw, 62px); }
+  .speak-button { width: 46px; height: 46px; }
+  .reveal-cue kbd { display: none; }
+  .answer-heading { margin-top: 19px; }
+  .translation-block { margin-top: 18px; }
+  .sentence-card { padding: 16px; }
+  .rating-buttons { grid-template-columns: repeat(2, 1fr); }
+  .rating { min-height: 48px; }
+  .shortcut-hint { display: none; }
+  .pre-reveal-actions { justify-content: center; }
+  .site-footer { min-height: 66px; }
+}
+
+@media (max-width: 380px) {
+  :root { --page: calc(100% - 16px); }
+  .study-header h1 { font-size: 27px; }
+  .card-meta { gap: 7px; }
+  .card-front, .card-back { padding-left: 22px; padding-right: 16px; }
+  .meaning { font-size: 24px; }
+  .swedish-sentence { font-size: 17px; }
+  .memory-hint { padding-left: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#study-card">Skip to current card</a>
+
+    <header class="site-header">
+      <a class="brand" href="./" aria-label="Ord home">
+        <span class="brand-mark" aria-hidden="true">Å</span>
+        <span>
+          <strong>ord</strong>
+          <small>Swedish, one word at a time</small>
+        </span>
+      </a>
+
+      <div class="header-actions">
+        <div class="streak-pill" title="Cards studied today">
+          <span aria-hidden="true">✦</span>
+          <span><strong id="today-count">0</strong> today</span>
+        </div>
+        <button class="icon-button" id="settings-button" type="button" aria-label="Open settings">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M6 14v6"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="study-header" aria-labelledby="session-heading">
+        <div>
+          <p class="eyebrow">Daily practice</p>
+          <h1 id="session-heading">Build your Swedish rhythm.</h1>
+        </div>
+
+        <div class="deck-control">
+          <label for="deck-filter">Deck</label>
+          <select id="deck-filter">
+            <option value="all">A1 + A2 · 240 words</option>
+            <option value="A1">A1 essentials · 160</option>
+            <option value="A2">A2 builder · 80</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="session-progress" aria-label="Daily progress">
+        <div class="progress-copy">
+          <span><strong id="progress-count">0</strong> of <span id="daily-goal-label">20</span> cards</span>
+          <span id="progress-message">A small practice is still progress.</span>
+        </div>
+        <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="20" aria-valuenow="0" id="progress-bar">
+          <span id="progress-fill"></span>
+        </div>
+      </section>
+
+      <section class="study-area" aria-live="off">
+        <article class="flashcard" id="study-card" tabindex="0" role="button" aria-label="Reveal the answer" aria-pressed="false">
+          <div class="card-accent" aria-hidden="true"></div>
+
+          <div class="card-front" id="card-front">
+            <div class="card-meta">
+              <span class="level-badge" id="level-badge">A1</span>
+              <span id="part-of-speech">noun</span>
+              <span class="card-number" id="card-number">1 / 240</span>
+            </div>
+
+            <div class="word-stage">
+              <p class="prompt">What does this mean?</p>
+              <div class="word-row">
+                <h2 id="swedish-word">ord</h2>
+                <button class="speak-button" id="speak-word" type="button" aria-label="Pronounce Swedish word">
+                  <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9H5Zm12.2-.8a5.4 5.4 0 0 1 0 7.6M19.8 5.6a9 9 0 0 1 0 12.8"/></svg>
+                </button>
+              </div>
+              <p class="ipa" id="ipa" hidden></p>
+            </div>
+
+            <div class="reveal-cue">
+              <span class="tap-icon" aria-hidden="true">↟</span>
+              <span>Tap the card to reveal</span>
+              <kbd>Space</kbd>
+            </div>
+          </div>
+
+          <div class="card-back" id="card-back" hidden>
+            <div class="card-meta">
+              <span class="level-badge" id="back-level-badge">A1</span>
+              <span id="back-part-of-speech">noun</span>
+              <span class="card-number" id="back-card-number">1 / 240</span>
+            </div>
+
+            <div class="answer-heading">
+              <div>
+                <p class="prompt">Swedish</p>
+                <h2 id="back-word">ord</h2>
+              </div>
+              <button class="speak-button" id="speak-word-back" type="button" aria-label="Pronounce Swedish word">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9H5Zm12.2-.2a4.6 4.6 0 0 1 0 6.4M19.8 5.6a9 9 0 0 1 0 12.8"/></svg>
+              </button>
+            </div>
+
+            <div class="translation-block">
+              <p class="answer-label">English</p>
+              <p class="meaning" id="english-meaning">word</p>
+            </div>
+
+            <div class="sentence-card">
+              <div class="sentence-topline">
+                <span>In context</span>
+                <button class="text-button" id="speak-sentence" type="button">
+                  <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9H5Zm12.5-.5a5 5 0 0 1 0 7"/></svg>
+                  Listen
+                </button>
+              </div>
+              <p class="swedish-sentence" id="swedish-sentence"></p>
+              <p class="english-sentence" id="english-sentence"></p>
+            </div>
+
+            <div class="word-details" id="word-details" hidden>
+              <p class="answer-label">Useful forms</p>
+              <div class="form-list" id="form-list"></div>
+            </div>
+
+            <div class="memory-area">
+              <button class="memory-button" id="memory-button" type="button" aria-expanded="false" aria-controls="memory-hint">
+                <span aria-hidden="true">✦</span>
+                <span>Reveal a memory hook</span>
+                <span aria-hidden="true">＋</span>
+              </button>
+              <p class="memory-hint" id="memory-hint" hidden></p>
+            </div>
+
+            <a class="source-link" id="source-link" href="#" target="_blank" rel="noreferrer">View sentence source ↗</a>
+          </div>
+        </article>
+
+        <div class="rating-panel" id="rating-panel" hidden>
+          <p>How well did you know it?</p>
+          <div class="rating-buttons">
+            <button class="rating again" type="button" data-rating="again"><span>Again</span><kbd>1</kbd></button>
+            <button class="rating hard" type="button" data-rating="hard"><span>Hard</span><kbd>2</kbd></button>
+            <button class="rating good" type="button" data-rating="good"><span>Good</span><kbd>3</kbd></button>
+            <button class="rating easy" type="button" data-rating="easy"><span>Easy</span><kbd>4</kbd></button>
+          </div>
+        </div>
+
+        <div class="pre-reveal-actions" id="pre-reveal-actions">
+          <button class="secondary-button" id="shuffle-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M16 3h5v5M4 17h3c5 0 5-10 10-10h4M16 21h5v-5M4 7h3c2.4 0 3.7 2.3 5 4.7M14.4 15.4c.8 1 1.6 1.6 2.6 1.6h4"/></svg>
+            Shuffle deck
+          </button>
+          <span class="shortcut-hint">Press <kbd>S</kbd> to listen</span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Made for steady learning.</span>
+      <button id="sources-button" type="button">Data &amp; licences</button>
+    </footer>
+
+    <dialog class="modal" id="settings-dialog">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Preferences</p>
+          <h2>Make practice yours</h2>
+        </div>
+        <button class="icon-button close-dialog" type="button" aria-label="Close settings">×</button>
+      </div>
+      <div class="modal-body">
+        <label class="setting-row" for="daily-goal">
+          <span><strong>Daily goal</strong><small>Cards per practice day</small></span>
+          <select id="daily-goal">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+          </select>
+        </label>
+        <label class="setting-row" for="theme-select">
+          <span><strong>Appearance</strong><small>Choose a comfortable theme</small></span>
+          <select id="theme-select">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+        <div class="keyboard-help">
+          <strong>Keyboard shortcuts</strong>
+          <p><kbd>Space</kbd> reveal · <kbd>S</kbd> speak · <kbd>1–4</kbd> rate</p>
+        </div>
+        <button class="danger-button" id="reset-progress" type="button">Reset all learning progress</button>
+      </div>
+    </dialog>
+
+    <dialog class="modal sources-modal" id="sources-dialog">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Open language data</p>
+          <h2>Data &amp; licences</h2>
+        </div>
+        <button class="icon-button close-dialog" type="button" aria-label="Close data information">×</button>
+      </div>
+      <div class="modal-body sources-copy">
+        <p>This learning deck combines three open sources. Each card retains its source IDs, and Tatoeba examples link back to the original sentence.</p>
+        <section>
+          <h3>Swedish Kelly list</h3>
+          <p>Vocabulary, frequency and CEFR levels from Språkbanken, licensed CC BY 4.0.</p>
+          <a href="https://sprakbanken.se/en/resources/kelly" target="_blank" rel="noreferrer">Visit Kelly ↗</a>
+        </section>
+        <section>
+          <h3>Wiktionary via Kaikki</h3>
+          <p>English meanings, word forms and IPA extracted from English Wiktionary. Data is available under Wiktionary’s CC BY-SA and GFDL terms.</p>
+          <a href="https://kaikki.org/dictionary/Swedish/index.html" target="_blank" rel="noreferrer">Visit Kaikki ↗</a>
+        </section>
+        <section>
+          <h3>Tatoeba</h3>
+          <p>Bilingual example sentences contributed by Tatoeba members, under CC BY 2.0 FR unless otherwise indicated.</p>
+          <a href="https://tatoeba.org/en/" target="_blank" rel="noreferrer">Visit Tatoeba ↗</a>
+        </section>
+        <p class="fine-print">This deck is an automatically assembled learning aid. Meanings and examples should be reviewed before high-stakes or commercial use.</p>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+    <noscript>This app needs JavaScript to show and schedule flashcards.</noscript>
+    <script>
+/* Generated by scripts/build_data.py. Do not edit by hand. */
+window.SWEDISH_CARDS=[{"id":"kelly-87","lemma":"och","displayWord":"och","marker":"","partOfSpeech":"conjunction","cefr":"A1","rank":87,"frequencyPerMillion":26019.68,"meaning":"and; plus","ipa":"/ɔ/","forms":[],"example":{"sv":"Kan du vara snäll och vänta en minut?","en":"Would you please wait for a minute?","surface":"och","source":"Tatoeba","swedishId":841624,"englishId":267901,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"87","wiktionarySenseId":"en-och-sv-conj-1ItE18XT"}},{"id":"kelly-88","lemma":"vara","displayWord":"att vara","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":88,"frequencyPerMillion":23017.26,"meaning":"to be","ipa":"/²vɑːra/","forms":[{"value":"är","label":"present"},{"value":"varit","label":"supine"},{"value":"var","label":"imperative"},{"value":"-","label":"supine"}],"example":{"sv":"Vi trodde att det var ett flygande tefat.","en":"We believed it to be a flying saucer.","surface":"var","source":"Tatoeba","swedishId":337413,"englishId":248176,"swedishContributor":"ebonheart","englishContributor":"ebonheart"},"memoryHint":"","source":{"kellyId":"88","wiktionarySenseId":"en-vara-sv-verb-r8jCoGF3"}},{"id":"kelly-89","lemma":"i","displayWord":"i","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":89,"frequencyPerMillion":19272.89,"meaning":"in; inside","ipa":"","forms":[],"example":{"sv":"I framtiden vill jag bli en TV-presentatör.","en":"I want to become a TV announcer in the future.","surface":"i","source":"Tatoeba","swedishId":647360,"englishId":258625,"swedishContributor":"sanda","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"89","wiktionarySenseId":""}},{"id":"kelly-90","lemma":"ha","displayWord":"att ha","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":90,"frequencyPerMillion":15983.31,"meaning":"to have","ipa":"/hɑː/","forms":[{"value":"har","label":"present"},{"value":"haft","label":"supine"},{"value":"hafts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Jag har inte sett honom på några år.","en":"I haven't seen him in a few years.","surface":"har","source":"Tatoeba","swedishId":822638,"englishId":3626652,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"90","wiktionarySenseId":"en-ha-sv-verb-I75MF20N"}},{"id":"kelly-91","lemma":"dess","displayWord":"dess","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":91,"frequencyPerMillion":15935.58,"meaning":"its; of it","ipa":"/dɛsː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"91","wiktionarySenseId":"en-dess-sv-pron-ijuDJyBN"}},{"id":"kelly-92","lemma":"det","displayWord":"det","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":92,"frequencyPerMillion":14582.21,"meaning":"it; that","ipa":"/dɛː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Vi trodde att det var ett flygande tefat.","en":"We believed it to be a flying saucer.","surface":"det","source":"Tatoeba","swedishId":337413,"englishId":248176,"swedishContributor":"ebonheart","englishContributor":"ebonheart"},"memoryHint":"","source":{"kellyId":"92","wiktionarySenseId":"en-det-sv-pron-XzwRFdht"}},{"id":"kelly-93","lemma":"en","displayWord":"en","marker":"","partOfSpeech":"determiner","cefr":"A1","rank":93,"frequencyPerMillion":14511.22,"meaning":"a; an; one","ipa":"/ɛnː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"En kombination av flera misstag ledde till olyckan.","en":"A combination of several mistakes led to the accident.","surface":"en","source":"Tatoeba","swedishId":401511,"englishId":66560,"swedishContributor":"morbrorper","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"93","wiktionarySenseId":"en-en-sv-pron-cJUpkDse"}},{"id":"kelly-94","lemma":"som","displayWord":"som","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":94,"frequencyPerMillion":12734.7,"meaning":"who; which; that; as","ipa":"/sɔm/","forms":[],"example":{"sv":"Skolbarn är förkylda dubbelt så ofta som vuxna.","en":"School children have colds twice as often as adults.","surface":"som","source":"Tatoeba","swedishId":401227,"englishId":21560,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"94","wiktionarySenseId":"en-som-sv-pron-yjpXb6p5"}},{"id":"kelly-95","lemma":"på","displayWord":"på","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":95,"frequencyPerMillion":12591.15,"meaning":"on; at","ipa":"/poː/","forms":[],"example":{"sv":"Hon älskar att se på tennismatcher på tv.","en":"She loves watching tennis matches on TV.","surface":"på","source":"Tatoeba","swedishId":403442,"englishId":311655,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"95","wiktionarySenseId":"en-på-sv-prep-GkppF7aA"}},{"id":"kelly-96","lemma":"å","displayWord":"å","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":96,"frequencyPerMillion":12462.73,"meaning":"on","ipa":"/oː/","forms":[],"example":{"sv":"Vi talar å den australienska ungdomens vägnar.","en":"We are speaking on behalf of the young people of Australia.","surface":"å","source":"Tatoeba","swedishId":401325,"englishId":247906,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"96","wiktionarySenseId":"en-å-sv-prep-sv:on"}},{"id":"kelly-97","lemma":"av","displayWord":"av","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":97,"frequencyPerMillion":11540.13,"meaning":"of; by; from","ipa":"/ɑːv/","forms":[],"example":{"sv":"En kombination av flera misstag ledde till olyckan.","en":"A combination of several mistakes led to the accident.","surface":"av","source":"Tatoeba","swedishId":401511,"englishId":66560,"swedishContributor":"morbrorper","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"97","wiktionarySenseId":"en-av-sv-prep-dYV6RYmZ"}},{"id":"kelly-98","lemma":"för","displayWord":"för","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":98,"frequencyPerMillion":11408.82,"meaning":"for; because","ipa":"/føːr/","forms":[],"example":{"sv":"Hon kunde inte komma för hon var sjuk.","en":"She could not come because she was ill.","surface":"för","source":"Tatoeba","swedishId":410145,"englishId":316696,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"98","wiktionarySenseId":"en-för-sv-prep-hv6gNN1q"}},{"id":"kelly-99","lemma":"att","displayWord":"att","marker":"","partOfSpeech":"conjunction","cefr":"A1","rank":99,"frequencyPerMillion":11271.57,"meaning":"to; that","ipa":"/atː/","forms":[],"example":{"sv":"Vi trodde att det var ett flygande tefat.","en":"We believed it to be a flying saucer.","surface":"att","source":"Tatoeba","swedishId":337413,"englishId":248176,"swedishContributor":"ebonheart","englishContributor":"ebonheart"},"memoryHint":"","source":{"kellyId":"99","wiktionarySenseId":"en-att-sv-conj-jn~AI2r0"}},{"id":"kelly-100","lemma":"kunna","displayWord":"att kunna","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":100,"frequencyPerMillion":11119.08,"meaning":"can; to be able to","ipa":"/²kɵnːa/","forms":[{"value":"kan","label":"present"},{"value":"kunnat","label":"supine"},{"value":"-","label":"supine"},{"value":"kunde","label":"past"}],"example":{"sv":"Hon kunde inte komma för hon var sjuk.","en":"She could not come because she was ill.","surface":"kunde","source":"Tatoeba","swedishId":410145,"englishId":316696,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"100","wiktionarySenseId":"en-kunna-sv-verb-0uV0zhye"}},{"id":"kelly-101","lemma":"skola","displayWord":"skola","marker":"","partOfSpeech":"verb","cefr":"A1","rank":101,"frequencyPerMillion":10411.19,"meaning":"shall; will","ipa":"/²skuːla/","forms":[{"value":"ska","label":"present"},{"value":"skall","label":"present"},{"value":"skolat","label":"supine"},{"value":"-","label":"supine"}],"example":{"sv":"Har du lite bröd? Jag ska mata duvorna.","en":"Do you have some bread? I'm going to feed the pigeons.","surface":"ska","source":"Tatoeba","swedishId":1129870,"englishId":1127832,"swedishContributor":"HannesP","englishContributor":"CK"},"memoryHint":"A scholar goes to skola — school.","source":{"kellyId":"101","wiktionarySenseId":"en-skola-sv-verb-qvLlIYcE"}},{"id":"kelly-102","lemma":"jag","displayWord":"jag","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":102,"frequencyPerMillion":9390.67,"meaning":"I","ipa":"/jɑː(ɡ)/","forms":[{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"},{"value":"mitt","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"102","wiktionarySenseId":"en-jag-sv-pron-qD3QzL~-"}},{"id":"kelly-103","lemma":"inte","displayWord":"inte","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":103,"frequencyPerMillion":9073.55,"meaning":"not","ipa":"/²ɪntɛ/","forms":[],"example":{"sv":"Hon kunde inte komma för hon var sjuk.","en":"She could not come because she was ill.","surface":"inte","source":"Tatoeba","swedishId":410145,"englishId":316696,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"103","wiktionarySenseId":"en-inte-sv-adv-JUu5e1fx"}},{"id":"kelly-104","lemma":"med","displayWord":"med","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":104,"frequencyPerMillion":8790.85,"meaning":"with","ipa":"/meː(d)/","forms":[],"example":{"sv":"Han hade tänkt att gifta sig med henne.","en":"He had thought to marry her.","surface":"med","source":"Tatoeba","swedishId":409746,"englishId":3626640,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"104","wiktionarySenseId":"en-med-sv-prep-aDZmZc9J"}},{"id":"kelly-105","lemma":"till","displayWord":"till","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":105,"frequencyPerMillion":8662.68,"meaning":"to; until","ipa":"/tɪl/","forms":[],"example":{"sv":"Den där slipsen passar bra till din skjorta.","en":"That tie goes well with your shirt.","surface":"till","source":"Tatoeba","swedishId":401257,"englishId":50066,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"105","wiktionarySenseId":"en-till-sv-prep-Zj6hv~~l"}},{"id":"kelly-106","lemma":"liten","displayWord":"liten","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":106,"frequencyPerMillion":8654.67,"meaning":"small; little","ipa":"/²liːtɛn/","forms":[{"value":"mindre","label":"indefinite"},{"value":"minst","label":"indefinite"},{"value":"litet","label":"indefinite · singular"},{"value":"små","label":"indefinite · plural"}],"example":{"sv":"Jag älskade att läsa då jag var liten.","en":"I loved to read when I was little.","surface":"liten","source":"Tatoeba","swedishId":1583146,"englishId":5073443,"swedishContributor":"viorayli","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"106","wiktionarySenseId":"en-liten-sv-adj-YRiQJgj-"}},{"id":"kelly-107","lemma":"den","displayWord":"den","marker":"","partOfSpeech":"determiner","cefr":"A1","rank":107,"frequencyPerMillion":6896.18,"meaning":"it; that; the","ipa":"/dɛnː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Den där slipsen passar bra till din skjorta.","en":"That tie goes well with your shirt.","surface":"den","source":"Tatoeba","swedishId":401257,"englishId":50066,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"107","wiktionarySenseId":"en-den-sv-pron-ZmmNcZSm"}},{"id":"kelly-108","lemma":"ett","displayWord":"ett","marker":"","partOfSpeech":"determiner","cefr":"A1","rank":108,"frequencyPerMillion":6314.26,"meaning":"a; an; one","ipa":"/ɛt/","forms":[],"example":{"sv":"Vi trodde att det var ett flygande tefat.","en":"We believed it to be a flying saucer.","surface":"ett","source":"Tatoeba","swedishId":337413,"englishId":248176,"swedishContributor":"ebonheart","englishContributor":"ebonheart"},"memoryHint":"","source":{"kellyId":"108","wiktionarySenseId":"en-ett-sv-article-pegB07q8"}},{"id":"kelly-110","lemma":"unna","displayWord":"att unna","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":110,"frequencyPerMillion":5559.15,"meaning":"to grant; allow oneself","ipa":"","forms":[{"value":"unnar","label":"present"},{"value":"unnat","label":"supine"},{"value":"unnats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Ibland kan man unna sig lite lyx.","en":"Sometimes you can indulge yourself in some luxury.","surface":"unna","source":"Tatoeba","swedishId":4424067,"englishId":5119726,"swedishContributor":"richke","englishContributor":"honestlang"},"memoryHint":"","source":{"kellyId":"110","wiktionarySenseId":"en-unna-sv-verb-SKRqM1ex"}},{"id":"kelly-111","lemma":"om","displayWord":"om","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":111,"frequencyPerMillion":5278.24,"meaning":"about; if","ipa":"/ɔm/","forms":[],"example":{"sv":"Du kan använda mitt skrivbord om du vill.","en":"You can use my desk if you want to.","surface":"om","source":"Tatoeba","swedishId":647369,"englishId":69360,"swedishContributor":"sanda","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"111","wiktionarySenseId":"en-om-sv-prep-sv:of"}},{"id":"kelly-112","lemma":"vi","displayWord":"vi","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":112,"frequencyPerMillion":4723.57,"meaning":"we","ipa":"/viː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Vi trodde att det var ett flygande tefat.","en":"We believed it to be a flying saucer.","surface":"vi","source":"Tatoeba","swedishId":337413,"englishId":248176,"swedishContributor":"ebonheart","englishContributor":"ebonheart"},"memoryHint":"","source":{"kellyId":"112","wiktionarySenseId":"en-vi-sv-pron-A5BLC3yB"}},{"id":"kelly-113","lemma":"men","displayWord":"men","marker":"","partOfSpeech":"conjunction","cefr":"A1","rank":113,"frequencyPerMillion":4545.97,"meaning":"but","ipa":"/mɛn/","forms":[],"example":{"sv":"Förlåt, men jag hör dig inte så bra.","en":"I'm sorry, but I can't hear you well.","surface":"men","source":"Tatoeba","swedishId":421455,"englishId":56377,"swedishContributor":"morbrorper","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"113","wiktionarySenseId":"en-men-sv-conj-NrQXECuG"}},{"id":"kelly-114","lemma":"man","displayWord":"man","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":114,"frequencyPerMillion":4446.34,"meaning":"one; you; people","ipa":"/man/","forms":[],"example":{"sv":"Om man äter för mycket blir man tjock.","en":"If you eat too much, you will get fat.","surface":"man","source":"Tatoeba","swedishId":898934,"englishId":268645,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"114","wiktionarySenseId":"en-man-sv-pron-GaqWCqo-"}},{"id":"kelly-115","lemma":"de","displayWord":"de","marker":"","partOfSpeech":"determiner","cefr":"A1","rank":115,"frequencyPerMillion":4437.26,"meaning":"they; the","ipa":"/dɔm/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"115","wiktionarySenseId":"en-de-sv-pron-FR5YqDEw"}},{"id":"kelly-116","lemma":"få","displayWord":"att få","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":116,"frequencyPerMillion":4060.39,"meaning":"to get; receive","ipa":"/foː/","forms":[{"value":"får","label":"present"},{"value":"fått","label":"supine"},{"value":"fåtts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Den här bussen får plats med femtio personer.","en":"This bus can hold fifty people.","surface":"får","source":"Tatoeba","swedishId":1403363,"englishId":60679,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"116","wiktionarySenseId":"en-få-sv-verb-sv:get__receive"}},{"id":"kelly-117","lemma":"så","displayWord":"så","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":117,"frequencyPerMillion":4004.97,"meaning":"so; then","ipa":"/soː/","forms":[],"example":{"sv":"Skolbarn är förkylda dubbelt så ofta som vuxna.","en":"School children have colds twice as often as adults.","surface":"så","source":"Tatoeba","swedishId":401227,"englishId":21560,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"117","wiktionarySenseId":"en-så-sv-adv-UEvW0ICz"}},{"id":"kelly-118","lemma":"som","displayWord":"som","marker":"","partOfSpeech":"conjunction","cefr":"A1","rank":118,"frequencyPerMillion":3762.28,"meaning":"who; which; that; as","ipa":"/sɔm/","forms":[],"example":{"sv":"Skolbarn är förkylda dubbelt så ofta som vuxna.","en":"School children have colds twice as often as adults.","surface":"som","source":"Tatoeba","swedishId":401227,"englishId":21560,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"118","wiktionarySenseId":"en-som-sv-conj-WUQhEusc"}},{"id":"kelly-119","lemma":"sig","displayWord":"sig","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":119,"frequencyPerMillion":3469.03,"meaning":"oneself","ipa":"/sɛj/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Han vande sig kvickt vid det kalla vädret.","en":"He soon accustomed himself to cold weather.","surface":"sig","source":"Tatoeba","swedishId":341941,"englishId":294894,"swedishContributor":"Tobberoth","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"119","wiktionarySenseId":"en-sig-sv-pron-fkEKDzLO"}},{"id":"kelly-120","lemma":"han","displayWord":"han","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":120,"frequencyPerMillion":3380.88,"meaning":"he","ipa":"/hanː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Han vande sig kvickt vid det kalla vädret.","en":"He soon accustomed himself to cold weather.","surface":"han","source":"Tatoeba","swedishId":341941,"englishId":294894,"swedishContributor":"Tobberoth","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"120","wiktionarySenseId":"en-han-sv-pron-Wnz0rBOA"}},{"id":"kelly-121","lemma":"de","displayWord":"de","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":121,"frequencyPerMillion":3345.8,"meaning":"they; the","ipa":"/dɔm/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"121","wiktionarySenseId":"en-de-sv-pron-FR5YqDEw"}},{"id":"kelly-122","lemma":"bli","displayWord":"att bli","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":122,"frequencyPerMillion":3293.35,"meaning":"to become","ipa":"/bliː/","forms":[{"value":"blir","label":"present"},{"value":"blivit","label":"supine"},{"value":"-","label":"supine"},{"value":"blin","label":"imperative · plural"}],"example":{"sv":"I framtiden vill jag bli en TV-presentatör.","en":"I want to become a TV announcer in the future.","surface":"bli","source":"Tatoeba","swedishId":647360,"englishId":258625,"swedishContributor":"sanda","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"122","wiktionarySenseId":"en-bli-sv-verb-rV000xq8"}},{"id":"kelly-123","lemma":"komma","displayWord":"att komma","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":123,"frequencyPerMillion":3224.74,"meaning":"to come","ipa":"/²kɔma/","forms":[{"value":"kommer","label":"present"},{"value":"kommit","label":"supine"},{"value":"kom","label":"imperative"},{"value":"kommits","label":"supine"}],"example":{"sv":"Hon kunde inte komma för hon var sjuk.","en":"She could not come because she was ill.","surface":"komma","source":"Tatoeba","swedishId":410145,"englishId":316696,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"123","wiktionarySenseId":"en-komma-sv-verb-sv:orgasm"}},{"id":"kelly-124","lemma":"det","displayWord":"det","marker":"","partOfSpeech":"determiner","cefr":"A1","rank":124,"frequencyPerMillion":3221.41,"meaning":"it; that","ipa":"/dɛː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Vi trodde att det var ett flygande tefat.","en":"We believed it to be a flying saucer.","surface":"det","source":"Tatoeba","swedishId":337413,"englishId":248176,"swedishContributor":"ebonheart","englishContributor":"ebonheart"},"memoryHint":"","source":{"kellyId":"124","wiktionarySenseId":"en-det-sv-pron-XzwRFdht"}},{"id":"kelly-125","lemma":"sin","displayWord":"sin","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":125,"frequencyPerMillion":3217.3,"meaning":"one’s own; his/her own","ipa":"/siːn/","forms":[{"value":"sina","label":"plural"},{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"125","wiktionarySenseId":"en-sin-sv-pron-7JVseAO2"}},{"id":"kelly-126","lemma":"eller","displayWord":"eller","marker":"","partOfSpeech":"conjunction","cefr":"A1","rank":126,"frequencyPerMillion":3138.92,"meaning":"or","ipa":"/ˈɛlɛr/","forms":[],"example":{"sv":"Vilken föredrar du? Den här eller den där?","en":"Which one do you prefer, this one or that one?","surface":"eller","source":"Tatoeba","swedishId":1137535,"englishId":400201,"swedishContributor":"arahlen","englishContributor":"sysko"},"memoryHint":"","source":{"kellyId":"126","wiktionarySenseId":"en-eller-sv-conj-cXVRejcL"}},{"id":"kelly-127","lemma":"från","displayWord":"från","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":127,"frequencyPerMillion":3117.46,"meaning":"from","ipa":"/froːn/","forms":[],"example":{"sv":"Mitt hus ligger tio minuters gångväg från stationen.","en":"My house is ten minutes' walk from the station.","surface":"från","source":"Tatoeba","swedishId":897173,"englishId":250539,"swedishContributor":"Tximist","englishContributor":"Eldad"},"memoryHint":"","source":{"kellyId":"127","wiktionarySenseId":"en-från-sv-prep-dYV6RYmZ"}},{"id":"kelly-128","lemma":"mycket","displayWord":"mycket","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":128,"frequencyPerMillion":3112.13,"meaning":"much; a lot; very","ipa":"/ˈmʏˌkɛ(t)/","forms":[],"example":{"sv":"Fram tills nu har de jobbat mycket hårt.","en":"Up to now they have worked very hard.","surface":"mycket","source":"Tatoeba","swedishId":822704,"englishId":241915,"swedishContributor":"yaseminhepaksoy","englishContributor":"sundown"},"memoryHint":"","source":{"kellyId":"128","wiktionarySenseId":"en-mycket-sv-adv-TGpIOfg9"}},{"id":"kelly-129","lemma":"vilja","displayWord":"att vilja","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":129,"frequencyPerMillion":3004.91,"meaning":"to want","ipa":"/²vɪlːja/","forms":[{"value":"vill","label":"present"},{"value":"velat","label":"supine"},{"value":"-","label":"supine"},{"value":"ville","label":"past"}],"example":{"sv":"I framtiden vill jag bli en TV-presentatör.","en":"I want to become a TV announcer in the future.","surface":"vill","source":"Tatoeba","swedishId":647360,"englishId":258625,"swedishContributor":"sanda","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"129","wiktionarySenseId":"en-vilja-sv-verb-oOxtnTfh"}},{"id":"kelly-130","lemma":"all","displayWord":"all","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":130,"frequencyPerMillion":2975.47,"meaning":"all; every","ipa":"/al/","forms":[{"value":"alla","label":"plural"}],"example":{"sv":"Han är väldigt smart, så alla gillar honom.","en":"He's very smart, so everybody likes him.","surface":"alla","source":"Tatoeba","swedishId":1414084,"englishId":1315792,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"130","wiktionarySenseId":"en-all-sv-det-XvXvA2S2"}},{"id":"kelly-131","lemma":"göra","displayWord":"att göra","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":131,"frequencyPerMillion":2942.04,"meaning":"to do; make","ipa":"/²jøːra/","forms":[{"value":"gör","label":"present"},{"value":"gjort","label":"supine"},{"value":"gjorts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Ingen annan än du kan göra mig lycklig.","en":"Nobody but you can make me happy.","surface":"göra","source":"Tatoeba","swedishId":891523,"englishId":237706,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"131","wiktionarySenseId":"en-göra-sv-verb-Y7Hgdi-s"}},{"id":"kelly-132","lemma":"om","displayWord":"om","marker":"","partOfSpeech":"conjunction","cefr":"A1","rank":132,"frequencyPerMillion":2630.45,"meaning":"about; if","ipa":"/ɔm/","forms":[],"example":{"sv":"Du kan använda mitt skrivbord om du vill.","en":"You can use my desk if you want to.","surface":"om","source":"Tatoeba","swedishId":647369,"englishId":69360,"swedishContributor":"sanda","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"132","wiktionarySenseId":"en-om-sv-conj-k19oMZ1P"}},{"id":"kelly-133","lemma":"annan","displayWord":"annan","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":133,"frequencyPerMillion":2624.2,"meaning":"other; another","ipa":"","forms":[{"value":"annat","label":"indefinite"},{"value":"andre","label":"definite"},{"value":"andra","label":"definite"}],"example":{"sv":"Ingen annan än du kan göra mig lycklig.","en":"Nobody but you can make me happy.","surface":"annan","source":"Tatoeba","swedishId":891523,"englishId":237706,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"133","wiktionarySenseId":"en-annan-sv-pron-8iCz74cQ"}},{"id":"kelly-134","lemma":"du","displayWord":"du","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":134,"frequencyPerMillion":2581.46,"meaning":"you","ipa":"/dʉː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Du måste vara på stationen senast klockan fem.","en":"You must be at the station at five o'clock at the latest.","surface":"du","source":"Tatoeba","swedishId":409713,"englishId":757524,"swedishContributor":"herrsilen","englishContributor":"sctld"},"memoryHint":"","source":{"kellyId":"134","wiktionarySenseId":"en-du-sv-pron-wLM6ztNc"}},{"id":"kelly-135","lemma":"någon","displayWord":"någon","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":135,"frequencyPerMillion":2565.69,"meaning":"someone; anyone; some","ipa":"/ˈnoːˌɡɔn/","forms":[],"example":{"sv":"Vi fick aldrig någon tydlig förklaring på mysteriet.","en":"We never got a clear explanation of the mystery.","surface":"någon","source":"Tatoeba","swedishId":912749,"englishId":248058,"swedishContributor":"Tximist","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"135","wiktionarySenseId":"en-någon-sv-pron-sv:pronoun"}},{"id":"kelly-136","lemma":"finna","displayWord":"att finna","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":136,"frequencyPerMillion":2465.41,"meaning":"to find","ipa":"/ˈfɪnːa/","forms":[{"value":"finner","label":"present"},{"value":"funnit","label":"supine"},{"value":"finn","label":"imperative"},{"value":"funnits","label":"supine"}],"example":{"sv":"Jag har fortfarande inte funnit det jag söker efter.","en":"I still haven't found what I'm looking for.","surface":"funnit","source":"Tatoeba","swedishId":2031147,"englishId":32590,"swedishContributor":"Lazzlo","englishContributor":"Catriona"},"memoryHint":"","source":{"kellyId":"136","wiktionarySenseId":"en-finna-sv-verb-n-Jbd-ah"}},{"id":"kelly-137","lemma":"ta","displayWord":"att ta","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":137,"frequencyPerMillion":2452.4,"meaning":"to take","ipa":"/tɑː/","forms":[{"value":"tar","label":"present"},{"value":"tagit","label":"supine"},{"value":"tagits","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Jag protesterade när kyparen försökte ta min tallrik.","en":"I objected when the waiter tried to remove my plate.","surface":"ta","source":"Tatoeba","swedishId":964403,"englishId":681598,"swedishContributor":"herrsilen","englishContributor":"Source_VOA"},"memoryHint":"","source":{"kellyId":"137","wiktionarySenseId":"en-ta-sv-verb-oP1Ag1K9"}},{"id":"kelly-138","lemma":"när","displayWord":"när","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":138,"frequencyPerMillion":2386.89,"meaning":"when","ipa":"","forms":[],"example":{"sv":"Jag protesterade när kyparen försökte ta min tallrik.","en":"I objected when the waiter tried to remove my plate.","surface":"när","source":"Tatoeba","swedishId":964403,"englishId":681598,"swedishContributor":"herrsilen","englishContributor":"Source_VOA"},"memoryHint":"","source":{"kellyId":"138","wiktionarySenseId":"en-när-sv-adv-9L-ff8vt"}},{"id":"kelly-139","lemma":"se","displayWord":"att se","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":139,"frequencyPerMillion":2253.32,"meaning":"to see","ipa":"/seː/","forms":[{"value":"ser","label":"present"},{"value":"sett","label":"supine"},{"value":"setts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Hon älskar att se på tennismatcher på tv.","en":"She loves watching tennis matches on TV.","surface":"se","source":"Tatoeba","swedishId":403442,"englishId":311655,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"139","wiktionarySenseId":"en-se-sv-verb-p2wgJpFb"}},{"id":"kelly-140","lemma":"måste","displayWord":"måste","marker":"","partOfSpeech":"verb","cefr":"A1","rank":140,"frequencyPerMillion":2214.95,"meaning":"must; have to","ipa":"/²mɔstɛ/","forms":[{"value":"måst","label":"supine"},{"value":"-","label":"supine"}],"example":{"sv":"Du måste vara på stationen senast klockan fem.","en":"You must be at the station at five o'clock at the latest.","surface":"måste","source":"Tatoeba","swedishId":409713,"englishId":757524,"swedishContributor":"herrsilen","englishContributor":"sctld"},"memoryHint":"","source":{"kellyId":"140","wiktionarySenseId":"en-måste-sv-verb-JyVAawW0"}},{"id":"kelly-141","lemma":"detta","displayWord":"detta","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":141,"frequencyPerMillion":2200.74,"meaning":"this","ipa":"","forms":[],"example":{"sv":"Tom tror inte att detta är någon tillfällighet.","en":"Tom doesn't think this is a coincidence.","surface":"detta","source":"Tatoeba","swedishId":1125874,"englishId":1094311,"swedishContributor":"HannesP","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"141","wiktionarySenseId":""}},{"id":"kelly-142","lemma":"stor","displayWord":"stor","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":142,"frequencyPerMillion":2046.73,"meaning":"big; large","ipa":"/stuːr/","forms":[{"value":"större","label":"indefinite"},{"value":"störst","label":"indefinite"},{"value":"stort","label":"indefinite · singular"},{"value":"stora","label":"indefinite · plural"}],"example":{"sv":"Det är ungefär lika stort som ett ägg.","en":"It's about the size of an egg.","surface":"stort","source":"Tatoeba","swedishId":1404077,"englishId":42038,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"142","wiktionarySenseId":"en-stor-sv-adj-tGfRI7-j"}},{"id":"kelly-143","lemma":"nu","displayWord":"nu","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":143,"frequencyPerMillion":2033.06,"meaning":"now","ipa":"/nʉː/","forms":[],"example":{"sv":"Fram tills nu har de jobbat mycket hårt.","en":"Up to now they have worked very hard.","surface":"nu","source":"Tatoeba","swedishId":822704,"englishId":241915,"swedishContributor":"yaseminhepaksoy","englishContributor":"sundown"},"memoryHint":"","source":{"kellyId":"143","wiktionarySenseId":"en-nu-sv-adv--v9Rn-kv"}},{"id":"kelly-144","lemma":"gå","displayWord":"att gå","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":144,"frequencyPerMillion":2001.14,"meaning":"to go; walk","ipa":"/ɡoː/","forms":[{"value":"går","label":"present"},{"value":"gått","label":"supine"},{"value":"gåtts","label":"supine"},{"value":"gack","label":"imperative"}],"example":{"sv":"Den här gamla bilen går sönder hela tiden.","en":"This old car breaks down all the time.","surface":"går","source":"Tatoeba","swedishId":402198,"englishId":60472,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"144","wiktionarySenseId":"en-gå-sv-verb-icLBTR14"}},{"id":"kelly-145","lemma":"säga","displayWord":"att säga","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":145,"frequencyPerMillion":1998.46,"meaning":"to say","ipa":"/²sɛjːa/","forms":[{"value":"säger","label":"present"},{"value":"sagt","label":"supine"},{"value":"säg","label":"imperative"},{"value":"sagts","label":"supine"}],"example":{"sv":"Tom bestämde sig för att säga upp sig.","en":"Tom decided to quit his job.","surface":"säga","source":"Tatoeba","swedishId":1125922,"englishId":1026519,"swedishContributor":"HannesP","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"145","wiktionarySenseId":"en-säga-sv-verb-KlHIAFBs"}},{"id":"kelly-146","lemma":"den","displayWord":"den","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":146,"frequencyPerMillion":1981.49,"meaning":"it; that; the","ipa":"/dɛnː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Den där slipsen passar bra till din skjorta.","en":"That tie goes well with your shirt.","surface":"den","source":"Tatoeba","swedishId":401257,"englishId":50066,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"146","wiktionarySenseId":"en-den-sv-pron-ZmmNcZSm"}},{"id":"kelly-147","lemma":"vad","displayWord":"vad","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":147,"frequencyPerMillion":1911.2,"meaning":"what","ipa":"/vɑːd/","forms":[],"example":{"sv":"Vad är den bekvämaste vägen till Tokyo station?","en":"What's the most convenient way to get to Tokyo Station?","surface":"vad","source":"Tatoeba","swedishId":402191,"englishId":279741,"swedishContributor":"Don","englishContributor":"CN"},"memoryHint":"","source":{"kellyId":"147","wiktionarySenseId":"en-vad-sv-pron-dJqywNBs"}},{"id":"kelly-148","lemma":"år","displayWord":"ett år","marker":"ett","partOfSpeech":"noun","cefr":"A1","rank":148,"frequencyPerMillion":1886.72,"meaning":"year","ipa":"/ˈoːr/","forms":[{"value":"året","label":"definite · singular"},{"value":"åren","label":"definite · plural"}],"example":{"sv":"”Hur gammal är du?” ”Jag är sexton år.”","en":"\"How old are you?\" \"I'm sixteen.\"","surface":"år","source":"Tatoeba","swedishId":742912,"englishId":418642,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"148","wiktionarySenseId":"en-år-sv-noun-hGeYgZ2V"}},{"id":"kelly-149","lemma":"äga","displayWord":"att äga","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":149,"frequencyPerMillion":1867.88,"meaning":"to own","ipa":"/²ɛːɡa/","forms":[{"value":"äger","label":"present"},{"value":"ägt","label":"supine"},{"value":"äg","label":"imperative"},{"value":"ägts","label":"supine"}],"example":{"sv":"En dag skulle jag vilja äga en segelbåt.","en":"Someday, I would like to possess a sailboat.","surface":"äga","source":"Tatoeba","swedishId":896742,"englishId":681763,"swedishContributor":"Tximist","englishContributor":"Source_VOA"},"memoryHint":"","source":{"kellyId":"149","wiktionarySenseId":"en-äga-sv-verb-Jm6rSslU"}},{"id":"kelly-150","lemma":"under","displayWord":"under","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":150,"frequencyPerMillion":1851.63,"meaning":"under; during","ipa":"/ˈɵndɛr/","forms":[],"example":{"sv":"Jag har levt här under en lång tid.","en":"I have lived here a long time.","surface":"under","source":"Tatoeba","swedishId":1405800,"englishId":1369395,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"150","wiktionarySenseId":"en-under-sv-prep-6PQRJGFJ"}},{"id":"kelly-151","lemma":"betyda","displayWord":"att betyda","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":151,"frequencyPerMillion":1811.72,"meaning":"to mean","ipa":"/bɛ¹tyːda/","forms":[{"value":"betyder","label":"present"},{"value":"betytt","label":"supine"},{"value":"betyd","label":"imperative"},{"value":"-","label":"supine"}],"example":{"sv":"Jag vet inte vad det här ordet betyder.","en":"I don't know what this word means.","surface":"betyder","source":"Tatoeba","swedishId":914344,"englishId":253593,"swedishContributor":"Tximist","englishContributor":"adjusting"},"memoryHint":"","source":{"kellyId":"151","wiktionarySenseId":"en-betyda-sv-verb-Igt3PDtq"}},{"id":"kelly-152","lemma":"också","displayWord":"också","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":152,"frequencyPerMillion":1797.39,"meaning":"also; too","ipa":"/²ɔksɔ/","forms":[],"example":{"sv":"Ben har också något med saken att göra.","en":"Ben also has something to do with the matter.","surface":"också","source":"Tatoeba","swedishId":923981,"englishId":33786,"swedishContributor":"Tximist","englishContributor":"CP"},"memoryHint":"","source":{"kellyId":"152","wiktionarySenseId":"en-också-sv-adv-MlRoTaMq"}},{"id":"kelly-153","lemma":"där","displayWord":"där","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":153,"frequencyPerMillion":1790.68,"meaning":"there","ipa":"/dɛːr/","forms":[],"example":{"sv":"Den där slipsen passar bra till din skjorta.","en":"That tie goes well with your shirt.","surface":"där","source":"Tatoeba","swedishId":401257,"englishId":50066,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"153","wiktionarySenseId":"en-där-sv-adv-qQ-dsSCD"}},{"id":"kelly-154","lemma":"då","displayWord":"då","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":154,"frequencyPerMillion":1788.93,"meaning":"then; when","ipa":"/doː/","forms":[],"example":{"sv":"Inte förrän då fick han reda på sanningen.","en":"It was not until then that he learned the truth.","surface":"då","source":"Tatoeba","swedishId":910672,"englishId":46971,"swedishContributor":"Tximist","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"154","wiktionarySenseId":"en-då-sv-adv-9v5QW~bU"}},{"id":"kelly-155","lemma":"min","displayWord":"min","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":155,"frequencyPerMillion":1757.18,"meaning":"my; mine","ipa":"/mɪn/","forms":[{"value":"mitt","label":"singular"},{"value":"mina","label":"plural"},{"value":"jag","label":"singular"},{"value":"mig","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"155","wiktionarySenseId":"en-min-sv-pron-A4RoUYrY"}},{"id":"kelly-156","lemma":"böra","displayWord":"böra","marker":"","partOfSpeech":"verb","cefr":"A1","rank":156,"frequencyPerMillion":1743.31,"meaning":"should; ought to","ipa":"/²bøːra/","forms":[{"value":"bör","label":"present"},{"value":"bort","label":"supine"},{"value":"-","label":"supine"},{"value":"bören","label":"imperative · plural"}],"example":{"sv":"Han kan inte ha tappat bort sina nycklar.","en":"He can't have lost his keys.","surface":"bort","source":"Tatoeba","swedishId":2147538,"englishId":622271,"swedishContributor":"herrsilen","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"156","wiktionarySenseId":"en-böra-sv-verb-CpQKjubX"}},{"id":"kelly-157","lemma":"hur","displayWord":"hur","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":157,"frequencyPerMillion":1690.32,"meaning":"how","ipa":"/hʉːr/","forms":[],"example":{"sv":"”Hur gammal är du?” ”Jag är sexton år.”","en":"\"How old are you?\" \"I'm sixteen.\"","surface":"hur","source":"Tatoeba","swedishId":742912,"englishId":418642,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"157","wiktionarySenseId":"en-hur-sv-adv-gESq4fho"}},{"id":"kelly-158","lemma":"mig","displayWord":"mig","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":158,"frequencyPerMillion":1622.7,"meaning":"me","ipa":"/mɛj/","forms":[{"value":"jag","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"},{"value":"mitt","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"158","wiktionarySenseId":"en-mig-sv-pron-pU-GouwZ"}},{"id":"kelly-159","lemma":"mot","displayWord":"mot","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":159,"frequencyPerMillion":1592.42,"meaning":"against; toward","ipa":"/muːt/","forms":[],"example":{"sv":"Du måste kämpa mot den tendensen hos dig.","en":"You've got to fight that tendency of yours.","surface":"mot","source":"Tatoeba","swedishId":2791552,"englishId":2069341,"swedishContributor":"Alex1975","englishContributor":"_undertoad"},"memoryHint":"","source":{"kellyId":"159","wiktionarySenseId":"en-mot-sv-prep-sv:against"}},{"id":"kelly-160","lemma":"bara","displayWord":"bara","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":160,"frequencyPerMillion":1582.15,"meaning":"only; just","ipa":"/²bɑːra/","forms":[],"example":{"sv":"Du har bara en chans att svara rätt.","en":"You have only one chance to answer correctly.","surface":"bara","source":"Tatoeba","swedishId":1129852,"englishId":1128014,"swedishContributor":"HannesP","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"160","wiktionarySenseId":"en-bara-sv-adv-1cY7s2SC"}},{"id":"kelly-161","lemma":"vilken","displayWord":"vilken","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":161,"frequencyPerMillion":1512.84,"meaning":"which; what","ipa":"/ˈvɪ(l)kɛn/","forms":[{"value":"vilka","label":"plural"}],"example":{"sv":"Vilken föredrar du? Den här eller den där?","en":"Which one do you prefer, this one or that one?","surface":"vilken","source":"Tatoeba","swedishId":1137535,"englishId":400201,"swedishContributor":"arahlen","englishContributor":"sysko"},"memoryHint":"","source":{"kellyId":"161","wiktionarySenseId":"en-vilken-sv-pron-JHJ4MYPn"}},{"id":"kelly-162","lemma":"ut","displayWord":"ut","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":162,"frequencyPerMillion":1481.5,"meaning":"out","ipa":"/ʉːt/","forms":[],"example":{"sv":"Många använder uttagsautomater för att ta ut pengar.","en":"Many people use ATMs to withdraw money.","surface":"ut","source":"Tatoeba","swedishId":1125944,"englishId":682459,"swedishContributor":"HannesP","englishContributor":"Source_VOA"},"memoryHint":"","source":{"kellyId":"162","wiktionarySenseId":"en-ut-sv-adv-8hgsHQ98"}},{"id":"kelly-163","lemma":"ny","displayWord":"ny","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":163,"frequencyPerMillion":1446.08,"meaning":"new","ipa":"/nyː/","forms":[{"value":"nyare","label":"indefinite"},{"value":"nyast","label":"indefinite"},{"value":"nytt","label":"indefinite · singular"},{"value":"nya","label":"indefinite · plural"}],"example":{"sv":"Du vänjer dig snart vid din nya skola.","en":"You will soon get accustomed to your new school.","surface":"nya","source":"Tatoeba","swedishId":1742578,"englishId":16650,"swedishContributor":"loghaD","englishContributor":"Zifre"},"memoryHint":"","source":{"kellyId":"163","wiktionarySenseId":"en-ny-sv-adj-EVB6Di9e"}},{"id":"kelly-164","lemma":"vid","displayWord":"vid","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":164,"frequencyPerMillion":1439.02,"meaning":"by; at","ipa":"/viːd/","forms":[],"example":{"sv":"Han vande sig kvickt vid det kalla vädret.","en":"He soon accustomed himself to cold weather.","surface":"vid","source":"Tatoeba","swedishId":341941,"englishId":294894,"swedishContributor":"Tobberoth","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"164","wiktionarySenseId":"en-vid-sv-prep-zSHrOV60"}},{"id":"kelly-165","lemma":"än","displayWord":"än","marker":"","partOfSpeech":"conjunction","cefr":"A1","rank":165,"frequencyPerMillion":1428.89,"meaning":"than; yet","ipa":"/ɛnː/","forms":[],"example":{"sv":"Ingen annan än du kan göra mig lycklig.","en":"Nobody but you can make me happy.","surface":"än","source":"Tatoeba","swedishId":891523,"englishId":237706,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"165","wiktionarySenseId":"en-än-sv-conj-MDGjrVJo"}},{"id":"kelly-166","lemma":"bra","displayWord":"bra","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":166,"frequencyPerMillion":1428.27,"meaning":"good; well","ipa":"/brɑː/","forms":[{"value":"bättre","label":"indefinite"},{"value":"bäst","label":"indefinite"},{"value":"bäste","label":"definite · singular"},{"value":"bästa","label":"definite"}],"example":{"sv":"Den där slipsen passar bra till din skjorta.","en":"That tie goes well with your shirt.","surface":"bra","source":"Tatoeba","swedishId":401257,"englishId":50066,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"166","wiktionarySenseId":"en-bra-sv-adj-OnW8Q3bj"}},{"id":"kelly-167","lemma":"ingen","displayWord":"ingen","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":167,"frequencyPerMillion":1350.9,"meaning":"no one; none; no","ipa":"/ˈɪŋˌɛn/","forms":[{"value":"inga","label":"plural"}],"example":{"sv":"Ingen annan än du kan göra mig lycklig.","en":"Nobody but you can make me happy.","surface":"ingen","source":"Tatoeba","swedishId":891523,"englishId":237706,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"167","wiktionarySenseId":"en-ingen-sv-pron-FAvtv5w~"}},{"id":"kelly-168","lemma":"dem","displayWord":"dem","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":168,"frequencyPerMillion":1341.39,"meaning":"them","ipa":"/ˈdɔmː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"168","wiktionarySenseId":"en-dem-sv-pron-SKTdONzo"}},{"id":"kelly-169","lemma":"efter","displayWord":"efter","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":169,"frequencyPerMillion":1323.97,"meaning":"after; behind","ipa":"/ˈɛftɛr/","forms":[],"example":{"sv":"Meg ringde efter dig medan du var borta.","en":"Meg called you during your absence.","surface":"efter","source":"Tatoeba","swedishId":1125924,"englishId":16861,"swedishContributor":"HannesP","englishContributor":"CN"},"memoryHint":"","source":{"kellyId":"169","wiktionarySenseId":"en-efter-sv-prep-pHQ-xspH"}},{"id":"kelly-170","lemma":"upp","displayWord":"upp","marker":"","partOfSpeech":"particle","cefr":"A1","rank":170,"frequencyPerMillion":1322.38,"meaning":"up","ipa":"/ɵp/","forms":[],"example":{"sv":"Hon höll just på att skära upp gurkor.","en":"She was right in the middle of cutting cucumbers.","surface":"upp","source":"Tatoeba","swedishId":891113,"englishId":310737,"swedishContributor":"Tximist","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"170","wiktionarySenseId":"en-upp-sv-adv-sv:open"}},{"id":"kelly-171","lemma":"hon","displayWord":"hon","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":171,"frequencyPerMillion":1291.75,"meaning":"she","ipa":"/hʊn/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Hon älskar att se på tennismatcher på tv.","en":"She loves watching tennis matches on TV.","surface":"hon","source":"Tatoeba","swedishId":403442,"englishId":311655,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"171","wiktionarySenseId":"en-hon-sv-pron-kWPua3pz"}},{"id":"kelly-172","lemma":"lite","displayWord":"lite","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":172,"frequencyPerMillion":1288.09,"meaning":"a little","ipa":"","forms":[],"example":{"sv":"Kan du tillaga det här köttet lite mer?","en":"Can you cook this meat a little more?","surface":"lite","source":"Tatoeba","swedishId":704640,"englishId":5078445,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"172","wiktionarySenseId":"en-lite-sv-adv-xo51cMnp"}},{"id":"kelly-173","lemma":"denna","displayWord":"denna","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":173,"frequencyPerMillion":1279.97,"meaning":"this","ipa":"","forms":[{"value":"dessa","label":"plural"}],"example":{"sv":"Allt i denna värld är blott en dröm.","en":"Everything that is in this world is but a dream.","surface":"denna","source":"Tatoeba","swedishId":1403350,"englishId":416879,"swedishContributor":"Fargy","englishContributor":"Scott"},"memoryHint":"","source":{"kellyId":"173","wiktionarySenseId":"en-denna-sv-pron-CwRtkovA"}},{"id":"kelly-174","lemma":"in","displayWord":"in","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":174,"frequencyPerMillion":1274.61,"meaning":"in; inside","ipa":"/ɪn/","forms":[],"example":{"sv":"Trots att det regnade ställdes matchen inte in.","en":"In spite of the rain, the game was not cancelled.","surface":"in","source":"Tatoeba","swedishId":892743,"englishId":26777,"swedishContributor":"Tximist","englishContributor":"jakov"},"memoryHint":"","source":{"kellyId":"174","wiktionarySenseId":"en-in-sv-adv-Bh6dzXaY"}},{"id":"kelly-175","lemma":"mycket","displayWord":"mycket","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":175,"frequencyPerMillion":1271.67,"meaning":"much; a lot; very","ipa":"","forms":[],"example":{"sv":"Fram tills nu har de jobbat mycket hårt.","en":"Up to now they have worked very hard.","surface":"mycket","source":"Tatoeba","swedishId":822704,"englishId":241915,"swedishContributor":"yaseminhepaksoy","englishContributor":"sundown"},"memoryHint":"","source":{"kellyId":"175","wiktionarySenseId":""}},{"id":"kelly-176","lemma":"över","displayWord":"över","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":176,"frequencyPerMillion":1267.18,"meaning":"over; above","ipa":"/ˈøːvɛr/","forms":[],"example":{"sv":"Vi blev väldigt besvikna över att höra nyheterna.","en":"We were very disappointed to hear the news.","surface":"över","source":"Tatoeba","swedishId":421454,"englishId":45183,"swedishContributor":"Don","englishContributor":"Liface"},"memoryHint":"","source":{"kellyId":"176","wiktionarySenseId":"en-över-sv-prep-iMfwjQvl"}},{"id":"kelly-177","lemma":"ge","displayWord":"att ge","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":177,"frequencyPerMillion":1208.51,"meaning":"to give","ipa":"/jeː/","forms":[{"value":"ger","label":"present"},{"value":"gett","label":"supine"},{"value":"getts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Snälla ge mig ett plåster och lite medicin.","en":"Please give me a Band-Aid and some medicine.","surface":"ge","source":"Tatoeba","swedishId":1988896,"englishId":1981836,"swedishContributor":"Ribon","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"177","wiktionarySenseId":"en-ge-sv-verb-jKZk8JaJ"}},{"id":"kelly-178","lemma":"vår","displayWord":"vår","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":178,"frequencyPerMillion":1206.78,"meaning":"our; ours","ipa":"/voːr/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"178","wiktionarySenseId":"en-vår-sv-pron-P0wO~sTe"}},{"id":"kelly-179","lemma":"del","displayWord":"en del","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":179,"frequencyPerMillion":1202.45,"meaning":"part; share","ipa":"","forms":[{"value":"delen","label":"definite · singular"},{"value":"delar","label":"indefinite · plural"},{"value":"delarna","label":"definite · plural"}],"example":{"sv":"För egen del föredrar jag kaffe framför te.","en":"Me, I prefer coffee to tea.","surface":"del","source":"Tatoeba","swedishId":2108277,"englishId":33562,"swedishContributor":"loghaD","englishContributor":"orcrist"},"memoryHint":"","source":{"kellyId":"179","wiktionarySenseId":"en-del-sv-noun-9vTHtNyG"}},{"id":"kelly-180","lemma":"här","displayWord":"här","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":180,"frequencyPerMillion":1194.91,"meaning":"here","ipa":"/hɛːr/","forms":[],"example":{"sv":"Den här gamla bilen går sönder hela tiden.","en":"This old car breaks down all the time.","surface":"här","source":"Tatoeba","swedishId":402198,"englishId":60472,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"180","wiktionarySenseId":"en-här-sv-adv-M9Ihkogd"}},{"id":"kelly-181","lemma":"även","displayWord":"även","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":181,"frequencyPerMillion":1191.77,"meaning":"also; even","ipa":"/²ɛːvɛn/","forms":[],"example":{"sv":"Hon är inte bara vänlig utan även generös.","en":"She's not just friendly but also generous.","surface":"även","source":"Tatoeba","swedishId":3721050,"englishId":3756472,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"181","wiktionarySenseId":"en-även-sv-adv-u4yGBcVd"}},{"id":"kelly-182","lemma":"skriva","displayWord":"att skriva","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":182,"frequencyPerMillion":1141.32,"meaning":"to write","ipa":"/²skriːva/","forms":[{"value":"skriver","label":"present"},{"value":"skrivit","label":"supine"},{"value":"skriv","label":"imperative"},{"value":"skrivits","label":"supine"}],"example":{"sv":"Jag kommer att skriva en mening på tyska.","en":"I'm going to write a sentence in German.","surface":"skriva","source":"Tatoeba","swedishId":1964373,"englishId":1785568,"swedishContributor":"herrsilen","englishContributor":"Eldad"},"memoryHint":"Scribble and skriva both start with skr — skriva means to write.","source":{"kellyId":"182","wiktionarySenseId":"en-skriva-sv-verb-FIylcHNP"}},{"id":"kelly-183","lemma":"tid","displayWord":"en tid","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":183,"frequencyPerMillion":1127.59,"meaning":"time","ipa":"/tiːd/","forms":[{"value":"tiden","label":"definite · singular"},{"value":"tider","label":"indefinite · plural"},{"value":"tiderna","label":"definite · plural"}],"example":{"sv":"Den här gamla bilen går sönder hela tiden.","en":"This old car breaks down all the time.","surface":"tiden","source":"Tatoeba","swedishId":402198,"englishId":60472,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"183","wiktionarySenseId":"en-tid-sv-noun-M2B0gF~I"}},{"id":"kelly-184","lemma":"ju","displayWord":"ju","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":184,"frequencyPerMillion":1119.58,"meaning":"of course; as you know","ipa":"/jɵ/","forms":[],"example":{"sv":"Ju mer vi har desto mer vill vi ha.","en":"The more we have, the more we want.","surface":"ju","source":"Tatoeba","swedishId":1134769,"englishId":270073,"swedishContributor":"arahlen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"184","wiktionarySenseId":"en-ju-sv-adv-~7v90tlQ"}},{"id":"kelly-185","lemma":"sedan","displayWord":"sedan","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":185,"frequencyPerMillion":1115.12,"meaning":"then; since","ipa":"/seːdan/","forms":[],"example":{"sv":"Den här bron byggdes för två år sedan.","en":"This bridge was built two years ago.","surface":"sedan","source":"Tatoeba","swedishId":1603331,"englishId":59650,"swedishContributor":"viorayli","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"185","wiktionarySenseId":"en-sedan-sv-adv-Ys~oR67a"}},{"id":"kelly-187","lemma":"riva","displayWord":"att riva","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":187,"frequencyPerMillion":1088.02,"meaning":"to tear; demolish","ipa":"","forms":[{"value":"river","label":"present"},{"value":"rivit","label":"supine"},{"value":"riv","label":"imperative"},{"value":"rivits","label":"supine"}],"example":{"sv":"\"Det är första gången jag river min ägare\", sa katten.","en":"\"This is the first time I've ever clawed my owner\", said the cat.","surface":"river","source":"Tatoeba","swedishId":2029410,"englishId":1682029,"swedishContributor":"Lazzlo","englishContributor":"Amastan"},"memoryHint":"","source":{"kellyId":"187","wiktionarySenseId":"en-riva-sv-verb-UBmQtsa~"}},{"id":"kelly-188","lemma":"börja","displayWord":"att börja","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":188,"frequencyPerMillion":1039.45,"meaning":"to begin; start","ipa":"[²bœ̞rˌja]","forms":[{"value":"börjar","label":"present"},{"value":"börjat","label":"supine"},{"value":"börjats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Tom beslutade sig för att börja med flugfiske.","en":"Tom decided to take up fly fishing.","surface":"börja","source":"Tatoeba","swedishId":2455259,"englishId":2006541,"swedishContributor":"torulf","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"188","wiktionarySenseId":"en-börja-sv-verb-ZL1z4MbP"}},{"id":"kelly-189","lemma":"hel","displayWord":"hel","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":189,"frequencyPerMillion":1034.76,"meaning":"whole; entire","ipa":"/heːl/","forms":[{"value":"helare","label":"indefinite"},{"value":"helast","label":"indefinite"},{"value":"helt","label":"indefinite · singular"},{"value":"hela","label":"indefinite · plural"}],"example":{"sv":"Den här gamla bilen går sönder hela tiden.","en":"This old car breaks down all the time.","surface":"hela","source":"Tatoeba","swedishId":402198,"englishId":60472,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"189","wiktionarySenseId":"en-hel-sv-adj-M3BPQruv"}},{"id":"kelly-190","lemma":"dag","displayWord":"en dag","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":190,"frequencyPerMillion":1033.61,"meaning":"day","ipa":"/dɑː(ɡ)/","forms":[{"value":"dagen","label":"definite · singular"},{"value":"dagar","label":"indefinite · plural"},{"value":"dagarna","label":"definite · plural"},{"value":"dan","label":"definite · singular"}],"example":{"sv":"En dag skulle jag vilja äga en segelbåt.","en":"Someday, I would like to possess a sailboat.","surface":"dag","source":"Tatoeba","swedishId":896742,"englishId":681763,"swedishContributor":"Tximist","englishContributor":"Source_VOA"},"memoryHint":"Think of the daylight in a day — dag begins with the same d sound.","source":{"kellyId":"190","wiktionarySenseId":"en-dag-sv-noun-TtBC4Bzr"}},{"id":"kelly-191","lemma":"själv","displayWord":"själv","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":191,"frequencyPerMillion":1033.19,"meaning":"self; oneself","ipa":"/ˈɧɛlːv/","forms":[{"value":"själva","label":"plural"}],"example":{"sv":"Jag kunde inte lägga band på mig själv.","en":"I couldn't restrain myself.","surface":"själv","source":"Tatoeba","swedishId":3710147,"englishId":3710134,"swedishContributor":"herrsilen","englishContributor":"AlanF_US"},"memoryHint":"","source":{"kellyId":"191","wiktionarySenseId":"en-själv-sv-pron-OivTj0IO"}},{"id":"kelly-192","lemma":"människa","displayWord":"en människa","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":192,"frequencyPerMillion":1030.33,"meaning":"person; human","ipa":"/mɛnːɪɧa/","forms":[{"value":"människan","label":"definite · singular"},{"value":"människor","label":"indefinite · plural"},{"value":"människorna","label":"definite · plural"}],"example":{"sv":"Jag tycker inte om att tala inför människor.","en":"I don't like talking in front of people.","surface":"människor","source":"Tatoeba","swedishId":1963924,"englishId":5078455,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"192","wiktionarySenseId":"en-människa-sv-noun-TGPd~sgS"}},{"id":"kelly-193","lemma":"land","displayWord":"ett land","marker":"ett","partOfSpeech":"noun","cefr":"A1","rank":193,"frequencyPerMillion":949.12,"meaning":"country; land","ipa":"/land/","forms":[{"value":"landet","label":"definite · singular"},{"value":"länder","label":"indefinite · plural"},{"value":"länderna","label":"definite · plural"}],"example":{"sv":"Vi måste försvara vårt land till varje pris.","en":"We have to defend our country at any cost.","surface":"land","source":"Tatoeba","swedishId":892733,"englishId":248243,"swedishContributor":"Tximist","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"193","wiktionarySenseId":"en-land-sv-noun-zP2mpvHE"}},{"id":"kelly-194","lemma":"svensk","displayWord":"svensk","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":194,"frequencyPerMillion":948.52,"meaning":"Swedish","ipa":"/svɛnːsk/","forms":[{"value":"svenskare","label":"indefinite"},{"value":"svenskast","label":"indefinite"},{"value":"svenskt","label":"indefinite · singular"},{"value":"svenska","label":"indefinite · plural"}],"example":{"sv":"Jag är finsk, men jag talar svenska också.","en":"I am Finnish, but I speak also Swedish.","surface":"svenska","source":"Tatoeba","swedishId":1129848,"englishId":1128696,"swedishContributor":"HannesP","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"194","wiktionarySenseId":"en-svensk-sv-adj-cya7Hs7m"}},{"id":"kelly-195","lemma":"fråga","displayWord":"en fråga","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":195,"frequencyPerMillion":938.78,"meaning":"question","ipa":"/ˈfroːˌɡa/","forms":[{"value":"frågan","label":"definite · singular"},{"value":"frågor","label":"indefinite · plural"},{"value":"frågorna","label":"definite · plural"}],"example":{"sv":"Jag skulle vilja ställa dig några till frågor.","en":"I'd like to ask you a few more questions.","surface":"frågor","source":"Tatoeba","swedishId":1972011,"englishId":1936554,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"195","wiktionarySenseId":"en-fråga-sv-noun-xti7wn1A"}},{"id":"kelly-196","lemma":"oss","displayWord":"oss","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":196,"frequencyPerMillion":934.32,"meaning":"us","ipa":"/ɔs/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"196","wiktionarySenseId":"en-oss-sv-pron-JHXCn~oP"}},{"id":"kelly-197","lemma":"tro","displayWord":"att tro","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":197,"frequencyPerMillion":928.39,"meaning":"to believe; think","ipa":"/truː/","forms":[{"value":"tror","label":"present"},{"value":"trott","label":"supine"},{"value":"trotts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Tom tror inte att detta är någon tillfällighet.","en":"Tom doesn't think this is a coincidence.","surface":"tror","source":"Tatoeba","swedishId":1125874,"englishId":1094311,"swedishContributor":"HannesP","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"197","wiktionarySenseId":"en-tro-sv-verb-HKdEOWGC"}},{"id":"kelly-198","lemma":"el","displayWord":"el","marker":"","partOfSpeech":"noun","cefr":"A1","rank":198,"frequencyPerMillion":925.85,"meaning":"electricity","ipa":"/eːl/","forms":[{"value":"elen","label":"definite · singular"},{"value":"-","label":"indefinite · plural"}],"example":{"sv":"Tom blev deporterad till ett fängelse i El Salvador.","en":"Tom was deported to a prison in El Salvador.","surface":"el","source":"Tatoeba","swedishId":13122038,"englishId":13122011,"swedishContributor":"morbrorper","englishContributor":"morbrorper"},"memoryHint":"","source":{"kellyId":"198","wiktionarySenseId":"en-el-sv-noun-UAVOlL8T"}},{"id":"kelly-199","lemma":"tycka","displayWord":"att tycka","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":199,"frequencyPerMillion":924.85,"meaning":"to think; feel","ipa":"/ˈtʏkːa/","forms":[{"value":"tycker","label":"present"},{"value":"tyckt","label":"supine"},{"value":"tyck","label":"imperative"},{"value":"tyckts","label":"supine"}],"example":{"sv":"Jag tycker att hon är en ärlig kvinna.","en":"I think she's an honest woman.","surface":"tycker","source":"Tatoeba","swedishId":1409956,"englishId":1318732,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"199","wiktionarySenseId":"en-tycka-sv-verb-n9~Z1Doc"}},{"id":"kelly-200","lemma":"kommentar","displayWord":"en kommentar","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":200,"frequencyPerMillion":924.68,"meaning":"a comment","ipa":"","forms":[{"value":"kommentaren","label":"definite · singular"},{"value":"kommentarer","label":"indefinite · plural"},{"value":"kommentarerna","label":"definite · plural"}],"example":{"sv":"Jag är trött på dina dumma kommentarer.","en":"I'm sick of your stupid remarks.","surface":"kommentarer","source":"Tatoeba","swedishId":4839779,"englishId":2229580,"swedishContributor":"Nour","englishContributor":"jgauthier"},"memoryHint":"","source":{"kellyId":"200","wiktionarySenseId":"en-kommentar-sv-noun-~yPaw~Vl"}},{"id":"kelly-201","lemma":"veta","displayWord":"att veta","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":201,"frequencyPerMillion":894.31,"meaning":"to know","ipa":"/²veːta/","forms":[{"value":"vet","label":"present"},{"value":"vetat","label":"supine"},{"value":"-","label":"supine"},{"value":"visste","label":"past"}],"example":{"sv":"Vet du inte vad som hände i går?","en":"Don't you know what happened yesterday?","surface":"vet","source":"Tatoeba","swedishId":822626,"englishId":244565,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"201","wiktionarySenseId":"en-veta-sv-verb-MISFPkRB"}},{"id":"kelly-202","lemma":"idag","displayWord":"idag","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":202,"frequencyPerMillion":865.13,"meaning":"today","ipa":"/ɪˈdɑː(ɡ)/","forms":[],"example":{"sv":"Jag känner inte för att äta någonting idag.","en":"I don't feel like eating anything today.","surface":"idag","source":"Tatoeba","swedishId":912739,"englishId":242787,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"202","wiktionarySenseId":"en-idag-sv-adv-1fvfRrT8"}},{"id":"kelly-203","lemma":"försöka","displayWord":"att försöka","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":203,"frequencyPerMillion":859.72,"meaning":"to try; attempt","ipa":"/fœrsøːka/","forms":[{"value":"försöker","label":"present"},{"value":"försökt","label":"supine"},{"value":"försök","label":"imperative"},{"value":"försökts","label":"supine"}],"example":{"sv":"Hans försök med att simma över floden misslyckades.","en":"He failed in his attempt to swim across the river.","surface":"försök","source":"Tatoeba","swedishId":1406731,"englishId":284371,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"203","wiktionarySenseId":"en-försöka-sv-verb-CQvW4Ewz"}},{"id":"kelly-204","lemma":"behöva","displayWord":"att behöva","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":204,"frequencyPerMillion":858.16,"meaning":"to need","ipa":"/bɛˈhøːva/","forms":[{"value":"behöver","label":"present"},{"value":"behövt","label":"supine"},{"value":"behöv","label":"imperative"},{"value":"behövts","label":"supine"}],"example":{"sv":"Jag tycker att du behöver tänka på framtiden.","en":"I think you need to think about the future.","surface":"behöver","source":"Tatoeba","swedishId":1414057,"englishId":1318780,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"204","wiktionarySenseId":"en-behöva-sv-verb-fCXPH8yL"}},{"id":"kelly-205","lemma":"samma","displayWord":"samma","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":205,"frequencyPerMillion":844.13,"meaning":"same","ipa":"","forms":[],"example":{"sv":"Rie och jag har gått i samma skola.","en":"Rie and I went to the same school.","surface":"samma","source":"Tatoeba","swedishId":1433478,"englishId":325336,"swedishContributor":"arahlen","englishContributor":"CN"},"memoryHint":"","source":{"kellyId":"205","wiktionarySenseId":"en-samma-sv-pron-CWcRXygT"}},{"id":"kelly-206","lemma":"mellan","displayWord":"mellan","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":206,"frequencyPerMillion":841.51,"meaning":"between; among","ipa":"","forms":[],"example":{"sv":"Vad är skillnaden mellan amerikansk och brittisk engelska?","en":"What's the difference between American and British English?","surface":"mellan","source":"Tatoeba","swedishId":1971898,"englishId":1971888,"swedishContributor":"herrsilen","englishContributor":"Eldad"},"memoryHint":"","source":{"kellyId":"206","wiktionarySenseId":"en-mellan-sv-prep--7J~vcT0"}},{"id":"kelly-207","lemma":"känna","displayWord":"att känna","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":207,"frequencyPerMillion":840.25,"meaning":"to feel; know","ipa":"/ˈɕɛn.na/","forms":[{"value":"känner","label":"present"},{"value":"känt","label":"supine"},{"value":"känn","label":"imperative"},{"value":"känts","label":"supine"}],"example":{"sv":"Jag känner inte för att äta någonting idag.","en":"I don't feel like eating anything today.","surface":"känner","source":"Tatoeba","swedishId":912739,"englishId":242787,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"207","wiktionarySenseId":"en-känna-sv-verb-zO~vQwrM"}},{"id":"kelly-208","lemma":"läsa","displayWord":"att läsa","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":208,"frequencyPerMillion":823.05,"meaning":"to read (text)","ipa":"/ˈlɛːˌsa/","forms":[{"value":"läser","label":"present"},{"value":"läst","label":"supine"},{"value":"läs","label":"imperative"},{"value":"lästs","label":"supine"}],"example":{"sv":"Han har vanan att läsa tidningar under måltider.","en":"He has the habit of reading the newspaper during meals.","surface":"läsa","source":"Tatoeba","swedishId":1409974,"englishId":1316912,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"A laser scans every line you read: läsa means to read.","source":{"kellyId":"208","wiktionarySenseId":"en-läsa-sv-verb--zHl5eNF"}},{"id":"kelly-209","lemma":"ro","displayWord":"att ro","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":209,"frequencyPerMillion":816.02,"meaning":"to quickly hand over, to pass","ipa":"/ruː/","forms":[{"value":"ror","label":"present"},{"value":"rott","label":"supine"},{"value":"rotts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Vad jag vill ha är lite lugn och ro.","en":"What I want is some peace and quiet.","surface":"ro","source":"Tatoeba","swedishId":9047732,"englishId":2018878,"swedishContributor":"ajje","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"209","wiktionarySenseId":"en-ro-sv-verb-B-LJz4CE"}},{"id":"kelly-210","lemma":"kanske","displayWord":"kanske","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":210,"frequencyPerMillion":809.75,"meaning":"maybe, perhaps, possibly","ipa":"/²kanːˌɧɛ/","forms":[],"example":{"sv":"Hon antydde att hon kanske skulle studera utomlands.","en":"She hinted that she might study abroad.","surface":"kanske","source":"Tatoeba","swedishId":891103,"englishId":317411,"swedishContributor":"Tximist","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"210","wiktionarySenseId":"en-kanske-sv-adv-3xqQyDhI"}},{"id":"kelly-211","lemma":"lik","displayWord":"lik","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":211,"frequencyPerMillion":808.09,"meaning":"alike, same (the same or similar)","ipa":"/ˈliːk/","forms":[{"value":"mer lik","label":"indefinite"},{"value":"mest lik","label":"indefinite"},{"value":"likt","label":"indefinite · singular"},{"value":"mer likt","label":"indefinite · singular"}],"example":{"sv":"Peter är inte alls lik hans pappa.","en":"Peter isn't anything like his father.","surface":"lik","source":"Tatoeba","swedishId":2030816,"englishId":34872,"swedishContributor":"Lazzlo","englishContributor":"CN"},"memoryHint":"","source":{"kellyId":"211","wiktionarySenseId":"en-lik-sv-adj-LFFSVmKw"}},{"id":"kelly-212","lemma":"låta","displayWord":"att låta","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":212,"frequencyPerMillion":807.17,"meaning":"to make sound","ipa":"/²loːta/","forms":[{"value":"låter","label":"present"},{"value":"låtit","label":"supine"},{"value":"låt","label":"imperative"},{"value":"låtits","label":"supine"}],"example":{"sv":"Det låter som om du faktiskt menar det.","en":"It sounds like you actually mean that.","surface":"låter","source":"Tatoeba","swedishId":1988806,"englishId":1975721,"swedishContributor":"Ribon","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"212","wiktionarySenseId":"en-låta-sv-verb-XE9jhTXT"}},{"id":"kelly-213","lemma":"olik","displayWord":"olik","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":213,"frequencyPerMillion":790.47,"meaning":"different, various","ipa":"","forms":[{"value":"mer olik","label":"indefinite"},{"value":"mest olik","label":"indefinite"},{"value":"olikt","label":"indefinite · singular"},{"value":"mer olikt","label":"indefinite · singular"}],"example":{"sv":"Han är olik sin yngre bror.","en":"He is different from his younger brother.","surface":"olik","source":"Tatoeba","swedishId":10039177,"englishId":10039122,"swedishContributor":"morbrorper","englishContributor":"espamatics"},"memoryHint":"","source":{"kellyId":"213","wiktionarySenseId":"en-olik-sv-adj-qiZTYrlt"}},{"id":"kelly-214","lemma":"sådan","displayWord":"sådan","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":214,"frequencyPerMillion":788.97,"meaning":"such, such a","ipa":"","forms":[{"value":"sådana","label":"plural"}],"example":{"sv":"Vad är det som tar en sådan tid?","en":"What's taking so long?","surface":"sådan","source":"Tatoeba","swedishId":2122597,"englishId":1886691,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"214","wiktionarySenseId":"en-sådan-sv-det-tYsxBmBh"}},{"id":"kelly-215","lemma":"sätt","displayWord":"ett sätt","marker":"ett","partOfSpeech":"noun","cefr":"A1","rank":215,"frequencyPerMillion":784.91,"meaning":"a set","ipa":"/sɛtː/","forms":[{"value":"sättet","label":"definite · singular"},{"value":"sätten","label":"definite · plural"}],"example":{"sv":"Den här boken är unik på många sätt.","en":"This book is unique in many ways.","surface":"sätt","source":"Tatoeba","swedishId":2778233,"englishId":2009472,"swedishContributor":"Alex1975","englishContributor":"halfb1t"},"memoryHint":"","source":{"kellyId":"215","wiktionarySenseId":"en-sätt-sv-noun-Z8Ycs1wy"}},{"id":"kelly-216","lemma":"hans","displayWord":"hans","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":216,"frequencyPerMillion":774.6,"meaning":"his","ipa":"/hans/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"216","wiktionarySenseId":"en-hans-sv-pron-c8nJhmij"}},{"id":"kelly-217","lemma":"din","displayWord":"din","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":217,"frequencyPerMillion":771.62,"meaning":"your, yours (common gender, singular)","ipa":"/dɪn/ [d̪ɪn̪ː]","forms":[{"value":"ditt","label":"singular"},{"value":"dina","label":"plural"},{"value":"jag","label":"singular"},{"value":"mig","label":"singular"}],"example":{"sv":"Den där slipsen passar bra till din skjorta.","en":"That tie goes well with your shirt.","surface":"din","source":"Tatoeba","swedishId":401257,"englishId":50066,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"217","wiktionarySenseId":"en-din-sv-det-HdNc5z3I"}},{"id":"kelly-218","lemma":"gång","displayWord":"en gång","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":218,"frequencyPerMillion":763.39,"meaning":"walking","ipa":"/ɡɔŋ/","forms":[{"value":"gången","label":"definite · singular"},{"value":"gångar","label":"indefinite · plural"},{"value":"gångarna","label":"definite · plural"}],"example":{"sv":"Minns du den gången vi åkte till Paris?","en":"Do you remember the time we went to Paris?","surface":"gången","source":"Tatoeba","swedishId":1129872,"englishId":1127733,"swedishContributor":"HannesP","englishContributor":"CN"},"memoryHint":"","source":{"kellyId":"218","wiktionarySenseId":"en-gång-sv-noun-N~8gWDlg"}},{"id":"kelly-219","lemma":"stå","displayWord":"att stå","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":219,"frequencyPerMillion":761.8,"meaning":"to hold up, to stand up","ipa":"/stoː/","forms":[{"value":"står","label":"present"},{"value":"stått","label":"supine"},{"value":"ståndit","label":"supine"},{"value":"-","label":"supine"}],"example":{"sv":"Pojken som står vid dörren är min bror.","en":"The boy standing by the door is my brother.","surface":"står","source":"Tatoeba","swedishId":1138509,"englishId":39077,"swedishContributor":"arahlen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"219","wiktionarySenseId":"en-stå-sv-verb-TrZuNEyX"}},{"id":"kelly-220","lemma":"inom","displayWord":"inom","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":220,"frequencyPerMillion":758.15,"meaning":"within (in time)","ipa":"","forms":[],"example":{"sv":"Jag kommer att vara med dig inom fem minuter.","en":"I'll be with you in five minutes.","surface":"inom","source":"Tatoeba","swedishId":3529748,"englishId":3529410,"swedishContributor":"turkishlearner","englishContributor":"Hybrid"},"memoryHint":"","source":{"kellyId":"220","wiktionarySenseId":"en-inom-sv-prep-n1AfqblB"}},{"id":"kelly-221","lemma":"visa","displayWord":"att visa","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":221,"frequencyPerMillion":757.44,"meaning":"to show, to prove","ipa":"/ˈviːˌsa/","forms":[{"value":"visar","label":"present"},{"value":"visat","label":"supine"},{"value":"visats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Visa mig var Puerto Rico är på kartan.","en":"Show me where Puerto Rico is on the map.","surface":"visa","source":"Tatoeba","swedishId":2078860,"englishId":708229,"swedishContributor":"herrsilen","englishContributor":"Rector"},"memoryHint":"","source":{"kellyId":"221","wiktionarySenseId":"en-visa-sv-verb-6ynMYcxK"}},{"id":"kelly-222","lemma":"använda","displayWord":"att använda","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":222,"frequencyPerMillion":749.26,"meaning":"to use (employ, apply)","ipa":"/ˈanˌvɛnda/","forms":[{"value":"använder","label":"present"},{"value":"använt","label":"supine"},{"value":"använd","label":"imperative"},{"value":"använts","label":"supine"}],"example":{"sv":"Du kan använda mitt skrivbord om du vill.","en":"You can use my desk if you want to.","surface":"använda","source":"Tatoeba","swedishId":647369,"englishId":69360,"swedishContributor":"sanda","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"222","wiktionarySenseId":"en-använda-sv-verb-REDbbyXE"}},{"id":"kelly-223","lemma":"vända","displayWord":"att vända","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":223,"frequencyPerMillion":749.26,"meaning":"to turn","ipa":"","forms":[{"value":"vänder","label":"present"},{"value":"vänt","label":"supine"},{"value":"vänd","label":"imperative"},{"value":"vänts","label":"supine"}],"example":{"sv":"Tom är en som vänder kappan efter vinden.","en":"Tom is a turncoat.","surface":"vänder","source":"Tatoeba","swedishId":4381522,"englishId":4379079,"swedishContributor":"richke","englishContributor":"Lepotdeterre"},"memoryHint":"","source":{"kellyId":"223","wiktionarySenseId":"en-vända-sv-verb-4s29iXOP"}},{"id":"kelly-224","lemma":"hålla","displayWord":"att hålla","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":224,"frequencyPerMillion":739.42,"meaning":"to hold (grasp or grip)","ipa":"/²hɔla/","forms":[{"value":"håller","label":"present"},{"value":"hållit","label":"supine"},{"value":"håll","label":"imperative"},{"value":"hållits","label":"supine"}],"example":{"sv":"Jag håller inte med dig på den punkten.","en":"I differ from you on that point.","surface":"håller","source":"Tatoeba","swedishId":891007,"englishId":44847,"swedishContributor":"Tximist","englishContributor":"orcrist"},"memoryHint":"","source":{"kellyId":"224","wiktionarySenseId":"en-hålla-sv-verb-8I0dsbEq"}},{"id":"kelly-225","lemma":"genom","displayWord":"genom","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":225,"frequencyPerMillion":733.74,"meaning":"by","ipa":"/ˈjeːnɔm/","forms":[],"example":{"sv":"Dr Patterson kommunicerade med en gorilla genom teckenspråk.","en":"Dr. Patterson communicated with a gorilla using sign language.","surface":"genom","source":"Tatoeba","swedishId":4337920,"englishId":35208,"swedishContributor":"richke","englishContributor":"CN"},"memoryHint":"","source":{"kellyId":"225","wiktionarySenseId":"en-genom-sv-prep-p-LSbo0V"}},{"id":"kelly-226","lemma":"helt","displayWord":"helt","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":226,"frequencyPerMillion":721.67,"meaning":"entirely, absolutely, wholly, completely","ipa":"/heːlt/","forms":[],"example":{"sv":"Jag är helt och hållet på din sida.","en":"I'm completely on your side.","surface":"helt","source":"Tatoeba","swedishId":3122016,"englishId":5078467,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"226","wiktionarySenseId":"en-helt-sv-adv-cslLrymB"}},{"id":"kelly-227","lemma":"fler","displayWord":"fler","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":227,"frequencyPerMillion":717.99,"meaning":"more and most (in numbers)","ipa":"/fleːr/","forms":[],"example":{"sv":"Fler och fler studenter ansluter sig till protesterna.","en":"More and more students are joining the protests.","surface":"fler","source":"Tatoeba","swedishId":2147519,"englishId":792319,"swedishContributor":"herrsilen","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"227","wiktionarySenseId":"en-fler-sv-adj-i6xDBM1Z"}},{"id":"kelly-228","lemma":"utan","displayWord":"utan","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":228,"frequencyPerMillion":707.53,"meaning":"without (not having)","ipa":"/ˈʉːˌtan/","forms":[],"example":{"sv":"Fattigdom lär en att äta bröd utan smör.","en":"Poverty teaches you to eat bread without butter.","surface":"utan","source":"Tatoeba","swedishId":1971101,"englishId":1970920,"swedishContributor":"herrsilen","englishContributor":"Saponutti"},"memoryHint":"","source":{"kellyId":"228","wiktionarySenseId":"en-utan-sv-prep-sv:preposition"}},{"id":"kelly-229","lemma":"väl","displayWord":"väl","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":229,"frequencyPerMillion":705.75,"meaning":"well","ipa":"/vɛːl/","forms":[],"example":{"sv":"Vi kan väl vänta tills han kommer hem?","en":"We can wait till he comes home, can't we?","surface":"väl","source":"Tatoeba","swedishId":3126954,"englishId":9358204,"swedishContributor":"herrsilen","englishContributor":"Lillith"},"memoryHint":"","source":{"kellyId":"229","wiktionarySenseId":"en-väl-sv-adv-p3Irdl0V"}},{"id":"kelly-230","lemma":"barn","displayWord":"ett barn","marker":"ett","partOfSpeech":"noun","cefr":"A1","rank":230,"frequencyPerMillion":700.31,"meaning":"pregnant, with child","ipa":"/bɑːrn/","forms":[{"value":"barnet","label":"definite · singular"},{"value":"barnen","label":"definite · plural"},{"value":"barne","label":"definite · singular"},{"value":"barna","label":"definite · plural"}],"example":{"sv":"Hon varnade barnen för att leka på gatan.","en":"She warned the children not to play on the street.","surface":"barnen","source":"Tatoeba","swedishId":1137552,"englishId":454497,"swedishContributor":"arahlen","englishContributor":"FeuDRenais"},"memoryHint":"Imagine children playing beside a red barn — barn means child.","source":{"kellyId":"230","wiktionarySenseId":"en-barn-sv-noun-sv:pregnant"}},{"id":"kelly-231","lemma":"enligt","displayWord":"enligt","marker":"","partOfSpeech":"preposition","cefr":"A1","rank":231,"frequencyPerMillion":680.22,"meaning":"according to","ipa":"","forms":[],"example":{"sv":"Enligt väderprognosen ska det snöa i morgon.","en":"According to the weather forecast, it will snow tomorrow.","surface":"enligt","source":"Tatoeba","swedishId":1126329,"englishId":402048,"swedishContributor":"Spraaksugen","englishContributor":"blay_paul"},"memoryHint":"","source":{"kellyId":"231","wiktionarySenseId":"en-enligt-sv-prep-KWGm0cjc"}},{"id":"kelly-232","lemma":"tänka","displayWord":"att tänka","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":232,"frequencyPerMillion":666.7,"meaning":"to consider as viable","ipa":"","forms":[{"value":"tänker","label":"present"},{"value":"tänkt","label":"supine"},{"value":"tänk","label":"imperative"},{"value":"tänkts","label":"supine"}],"example":{"sv":"Han hade tänkt att gifta sig med henne.","en":"He had thought to marry her.","surface":"tänkt","source":"Tatoeba","swedishId":409746,"englishId":3626640,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"232","wiktionarySenseId":"en-tänka-sv-verb-EOLI6K2d"}},{"id":"kelly-233","lemma":"ni","displayWord":"ni","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":233,"frequencyPerMillion":665.01,"meaning":"you (plural subjective case)","ipa":"/niː/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"233","wiktionarySenseId":"en-ni-sv-pron-ARdLSCxh"}},{"id":"kelly-234","lemma":"viktig","displayWord":"viktig","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":234,"frequencyPerMillion":662.11,"meaning":"important","ipa":"/²vɪktɪ(ɡ)/","forms":[{"value":"viktigare","label":"indefinite"},{"value":"viktigast","label":"indefinite"},{"value":"viktigt","label":"indefinite · singular"},{"value":"viktiga","label":"indefinite · plural"}],"example":{"sv":"Det är viktigt att följa en sträng diet.","en":"It's important to follow a strict diet.","surface":"viktigt","source":"Tatoeba","swedishId":1137604,"englishId":268754,"swedishContributor":"arahlen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"234","wiktionarySenseId":"en-viktig-sv-adj-NKmJ6z4i"}},{"id":"kelly-235","lemma":"ring","displayWord":"en ring","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":235,"frequencyPerMillion":658.84,"meaning":"A ring, algebraic structure","ipa":"","forms":[{"value":"ringen","label":"definite · singular"},{"value":"ringar","label":"indefinite · plural"},{"value":"ringarna","label":"definite · plural"}],"example":{"sv":"Om du vill, så ring mig på eftermiddagen.","en":"If you want to, call me this afternoon.","surface":"ring","source":"Tatoeba","swedishId":2807024,"englishId":1440821,"swedishContributor":"Alex1975","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"235","wiktionarySenseId":"en-ring-sv-noun-ExPCAV0i"}},{"id":"kelly-236","lemma":"eftersom","displayWord":"eftersom","marker":"","partOfSpeech":"conjunction","cefr":"A1","rank":236,"frequencyPerMillion":652.0,"meaning":"because, since, as (for the reason that)","ipa":"/ˈɛftɛrˌsɔm/","forms":[],"example":{"sv":"Jag är hungrig eftersom jag inte åt frukost.","en":"I am hungry because I did not have breakfast.","surface":"eftersom","source":"Tatoeba","swedishId":1959764,"englishId":460070,"swedishContributor":"Coedwig","englishContributor":"saasmath"},"memoryHint":"","source":{"kellyId":"236","wiktionarySenseId":"en-eftersom-sv-conj-zxFQ8ki7"}},{"id":"kelly-237","lemma":"liv","displayWord":"ett liv","marker":"ett","partOfSpeech":"noun","cefr":"A1","rank":237,"frequencyPerMillion":624.66,"meaning":"waist","ipa":"/liːv/","forms":[{"value":"livet","label":"definite · singular"},{"value":"liven","label":"definite · plural"}],"example":{"sv":"Ett ögonblicks tvekan kan kosta en pilot livet.","en":"A moment's doubt can cost a pilot her life.","surface":"livet","source":"Tatoeba","swedishId":651240,"englishId":3626650,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"237","wiktionarySenseId":"en-liv-sv-noun-bCRWuZub"}},{"id":"kelly-238","lemma":"deras","displayWord":"deras","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":238,"frequencyPerMillion":623.86,"meaning":"their; belonging to them","ipa":"","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"238","wiktionarySenseId":"en-deras-sv-pron-4Ad0mCC-"}},{"id":"kelly-239","lemma":"värld","displayWord":"en värld","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":239,"frequencyPerMillion":617.89,"meaning":"to not be the end of the world (not be that bad)","ipa":"/vɛːrd/","forms":[{"value":"världen","label":"definite · singular"},{"value":"världar","label":"indefinite · plural"},{"value":"världarna","label":"definite · plural"}],"example":{"sv":"Allt i denna värld är blott en dröm.","en":"Everything that is in this world is but a dream.","surface":"värld","source":"Tatoeba","swedishId":1403350,"englishId":416879,"swedishContributor":"Fargy","englishContributor":"Scott"},"memoryHint":"","source":{"kellyId":"239","wiktionarySenseId":"en-värld-sv-noun-clY81pOE"}},{"id":"kelly-240","lemma":"viss","displayWord":"viss","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":240,"frequencyPerMillion":614.61,"meaning":"certain, convinced","ipa":"/vɪsː/","forms":[{"value":"vissare","label":"indefinite"},{"value":"vissast","label":"indefinite"},{"value":"visst","label":"indefinite · singular"},{"value":"vissa","label":"indefinite · plural"}],"example":{"sv":"Visst kan det vara traumatiskt, men än sen?","en":"Sure, it might be traumatic, but so what?","surface":"visst","source":"Tatoeba","swedishId":1992217,"englishId":2000263,"swedishContributor":"Siljan","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"240","wiktionarySenseId":"en-viss-sv-adj-j44XFAgP"}},{"id":"kelly-241","lemma":"dock","displayWord":"dock","marker":"","partOfSpeech":"adverb","cefr":"A1","rank":241,"frequencyPerMillion":614.54,"meaning":"though, however, still, nevertheless","ipa":"/dɔkː/","forms":[],"example":{"sv":"Det är dock inte så viktigt.","en":"However, it is not that important.","surface":"dock","source":"Tatoeba","swedishId":5883490,"englishId":10611266,"swedishContributor":"herrsilen","englishContributor":"Pineapple"},"memoryHint":"","source":{"kellyId":"241","wiktionarySenseId":"en-dock-sv-adv-V4~PmeW6"}},{"id":"kelly-242","lemma":"egen","displayWord":"egen","marker":"","partOfSpeech":"adjective","cefr":"A1","rank":242,"frequencyPerMillion":612.48,"meaning":"peculiar, eccentric, odd, unique, personal, individualistic","ipa":"","forms":[{"value":"egnare","label":"indefinite"},{"value":"egnast","label":"indefinite"},{"value":"eget","label":"indefinite · singular"},{"value":"egna","label":"indefinite · plural"}],"example":{"sv":"För egen del föredrar jag kaffe framför te.","en":"Me, I prefer coffee to tea.","surface":"egen","source":"Tatoeba","swedishId":2108277,"englishId":33562,"swedishContributor":"loghaD","englishContributor":"orcrist"},"memoryHint":"","source":{"kellyId":"242","wiktionarySenseId":"en-egen-sv-adj-cg6-iOIo"}},{"id":"kelly-243","lemma":"folk","displayWord":"ett folk","marker":"ett","partOfSpeech":"noun","cefr":"A1","rank":243,"frequencyPerMillion":606.98,"meaning":"people","ipa":"/fɔlːk/","forms":[{"value":"folket","label":"definite · singular"},{"value":"folken","label":"definite · plural"}],"example":{"sv":"Jag förstår inte varför folk tror på spöken.","en":"I don't understand why people believe in ghosts.","surface":"folk","source":"Tatoeba","swedishId":3711599,"englishId":3616562,"swedishContributor":"herrsilen","englishContributor":"Eldad"},"memoryHint":"","source":{"kellyId":"243","wiktionarySenseId":"en-folk-sv-noun-sv:persons"}},{"id":"kelly-244","lemma":"regering","displayWord":"en regering","marker":"en","partOfSpeech":"noun","cefr":"A1","rank":244,"frequencyPerMillion":603.37,"meaning":"government; the executive body of a country's governmental system","ipa":"/rɛˈjeːrɪŋ/","forms":[{"value":"regeringen","label":"definite · singular"},{"value":"regeringar","label":"indefinite · plural"},{"value":"regeringarna","label":"definite · plural"}],"example":{"sv":"Vi vill att regeringen ska tjäna hela befolkningen.","en":"We want the government to serve the entire population.","surface":"regeringen","source":"Tatoeba","swedishId":2932694,"englishId":2932692,"swedishContributor":"loghaD","englishContributor":"loghaD"},"memoryHint":"","source":{"kellyId":"244","wiktionarySenseId":"en-regering-sv-noun-IPrEJOK0"}},{"id":"kelly-245","lemma":"fram","displayWord":"fram","marker":"","partOfSpeech":"particle","cefr":"A1","rank":245,"frequencyPerMillion":600.53,"meaning":"in front, front","ipa":"/fram/","forms":[],"example":{"sv":"Fram tills nu har de jobbat mycket hårt.","en":"Up to now they have worked very hard.","surface":"fram","source":"Tatoeba","swedishId":822704,"englishId":241915,"swedishContributor":"yaseminhepaksoy","englishContributor":"sundown"},"memoryHint":"","source":{"kellyId":"245","wiktionarySenseId":"en-fram-sv-adv-kMkQrvPB"}},{"id":"kelly-246","lemma":"honom","displayWord":"honom","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":246,"frequencyPerMillion":597.56,"meaning":"him; oblique of han","ipa":"/²hɔnːɔm/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"246","wiktionarySenseId":"en-honom-sv-pron-E4KWLJqc"}},{"id":"kelly-247","lemma":"söka","displayWord":"att söka","marker":"att","partOfSpeech":"verb","cefr":"A1","rank":247,"frequencyPerMillion":596.07,"meaning":"to search (look throughout (a place) for something), to seek","ipa":"/²søːka/","forms":[{"value":"söker","label":"present"},{"value":"sökt","label":"supine"},{"value":"sök","label":"imperative"},{"value":"sökts","label":"supine"}],"example":{"sv":"Jag söker efter någon att förälska mig i.","en":"I'm looking for someone to fall in love with.","surface":"söker","source":"Tatoeba","swedishId":3841110,"englishId":326265,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"247","wiktionarySenseId":"en-söka-sv-verb-IEKZLPhZ"}},{"id":"kelly-248","lemma":"dig","displayWord":"dig","marker":"","partOfSpeech":"pronoun","cefr":"A1","rank":248,"frequencyPerMillion":590.81,"meaning":"you (singular objective case)","ipa":"/dɛj/","forms":[{"value":"jag","label":"singular"},{"value":"mig","label":"singular"},{"value":"mej","label":"singular"},{"value":"min","label":"singular"}],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"jag","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"248","wiktionarySenseId":"en-dig-sv-pron-DOxvVdKl"}},{"id":"kelly-1405","lemma":"normal","displayWord":"normal","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1405,"frequencyPerMillion":63.27,"meaning":"normal","ipa":"","forms":[{"value":"normalare","label":"indefinite"},{"value":"normalast","label":"indefinite"},{"value":"normalt","label":"indefinite · singular"},{"value":"normala","label":"indefinite · plural"}],"example":{"sv":"Det är normalt att vara lite rädd.","en":"It's normal to be a little afraid.","surface":"normalt","source":"Tatoeba","swedishId":4030588,"englishId":4017363,"swedishContributor":"malinef","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1405","wiktionarySenseId":"en-normal-sv-adj-MXsywUNp"}},{"id":"kelly-1407","lemma":"kurs","displayWord":"en kurs","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1407,"frequencyPerMillion":63.24,"meaning":"rate, exchange rate","ipa":"","forms":[{"value":"kursen","label":"definite · singular"},{"value":"kurser","label":"indefinite · plural"},{"value":"kurserna","label":"definite · plural"}],"example":{"sv":"Kursen är uppdelad i fyra mindre delar.","en":"The course is divided into four smaller units.","surface":"kursen","source":"Tatoeba","swedishId":3130229,"englishId":3553390,"swedishContributor":"herrsilen","englishContributor":"Objectivesea"},"memoryHint":"","source":{"kellyId":"1407","wiktionarySenseId":"en-kurs-sv-noun-C6272j7e"}},{"id":"kelly-1408","lemma":"påstående","displayWord":"ett påstående","marker":"ett","partOfSpeech":"noun","cefr":"A2","rank":1408,"frequencyPerMillion":63.24,"meaning":"a claim, a statement","ipa":"","forms":[{"value":"påståendet","label":"definite · singular"},{"value":"påståenden","label":"indefinite · plural"},{"value":"påståendena","label":"definite · plural"}],"example":{"sv":"Jag kan varken bekräfta eller förneka dessa påståenden.","en":"I can neither confirm nor deny these allegations.","surface":"påståenden","source":"Tatoeba","swedishId":12347175,"englishId":12345248,"swedishContributor":"morbrorper","englishContributor":"Miktsoanit"},"memoryHint":"","source":{"kellyId":"1408","wiktionarySenseId":"en-påstående-sv-noun-x3bHBHRa"}},{"id":"kelly-1409","lemma":"märklig","displayWord":"märklig","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1409,"frequencyPerMillion":63.17,"meaning":"strange, peculiar","ipa":"/²mærklɪ(ɡ)/","forms":[{"value":"märkligare","label":"indefinite"},{"value":"märkligast","label":"indefinite"},{"value":"märkligt","label":"indefinite · singular"},{"value":"märkliga","label":"indefinite · plural"}],"example":{"sv":"Det här är ett mycket märkligt brev.","en":"This is a very strange letter.","surface":"märkligt","source":"Tatoeba","swedishId":2192500,"englishId":55771,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1409","wiktionarySenseId":"en-märklig-sv-adj-B6fn~RV5"}},{"id":"kelly-1410","lemma":"öst","displayWord":"öst","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1410,"frequencyPerMillion":63.12,"meaning":"east","ipa":"/œst/","forms":[{"value":"östen","label":"definite · singular"},{"value":"-","label":"indefinite · plural"}],"example":{"sv":"Rör sig jorden från öst till väst eller tvärtom?","en":"Does The Earth move from East to West or vice-versa?","surface":"öst","source":"Tatoeba","swedishId":6364104,"englishId":6318524,"swedishContributor":"SilasNordgren","englishContributor":"kyle7667"},"memoryHint":"","source":{"kellyId":"1410","wiktionarySenseId":"en-öst-sv-noun-a9smKwIB"}},{"id":"kelly-1411","lemma":"affär","displayWord":"en affär","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1411,"frequencyPerMillion":63.08,"meaning":"a shop, a store","ipa":"/a¹fɛːr/","forms":[{"value":"affären","label":"definite · singular"},{"value":"affärer","label":"indefinite · plural"},{"value":"affärerna","label":"definite · plural"}],"example":{"sv":"De säljer diverse varor på den affären.","en":"They sell various kinds of goods at that store.","surface":"affären","source":"Tatoeba","swedishId":401360,"englishId":67928,"swedishContributor":"Don","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1411","wiktionarySenseId":"en-affär-sv-noun-x4Tnu8dX"}},{"id":"kelly-1412","lemma":"tidigt","displayWord":"tidigt","marker":"","partOfSpeech":"adverb","cefr":"A2","rank":1412,"frequencyPerMillion":62.99,"meaning":"early","ipa":"","forms":[],"example":{"sv":"De sa att de skulle komma hit tidigt.","en":"They said that they'd get there early.","surface":"tidigt","source":"Tatoeba","swedishId":10161679,"englishId":7439119,"swedishContributor":"SilasNordgren","englishContributor":"CH"},"memoryHint":"","source":{"kellyId":"1412","wiktionarySenseId":"en-tidigt-sv-adv-9AiDC8x~"}},{"id":"kelly-1413","lemma":"upplevelse","displayWord":"en upplevelse","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1413,"frequencyPerMillion":62.97,"meaning":"an event","ipa":"","forms":[{"value":"upplevelsen","label":"definite · singular"},{"value":"upplevelser","label":"indefinite · plural"},{"value":"upplevelserna","label":"definite · plural"}],"example":{"sv":"Det var en av mitt livs mest makalösa upplevelser.","en":"It was one of the most incredible experiences of my life.","surface":"upplevelser","source":"Tatoeba","swedishId":2235345,"englishId":2149113,"swedishContributor":"Tximist","englishContributor":"Hybrid"},"memoryHint":"","source":{"kellyId":"1413","wiktionarySenseId":"en-upplevelse-sv-noun-8u6QagNq"}},{"id":"kelly-1414","lemma":"riktning","displayWord":"en riktning","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1414,"frequencyPerMillion":62.93,"meaning":"adjusting, adjustment, straightening, truing","ipa":"","forms":[{"value":"riktningen","label":"definite · singular"},{"value":"riktningar","label":"indefinite · plural"},{"value":"riktningarna","label":"definite · plural"}],"example":{"sv":"Det går i riktning mot en katastrof.","en":"It goes in the direction of a disaster.","surface":"riktning","source":"Tatoeba","swedishId":3976806,"englishId":3976807,"swedishContributor":"Abeer","englishContributor":"Abeer"},"memoryHint":"","source":{"kellyId":"1414","wiktionarySenseId":"en-riktning-sv-noun-XOS85XxQ"}},{"id":"kelly-1415","lemma":"vetenskap","displayWord":"vetenskap","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1415,"frequencyPerMillion":62.83,"meaning":"any academic discipline; in general, the sciences and humanities taken as a whole","ipa":"","forms":[{"value":"vetenskapen","label":"definite · singular"},{"value":"vetenskaper","label":"indefinite · plural"},{"value":"vetenskaperna","label":"definite · plural"}],"example":{"sv":"Hans far vigde sitt liv åt vetenskapen.","en":"His father dedicated his life to science.","surface":"vetenskapen","source":"Tatoeba","swedishId":2389819,"englishId":1463394,"swedishContributor":"Tximist","englishContributor":"Eldad"},"memoryHint":"","source":{"kellyId":"1415","wiktionarySenseId":"en-vetenskap-sv-noun-afsM1axj"}},{"id":"kelly-1416","lemma":"avsnitt","displayWord":"ett avsnitt","marker":"ett","partOfSpeech":"noun","cefr":"A2","rank":1416,"frequencyPerMillion":62.81,"meaning":"paragraph; piece of text","ipa":"","forms":[{"value":"avsnittet","label":"definite · singular"},{"value":"avsnitten","label":"definite · plural"}],"example":{"sv":"Hur många avsnitt har du sett nu?","en":"How many episodes have you seen now?","surface":"avsnitt","source":"Tatoeba","swedishId":2513599,"englishId":8051340,"swedishContributor":"herrsilen","englishContributor":"polygon"},"memoryHint":"","source":{"kellyId":"1416","wiktionarySenseId":"en-avsnitt-sv-noun-ihWUXCMy"}},{"id":"kelly-1417","lemma":"handel","displayWord":"handel","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1417,"frequencyPerMillion":62.81,"meaning":"a store","ipa":"","forms":[{"value":"handeln","label":"definite · singular"},{"value":"-","label":"indefinite · plural"}],"example":{"sv":"bokhandel","en":"bookstore","surface":"handel","source":"Wiktionary"},"memoryHint":"","source":{"kellyId":"1417","wiktionarySenseId":"en-handel-sv-noun-TBNxem9g"}},{"id":"kelly-1419","lemma":"locka","displayWord":"att locka","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1419,"frequencyPerMillion":62.67,"meaning":"to curl","ipa":"","forms":[{"value":"lockar","label":"present"},{"value":"lockat","label":"supine"},{"value":"lockats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Döda havet lever. Det lockar turister från världens alla hörn.","en":"The Dead Sea lives: it attracts tourists from all corners of the world.","surface":"lockar","source":"Tatoeba","swedishId":1231199,"englishId":1515052,"swedishContributor":"PeterR","englishContributor":"Ignoto"},"memoryHint":"","source":{"kellyId":"1419","wiktionarySenseId":"en-locka-sv-verb-~NSgH~PB"}},{"id":"kelly-1421","lemma":"uttalande","displayWord":"ett uttalande","marker":"ett","partOfSpeech":"noun","cefr":"A2","rank":1421,"frequencyPerMillion":62.58,"meaning":"a statement, a declaration","ipa":"","forms":[{"value":"uttalandet","label":"definite · singular"},{"value":"uttalanden","label":"indefinite · plural"},{"value":"uttalandena","label":"definite · plural"}],"example":{"sv":"ett offentligt uttalande","en":"a public statement","surface":"uttalande","source":"Wiktionary"},"memoryHint":"","source":{"kellyId":"1421","wiktionarySenseId":"en-uttalande-sv-noun-P4oJX5uu"}},{"id":"kelly-1422","lemma":"respektive","displayWord":"respektive","marker":"","partOfSpeech":"conjunction","cefr":"A2","rank":1422,"frequencyPerMillion":62.53,"meaning":"respectively","ipa":"","forms":[],"example":{"sv":"Stockholm och Göteborg har två respektive ett bibliotek.","en":"Stockholm and Gothenburg have two and one libraries, respectively.","surface":"respektive","source":"Wiktionary"},"memoryHint":"","source":{"kellyId":"1422","wiktionarySenseId":"en-respektive-sv-adv-o2ZwuFbW"}},{"id":"kelly-1424","lemma":"störa","displayWord":"att störa","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1424,"frequencyPerMillion":62.42,"meaning":"to disturb, to confuse or irritate, to interfere, to make noise","ipa":"/²stœːra/","forms":[{"value":"stör","label":"present"},{"value":"stört","label":"supine"},{"value":"störts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Det stör mig att hon alltid är sen.","en":"It bothers me that she's always late.","surface":"stör","source":"Tatoeba","swedishId":2315118,"englishId":1346600,"swedishContributor":"Tximist","englishContributor":"marcelostockle"},"memoryHint":"","source":{"kellyId":"1424","wiktionarySenseId":"en-störa-sv-verb-GeSowrun"}},{"id":"kelly-1425","lemma":"ihåg","displayWord":"ihåg","marker":"","partOfSpeech":"particle","cefr":"A2","rank":1425,"frequencyPerMillion":62.4,"meaning":"only used in komma ihåg and ihågkomma","ipa":"","forms":[],"example":{"sv":"Jag kan inte komma ihåg den låtens melodi.","en":"I can't remember the melody of that song.","surface":"ihåg","source":"Tatoeba","swedishId":1404101,"englishId":1392879,"swedishContributor":"Fargy","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1425","wiktionarySenseId":"en-ihåg-sv-adv-vyyByhpw"}},{"id":"kelly-1426","lemma":"någonstans","displayWord":"någonstans","marker":"","partOfSpeech":"adverb","cefr":"A2","rank":1426,"frequencyPerMillion":62.31,"meaning":"somewhere, anywhere; in, at or to any place","ipa":"","forms":[],"example":{"sv":"Kan vi prata enskilt om det här någonstans?","en":"Is there somewhere we can talk privately about this?","surface":"någonstans","source":"Tatoeba","swedishId":11061984,"englishId":7587482,"swedishContributor":"SilasNordgren","englishContributor":"_undertoad"},"memoryHint":"","source":{"kellyId":"1426","wiktionarySenseId":"en-någonstans-sv-adv-RT5dHEWq"}},{"id":"kelly-1427","lemma":"respekt","displayWord":"respekt","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1427,"frequencyPerMillion":62.24,"meaning":"respect (admiration for a person or entity because of perceived merit)","ipa":"","forms":[{"value":"respekten","label":"definite · singular"},{"value":"-","label":"indefinite · plural"}],"example":{"sv":"Du bör visa respekt för dina lärare.","en":"You should be respectful to your teachers.","surface":"respekt","source":"Tatoeba","swedishId":9571621,"englishId":19067,"swedishContributor":"mrkalling","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1427","wiktionarySenseId":"en-respekt-sv-noun-9G3misZ2"}},{"id":"kelly-1428","lemma":"rapportera","displayWord":"att rapportera","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1428,"frequencyPerMillion":62.23,"meaning":"to report","ipa":"","forms":[{"value":"rapporterar","label":"present"},{"value":"rapporterat","label":"supine"},{"value":"rapporterats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Vi måste rapportera till Migrationsverket.","en":"We have to report to the immigration office.","surface":"rapportera","source":"Tatoeba","swedishId":4843075,"englishId":3791594,"swedishContributor":"Nour","englishContributor":"SnipsyStripes"},"memoryHint":"","source":{"kellyId":"1428","wiktionarySenseId":"en-rapportera-sv-verb-uuoUojp1"}},{"id":"kelly-1429","lemma":"knappt","displayWord":"knappt","marker":"","partOfSpeech":"adverb","cefr":"A2","rank":1429,"frequencyPerMillion":62.21,"meaning":"hardly, scarcely, barely, almost not, not quite yet, slightly less than; see also knappast","ipa":"","forms":[],"example":{"sv":"Hon kunde knappt ta sig upp ur sängen.","en":"She barely was able to get out of bed.","surface":"knappt","source":"Tatoeba","swedishId":10673272,"englishId":5036885,"swedishContributor":"Pineapple","englishContributor":"AlanF_US"},"memoryHint":"","source":{"kellyId":"1429","wiktionarySenseId":"en-knappt-sv-adv-7XYglPwk"}},{"id":"kelly-1430","lemma":"direkt","displayWord":"direkt","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1430,"frequencyPerMillion":62.17,"meaning":"direct","ipa":"","forms":[{"value":"direktare","label":"indefinite"},{"value":"direktast","label":"indefinite"},{"value":"direkta","label":"indefinite · plural"},{"value":"direkte","label":"indefinite · plural"}],"example":{"sv":"Tom lovade att han skulle gå direkt hem.","en":"Tom promised he'd go straight home.","surface":"direkt","source":"Tatoeba","swedishId":9084166,"englishId":1877524,"swedishContributor":"Gorzash","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1430","wiktionarySenseId":"en-direkt-sv-adj-0VaQ8IpX"}},{"id":"kelly-1431","lemma":"enkelt","displayWord":"enkelt","marker":"","partOfSpeech":"adverb","cefr":"A2","rank":1431,"frequencyPerMillion":62.17,"meaning":"simply","ipa":"","forms":[],"example":{"sv":"Jag önskar bara att det var så enkelt.","en":"I only wish it were that simple.","surface":"enkelt","source":"Tatoeba","swedishId":1965724,"englishId":1956100,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1431","wiktionarySenseId":"en-enkelt-sv-adv-DsizpKEO"}},{"id":"kelly-1432","lemma":"omständighet","displayWord":"en omständighet","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1432,"frequencyPerMillion":62.09,"meaning":"circumstance","ipa":"","forms":[{"value":"omständigheten","label":"definite · singular"},{"value":"omständigheter","label":"indefinite · plural"},{"value":"omständigheterna","label":"definite · plural"}],"example":{"sv":"Han kunde inte anpassa sig till nya omständigheter.","en":"He couldn't adapt to new circumstances.","surface":"omständigheter","source":"Tatoeba","swedishId":10724566,"englishId":299870,"swedishContributor":"Pineapple","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1432","wiktionarySenseId":"en-omständighet-sv-noun-rEVWcc9~"}},{"id":"kelly-1433","lemma":"hänsyn","displayWord":"hänsyn","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1433,"frequencyPerMillion":62.05,"meaning":"respect, consideration","ipa":"/ˈhɛːnˌsyːn/","forms":[{"value":"hänsynen","label":"definite · singular"},{"value":"-","label":"indefinite · plural"}],"example":{"sv":"Vi kommer att ta hänsyn till dina önskemål.","en":"We will respect your wishes.","surface":"hänsyn","source":"Tatoeba","swedishId":8897455,"englishId":2953824,"swedishContributor":"morbrorper","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1433","wiktionarySenseId":"en-hänsyn-sv-noun-i8zygZwY"}},{"id":"kelly-1434","lemma":"ikväll","displayWord":"ikväll","marker":"","partOfSpeech":"adverb","cefr":"A2","rank":1434,"frequencyPerMillion":62.03,"meaning":"this evening","ipa":"","forms":[],"example":{"sv":"Du var den vackraste kvinnan på festen ikväll.","en":"You were the most beautiful woman at the party tonight.","surface":"ikväll","source":"Tatoeba","swedishId":4456859,"englishId":2639793,"swedishContributor":"richke","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1434","wiktionarySenseId":"en-ikväll-sv-adv-ZUXhNonU"}},{"id":"kelly-1435","lemma":"begära","displayWord":"att begära","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1435,"frequencyPerMillion":61.92,"meaning":"to request, to ask for (ask for to be granted)","ipa":"","forms":[{"value":"begär","label":"present"},{"value":"begärt","label":"supine"},{"value":"begärts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Det är orättvist att begära att någon ska vara som du.","en":"It is unfair to ask someone to be like you.","surface":"begära","source":"Tatoeba","swedishId":10598880,"englishId":2266566,"swedishContributor":"Pineapple","englishContributor":"marcelostockle"},"memoryHint":"","source":{"kellyId":"1435","wiktionarySenseId":"en-begära-sv-verb-3HcAIiK4"}},{"id":"kelly-1437","lemma":"producera","displayWord":"att producera","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1437,"frequencyPerMillion":61.86,"meaning":"to produce or manufacture (some product)","ipa":"","forms":[{"value":"producerar","label":"present"},{"value":"producerat","label":"supine"},{"value":"producerats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Hur mycket dragkraft kan motorn producera?","en":"How much thrust can the engine produce?","surface":"producera","source":"Tatoeba","swedishId":12084975,"englishId":11058986,"swedishContributor":"johanrhg","englishContributor":"Amastan"},"memoryHint":"","source":{"kellyId":"1437","wiktionarySenseId":"en-producera-sv-verb-Vah65J9D"}},{"id":"kelly-1439","lemma":"anonym","displayWord":"anonym","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1439,"frequencyPerMillion":61.81,"meaning":"anonymous (without any name acknowledged)","ipa":"/a.nɔˈnyːm/","forms":[{"value":"mer anonym","label":"indefinite"},{"value":"mest anonym","label":"indefinite"},{"value":"anonymt","label":"indefinite · singular"},{"value":"mer anonymt","label":"indefinite · singular"}],"example":{"sv":"Jag använder en anonym ip-adress.","en":"I use an anonymous IP address.","surface":"anonym","source":"Tatoeba","swedishId":7045985,"englishId":10601304,"swedishContributor":"herrsilen","englishContributor":"Pineapple"},"memoryHint":"","source":{"kellyId":"1439","wiktionarySenseId":"en-anonym-sv-adj-MN4A1vdI"}},{"id":"kelly-1440","lemma":"begå","displayWord":"att begå","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1440,"frequencyPerMillion":61.74,"meaning":"to commit, to perpetrate (perform, carry out)","ipa":"/bɛˈɡoː/","forms":[{"value":"begår","label":"present"},{"value":"begått","label":"supine"},{"value":"begåtts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Vi är på väg att begå ett stort misstag.","en":"We're making a big mistake.","surface":"begå","source":"Tatoeba","swedishId":9770351,"englishId":3315089,"swedishContributor":"morbrorper","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1440","wiktionarySenseId":"en-begå-sv-verb-zkXg7eNV"}},{"id":"kelly-1441","lemma":"bar","displayWord":"bar","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1441,"frequencyPerMillion":61.59,"meaning":"bare, uncovered; not covered by e.g. clothes (about people), fur (about certain animals) or a snow cover (about the ground)","ipa":"/bɑːr/","forms":[{"value":"barare","label":"indefinite"},{"value":"barast","label":"indefinite"},{"value":"bart","label":"indefinite · singular"},{"value":"bara","label":"indefinite · plural"}],"example":{"sv":"Du har bara en chans att svara rätt.","en":"You have only one chance to answer correctly.","surface":"bara","source":"Tatoeba","swedishId":1129852,"englishId":1128014,"swedishContributor":"HannesP","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"1441","wiktionarySenseId":"en-bar-sv-adj-z6i7H3Qb"}},{"id":"kelly-1443","lemma":"förstöra","displayWord":"att förstöra","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1443,"frequencyPerMillion":61.58,"meaning":"to break, to demolish; to (deliberately) make something cease working","ipa":"/fœʂʈœːra/","forms":[{"value":"förstör","label":"present"},{"value":"förstört","label":"supine"},{"value":"förstörts","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Om du vill vara fri, förstör din tv.","en":"If you want to be free, destroy your television set.","surface":"förstör","source":"Tatoeba","swedishId":1030667,"englishId":1030659,"swedishContributor":"Batko","englishContributor":"Batko"},"memoryHint":"","source":{"kellyId":"1443","wiktionarySenseId":"en-förstöra-sv-verb-GKrhqOLB"}},{"id":"kelly-1444","lemma":"boll","displayWord":"en boll","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1444,"frequencyPerMillion":61.53,"meaning":"head","ipa":"/bɔl/","forms":[{"value":"bollen","label":"definite · singular"},{"value":"bollar","label":"indefinite · plural"},{"value":"bollarna","label":"definite · plural"}],"example":{"sv":"Läraren öppnade lådan och tog ut en boll.","en":"The teacher opened the box and took out a ball.","surface":"boll","source":"Tatoeba","swedishId":2674030,"englishId":273049,"swedishContributor":"Balamax","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1444","wiktionarySenseId":"en-boll-sv-noun-ny5tM6Nx"}},{"id":"kelly-1445","lemma":"grunda","displayWord":"att grunda","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1445,"frequencyPerMillion":61.49,"meaning":"to found, to establish","ipa":"","forms":[{"value":"grundar","label":"present"},{"value":"grundat","label":"supine"},{"value":"grundats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Uppgiftens värde är grundat i det som den innebär.","en":"The task's worth lies in the doing.","surface":"grundat","source":"Tatoeba","swedishId":8428938,"englishId":3573362,"swedishContributor":"nickrobson","englishContributor":"feyero"},"memoryHint":"","source":{"kellyId":"1445","wiktionarySenseId":"en-grunda-sv-verb-3vWHmDpG"}},{"id":"kelly-1446","lemma":"förbi","displayWord":"förbi","marker":"","partOfSpeech":"preposition","cefr":"A2","rank":1446,"frequencyPerMillion":61.34,"meaning":"past, over","ipa":"","forms":[],"example":{"sv":"Hon tittade på alla hus som gled förbi.","en":"He looked all the houses unfolding.","surface":"förbi","source":"Tatoeba","swedishId":1507212,"englishId":1507213,"swedishContributor":"marco87","englishContributor":"marco87"},"memoryHint":"","source":{"kellyId":"1446","wiktionarySenseId":"en-förbi-sv-adv-nSOOBhY~"}},{"id":"kelly-1447","lemma":"luft","displayWord":"luft","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1447,"frequencyPerMillion":61.33,"meaning":"air","ipa":"","forms":[{"value":"luften","label":"definite · singular"},{"value":"-","label":"indefinite · plural"}],"example":{"sv":"Skulle du inte vilja ta lite frisk luft?","en":"Wouldn't you like to get some fresh air?","surface":"luft","source":"Tatoeba","swedishId":4388069,"englishId":40004,"swedishContributor":"richke","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1447","wiktionarySenseId":"en-luft-sv-noun-n-Qw5SdG"}},{"id":"kelly-1448","lemma":"industri","displayWord":"industri","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1448,"frequencyPerMillion":61.23,"meaning":"an industry (trade, more generally)","ipa":"","forms":[{"value":"industrin","label":"definite · singular"},{"value":"industrien","label":"definite · singular"},{"value":"industrier","label":"indefinite · plural"},{"value":"industrierna","label":"definite · plural"}],"example":{"sv":"Algeriet behöver utveckla sina lokala industrier.","en":"Algeria needs to develop its local industries.","surface":"industrier","source":"Tatoeba","swedishId":12110790,"englishId":10120288,"swedishContributor":"johanrhg","englishContributor":"Amastan"},"memoryHint":"","source":{"kellyId":"1448","wiktionarySenseId":"en-industri-sv-noun-PJna7E65"}},{"id":"kelly-1449","lemma":"tåg","displayWord":"ett tåg","marker":"ett","partOfSpeech":"noun","cefr":"A2","rank":1449,"frequencyPerMillion":61.07,"meaning":"a raid, a journey","ipa":"/toːɡ/","forms":[{"value":"tåget","label":"definite · singular"},{"value":"tågen","label":"definite · plural"}],"example":{"sv":"Jag föredrar att åka tåg framför att flyga.","en":"I prefer traveling by train to flying.","surface":"tåg","source":"Tatoeba","swedishId":1135722,"englishId":28935,"swedishContributor":"arahlen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1449","wiktionarySenseId":"en-tåg-sv-noun-TKH0Fv9m"}},{"id":"kelly-1450","lemma":"skada","displayWord":"att skada","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1450,"frequencyPerMillion":61.02,"meaning":"scathe; to injure, to harm, to hurt, to damage, to wound","ipa":"","forms":[{"value":"skadar","label":"present"},{"value":"skadat","label":"supine"},{"value":"skadats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Jag kan äta glas, det skadar inte mig","en":"I can eat glass; it does not hurt me.","surface":"skadar","source":"Tatoeba","swedishId":8223300,"englishId":6943964,"swedishContributor":"psychoslave","englishContributor":"shekitten"},"memoryHint":"","source":{"kellyId":"1450","wiktionarySenseId":"en-skada-sv-verb-w-Y8XA4L"}},{"id":"kelly-1452","lemma":"uppfylla","displayWord":"att uppfylla","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1452,"frequencyPerMillion":60.84,"meaning":"fulfill; to fill up","ipa":"","forms":[{"value":"uppfyller","label":"present"},{"value":"uppfyllt","label":"supine"},{"value":"uppfyll","label":"imperative"},{"value":"uppfyllts","label":"supine"}],"example":{"sv":"Vi behöver inte ett nytt internationellt hjälpspråk. Engelskan uppfyller redan den rollen.","en":"We don't need a new international auxiliary language. The English language already fills that role.","surface":"uppfyller","source":"Tatoeba","swedishId":3520580,"englishId":3626668,"swedishContributor":"Braunberg","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"1452","wiktionarySenseId":"en-uppfylla-sv-verb-xnNAm3s6"}},{"id":"kelly-1453","lemma":"akta","displayWord":"att akta","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1453,"frequencyPerMillion":60.82,"meaning":"to respect, to esteem (value highly)","ipa":"","forms":[{"value":"aktar","label":"present"},{"value":"aktat","label":"supine"},{"value":"aktats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Akta er för medlemmar som har en agenda.","en":"Beware of members with an agenda.","surface":"akta","source":"Tatoeba","swedishId":12229459,"englishId":12229453,"swedishContributor":"morbrorper","englishContributor":"morbrorper"},"memoryHint":"","source":{"kellyId":"1453","wiktionarySenseId":"en-akta-sv-verb-aSZFMBSj"}},{"id":"kelly-1454","lemma":"förhandling","displayWord":"en förhandling","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1454,"frequencyPerMillion":60.69,"meaning":"a negotiation","ipa":"","forms":[{"value":"förhandlingen","label":"definite · singular"},{"value":"förhandlingar","label":"indefinite · plural"},{"value":"förhandlingarna","label":"definite · plural"}],"example":{"sv":"Nordkoreas tillbakadragne ledare besöker Ryssland för förhandlingar om energi.","en":"North Korea’s reclusive leader visits Russia for talks on energy.","surface":"förhandlingar","source":"Tatoeba","swedishId":1063907,"englishId":1061803,"swedishContributor":"ondo","englishContributor":"ondo"},"memoryHint":"","source":{"kellyId":"1454","wiktionarySenseId":"en-förhandling-sv-noun-yBHXsO-j"}},{"id":"kelly-1455","lemma":"syfta","displayWord":"att syfta","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1455,"frequencyPerMillion":60.6,"meaning":"to refer to","ipa":"","forms":[{"value":"syftar","label":"present"},{"value":"syftat","label":"supine"},{"value":"-","label":"supine"},{"value":"syften","label":"imperative · plural"}],"example":{"sv":"När jag talar om måltidens krämighet så är deras kebabsås jag syftar på.","en":"When I talk of the creaminess of the meal, it's their kebab sauce I'm referring to.","surface":"syfta","source":"Wiktionary"},"memoryHint":"","source":{"kellyId":"1455","wiktionarySenseId":"en-syfta-sv-verb-Z27JSHlZ"}},{"id":"kelly-1456","lemma":"bror","displayWord":"en bror","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1456,"frequencyPerMillion":60.45,"meaning":"a brother, a contracted form of broder","ipa":"/ˈbruːr/","forms":[{"value":"brodern","label":"definite · singular"},{"value":"bröder","label":"indefinite · plural"},{"value":"bröderna","label":"definite · plural"}],"example":{"sv":"Pojken som står vid dörren är min bror.","en":"The boy standing by the door is my brother.","surface":"bror","source":"Tatoeba","swedishId":1138509,"englishId":39077,"swedishContributor":"arahlen","englishContributor":"CK"},"memoryHint":"Brother is shortened to bror.","source":{"kellyId":"1456","wiktionarySenseId":"en-bror-sv-noun-sShJSdmI"}},{"id":"kelly-1457","lemma":"byggnad","displayWord":"en byggnad","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1457,"frequencyPerMillion":60.45,"meaning":"a building","ipa":"","forms":[{"value":"byggnaden","label":"definite · singular"},{"value":"byggnader","label":"indefinite · plural"},{"value":"byggnaderna","label":"definite · plural"}],"example":{"sv":"Byggnaden uppe på kullen är vår skola.","en":"The building on the hill is our school.","surface":"byggnaden","source":"Tatoeba","swedishId":893318,"englishId":19863,"swedishContributor":"Tximist","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1457","wiktionarySenseId":"en-byggnad-sv-noun-~BS2MTZW"}},{"id":"kelly-1458","lemma":"hälft","displayWord":"en hälft","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1458,"frequencyPerMillion":60.43,"meaning":"half, one of two roughly equal parts","ipa":"/ˈhɛlft/","forms":[{"value":"hälften","label":"definite · singular"},{"value":"hälfter","label":"indefinite · plural"},{"value":"hälfterna","label":"definite · plural"}],"example":{"sv":"Italiens folkmängd är ungefär hälften så stor som Japans.","en":"The population of Italy is about half as large as that of Japan.","surface":"hälften","source":"Tatoeba","swedishId":8829661,"englishId":66433,"swedishContributor":"morbrorper","englishContributor":"lilygilder"},"memoryHint":"","source":{"kellyId":"1458","wiktionarySenseId":"en-hälft-sv-noun-KQJTk1Zu"}},{"id":"kelly-1459","lemma":"skrift","displayWord":"en skrift","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1459,"frequencyPerMillion":60.43,"meaning":"a text, any written work, a book, a report, a script","ipa":"","forms":[{"value":"skriften","label":"definite · singular"},{"value":"skrifter","label":"indefinite · plural"},{"value":"skrifterna","label":"definite · plural"}],"example":{"sv":"Jag kan inte läsa arabisk skrift.","en":"I can't read Arabic script.","surface":"skrift","source":"Tatoeba","swedishId":4448942,"englishId":67420,"swedishContributor":"richke","englishContributor":"Dejo"},"memoryHint":"","source":{"kellyId":"1459","wiktionarySenseId":"en-skrift-sv-noun-av0HDP9F"}},{"id":"kelly-1460","lemma":"ansvarig","displayWord":"ansvarig","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1460,"frequencyPerMillion":60.34,"meaning":"responsible","ipa":"/²ansˌvɑːrɪɡ/","forms":[{"value":"mer ansvarig","label":"indefinite"},{"value":"mest ansvarig","label":"indefinite"},{"value":"ansvarigt","label":"indefinite · singular"},{"value":"mer ansvarigt","label":"indefinite · singular"}],"example":{"sv":"Jag känner mig ansvarig för det som hände.","en":"I feel responsible for what happened.","surface":"ansvarig","source":"Tatoeba","swedishId":9833553,"englishId":6248354,"swedishContributor":"morbrorper","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1460","wiktionarySenseId":"en-ansvarig-sv-adj-yRlfCUaJ"}},{"id":"kelly-1461","lemma":"allmänhet","displayWord":"allmänhet","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1461,"frequencyPerMillion":60.26,"meaning":"public (people in general)","ipa":"/ˈalːmɛnˌheːt/","forms":[{"value":"allmänheten","label":"definite · singular"},{"value":"allmänheter","label":"indefinite · plural"},{"value":"allmänheterna","label":"definite · plural"}],"example":{"sv":"Långdistanslöpare är i allmänhet ovigare än kortdistanslöpare.","en":"Generally speaking, distance runners are less flexible than sprinters.","surface":"allmänhet","source":"Tatoeba","swedishId":4334716,"englishId":2838046,"swedishContributor":"richke","englishContributor":"patgfisher"},"memoryHint":"","source":{"kellyId":"1461","wiktionarySenseId":"en-allmänhet-sv-noun-zUJ671RJ"}},{"id":"kelly-1462","lemma":"orsaka","displayWord":"att orsaka","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1462,"frequencyPerMillion":60.24,"meaning":"to cause","ipa":"","forms":[{"value":"orsakar","label":"present"},{"value":"orsakat","label":"supine"},{"value":"orsakats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Förlåt att jag har orsakat dig så mycket besvär.","en":"I'm sorry to have caused you so much trouble.","surface":"orsakat","source":"Tatoeba","swedishId":1960695,"englishId":1396189,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1462","wiktionarySenseId":"en-orsaka-sv-verb-7pg4WaO7"}},{"id":"kelly-1466","lemma":"lever","displayWord":"en lever","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1466,"frequencyPerMillion":60.09,"meaning":"liver","ipa":"","forms":[{"value":"levern","label":"definite · singular"},{"value":"levrar","label":"indefinite · plural"},{"value":"levrarna","label":"definite · plural"}],"example":{"sv":"Landet som tuaregerna lever i är extremt fattigt.","en":"The land on which the Tuaregs live is extremely poor.","surface":"lever","source":"Tatoeba","swedishId":12107327,"englishId":9690244,"swedishContributor":"johanrhg","englishContributor":"Amastan"},"memoryHint":"","source":{"kellyId":"1466","wiktionarySenseId":"en-lever-sv-noun-669IqXJX"}},{"id":"kelly-1467","lemma":"bloggare","displayWord":"en bloggare","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1467,"frequencyPerMillion":60.07,"meaning":"blogger","ipa":"","forms":[{"value":"bloggaren","label":"definite · singular"},{"value":"bloggarna","label":"definite · plural"}],"example":{"sv":"Min pojkvän är bloggare.","en":"My boyfriend is a blogger.","surface":"bloggare","source":"Tatoeba","swedishId":10714618,"englishId":6481711,"swedishContributor":"Pineapple","englishContributor":"mervert1"},"memoryHint":"","source":{"kellyId":"1467","wiktionarySenseId":"en-bloggare-sv-noun-B1XdNqAj"}},{"id":"kelly-1468","lemma":"tävling","displayWord":"en tävling","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1468,"frequencyPerMillion":59.87,"meaning":"a competition, a contest (in sports or otherwise)","ipa":"","forms":[{"value":"tävlingen","label":"definite · singular"},{"value":"tävlingar","label":"indefinite · plural"},{"value":"tävlingarna","label":"definite · plural"}],"example":{"sv":"Det här är ingen tävling.","en":"This isn't a competition.","surface":"tävling","source":"Tatoeba","swedishId":2239079,"englishId":5269917,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"1468","wiktionarySenseId":"en-tävling-sv-noun-loKmGxkJ"}},{"id":"kelly-1469","lemma":"kommunikation","displayWord":"kommunikation","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1469,"frequencyPerMillion":59.79,"meaning":"transport","ipa":"","forms":[{"value":"kommunikationen","label":"definite · singular"},{"value":"kommunikationer","label":"indefinite · plural"},{"value":"kommunikationerna","label":"definite · plural"}],"example":{"sv":"Interlingua är ett modernt redskap för internationell kommunikation.","en":"Interlingua is a modern tool for international communication.","surface":"kommunikation","source":"Tatoeba","swedishId":3081497,"englishId":749754,"swedishContributor":"untorrente","englishContributor":"sctld"},"memoryHint":"","source":{"kellyId":"1469","wiktionarySenseId":"en-kommunikation-sv-noun-ZpTqgHUA"}},{"id":"kelly-1470","lemma":"kritisk","displayWord":"kritisk","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1470,"frequencyPerMillion":59.66,"meaning":"critical (opposed to)","ipa":"","forms":[{"value":"mer kritisk","label":"indefinite"},{"value":"mest kritisk","label":"indefinite"},{"value":"kritiskt","label":"indefinite · singular"},{"value":"mer kritiskt","label":"indefinite · singular"}],"example":{"sv":"Hans tillstånd är kritiskt.","en":"His condition is critical.","surface":"kritiskt","source":"Tatoeba","swedishId":4337300,"englishId":1669932,"swedishContributor":"richke","englishContributor":"Spamster"},"memoryHint":"","source":{"kellyId":"1470","wiktionarySenseId":"en-kritisk-sv-adj-QecQFNZA"}},{"id":"kelly-1471","lemma":"plocka","displayWord":"att plocka","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1471,"frequencyPerMillion":59.59,"meaning":"to pick","ipa":"/²plɔka/","forms":[{"value":"plockar","label":"present"},{"value":"plockat","label":"supine"},{"value":"plockats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Flickan gick till skogen för att plocka svamp.","en":"The girl went into the forest to look for mushrooms.","surface":"plocka","source":"Tatoeba","swedishId":1605279,"englishId":657188,"swedishContributor":"viorayli","englishContributor":"Eldad"},"memoryHint":"","source":{"kellyId":"1471","wiktionarySenseId":"en-plocka-sv-verb-brNm5JZl"}},{"id":"kelly-1472","lemma":"patient","displayWord":"en patient","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1472,"frequencyPerMillion":59.58,"meaning":"a patient","ipa":"/pasiˈenːt/","forms":[{"value":"patienten","label":"definite · singular"},{"value":"patienter","label":"indefinite · plural"},{"value":"patienterna","label":"definite · plural"}],"example":{"sv":"De föredrar patienter som inte kan prata.","en":"They prefer patients who can't talk.","surface":"patienter","source":"Tatoeba","swedishId":10161669,"englishId":2721738,"swedishContributor":"SilasNordgren","englishContributor":"Amastan"},"memoryHint":"","source":{"kellyId":"1472","wiktionarySenseId":"en-patient-sv-noun-JhCkDKNv"}},{"id":"kelly-1473","lemma":"sjunga","displayWord":"att sjunga","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1473,"frequencyPerMillion":59.53,"meaning":"to sing","ipa":"/²ɧɵŋa/","forms":[{"value":"sjunger","label":"present"},{"value":"sjungit","label":"supine"},{"value":"sjung","label":"imperative"},{"value":"sjungits","label":"supine"}],"example":{"sv":"Jag vill inte sjunga, för jag är tondöv.","en":"I don't want to sing, because I'm tone-deaf.","surface":"sjunga","source":"Tatoeba","swedishId":2266595,"englishId":256346,"swedishContributor":"Tximist","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"1473","wiktionarySenseId":"en-sjunga-sv-verb-e1aXhU~s"}},{"id":"kelly-1474","lemma":"vakna","displayWord":"att vakna","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1474,"frequencyPerMillion":59.51,"meaning":"to wake up (become awake – compare väcka)","ipa":"/²vɑːkna/","forms":[{"value":"vaknar","label":"present"},{"value":"vaknat","label":"supine"},{"value":"-","label":"supine"},{"value":"vaknen","label":"imperative · plural"}],"example":{"sv":"Tror du att Tom och Mary fortfarande är vakna?","en":"Do you think Tom and Mary are still awake?","surface":"vakna","source":"Tatoeba","swedishId":10749581,"englishId":6512230,"swedishContributor":"Pineapple","englishContributor":"CT"},"memoryHint":"","source":{"kellyId":"1474","wiktionarySenseId":"en-vakna-sv-verb-UHmUOti7"}},{"id":"kelly-1475","lemma":"hälsa","displayWord":"hälsa","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1475,"frequencyPerMillion":59.45,"meaning":"health","ipa":"","forms":[{"value":"hälsan","label":"definite · singular"},{"value":"-","label":"indefinite · plural"}],"example":{"sv":"Att äta för mycket är dåligt för hälsan.","en":"Eating too much is bad for the health.","surface":"hälsan","source":"Tatoeba","swedishId":10707464,"englishId":268641,"swedishContributor":"Pineapple","englishContributor":"darinmex"},"memoryHint":"","source":{"kellyId":"1475","wiktionarySenseId":"en-hälsa-sv-noun-YkhOIqal"}},{"id":"kelly-1477","lemma":"centrum","displayWord":"ett centrum","marker":"ett","partOfSpeech":"noun","cefr":"A2","rank":1477,"frequencyPerMillion":59.43,"meaning":"centre; the middle of something","ipa":"/²sɛnːtrɵm/","forms":[{"value":"centrumet","label":"definite · singular"},{"value":"centrumen","label":"definite · plural"},{"value":"centret","label":"definite · singular"},{"value":"centrer","label":"indefinite · plural"}],"example":{"sv":"Det finns en park i centrum.","en":"There is a park in the middle of the city.","surface":"centrum","source":"Tatoeba","swedishId":1137564,"englishId":246112,"swedishContributor":"arahlen","englishContributor":"Zifre"},"memoryHint":"","source":{"kellyId":"1477","wiktionarySenseId":"en-centrum-sv-noun-AdmH9zuL"}},{"id":"kelly-1480","lemma":"mörk","displayWord":"mörk","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1480,"frequencyPerMillion":59.31,"meaning":"dark (of colors)","ipa":"/mœrk/","forms":[{"value":"mörkare","label":"indefinite"},{"value":"mörkast","label":"indefinite"},{"value":"mörkt","label":"indefinite · singular"},{"value":"mörka","label":"indefinite · plural"}],"example":{"sv":"De mörka kullarna svarade med ett retande eko.","en":"The dark hills in the surroundings responded with a mocking echo.","surface":"mörka","source":"Tatoeba","swedishId":7882350,"englishId":7490310,"swedishContributor":"loovjo","englishContributor":"Mithridates"},"memoryHint":"","source":{"kellyId":"1480","wiktionarySenseId":"en-mörk-sv-adj-Qj7c9JnN"}},{"id":"kelly-1481","lemma":"träna","displayWord":"att träna","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1481,"frequencyPerMillion":59.09,"meaning":"to work out; to habitually exercise rigorously","ipa":"/²trɛːna/","forms":[{"value":"tränar","label":"present"},{"value":"tränat","label":"supine"},{"value":"tränats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Jag tränar för att hålla mig i form.","en":"I work out to stay in shape.","surface":"tränar","source":"Tatoeba","swedishId":4441761,"englishId":4401043,"swedishContributor":"richke","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1481","wiktionarySenseId":"en-träna-sv-verb-209EliyG"}},{"id":"kelly-1482","lemma":"bord","displayWord":"ett bord","marker":"ett","partOfSpeech":"noun","cefr":"A2","rank":1482,"frequencyPerMillion":59.07,"meaning":"a table (piece of furniture)","ipa":"/buːrd/","forms":[{"value":"bordet","label":"definite · singular"},{"value":"borden","label":"definite · plural"}],"example":{"sv":"När katten är borta dansar råttorna på bordet.","en":"When the cat's away, the mice will play.","surface":"bordet","source":"Tatoeba","swedishId":3721059,"englishId":390040,"swedishContributor":"herrsilen","englishContributor":"Scott"},"memoryHint":"","source":{"kellyId":"1482","wiktionarySenseId":"en-bord-sv-noun-VDBT4cCe"}},{"id":"kelly-1483","lemma":"förrän","displayWord":"förrän","marker":"","partOfSpeech":"conjunction","cefr":"A2","rank":1483,"frequencyPerMillion":59.06,"meaning":"until, before, ere","ipa":"/ˈfœrɛn/","forms":[],"example":{"sv":"Det var inte förrän igår jag fick nyheterna.","en":"It was not until yesterday that I got the news.","surface":"förrän","source":"Tatoeba","swedishId":415852,"englishId":257735,"swedishContributor":"Don","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"1483","wiktionarySenseId":"en-förrän-sv-conj--7gXqb~S"}},{"id":"kelly-1484","lemma":"dansk","displayWord":"dansk","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1484,"frequencyPerMillion":59.05,"meaning":"Danish; of or pertaining to Denmark","ipa":"/dansk/","forms":[{"value":"danskare","label":"indefinite"},{"value":"danskast","label":"indefinite"},{"value":"danskt","label":"indefinite · singular"},{"value":"danska","label":"indefinite · plural"}],"example":{"sv":"Tom tycker att danska är världens vackraste språk.","en":"Tom thinks that Danish is the most beautiful language in the world.","surface":"danska","source":"Tatoeba","swedishId":5142863,"englishId":5695988,"swedishContributor":"herrsilen","englishContributor":"shea"},"memoryHint":"","source":{"kellyId":"1484","wiktionarySenseId":"en-dansk-sv-adj-5Y0R-xgq"}},{"id":"kelly-1485","lemma":"vidta","displayWord":"att vidta","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1485,"frequencyPerMillion":59.02,"meaning":"to take","ipa":"","forms":[{"value":"vidtar","label":"present"},{"value":"vidtagit","label":"supine"},{"value":"vidtagits","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"vidta åtgärd","en":"take action","surface":"vidta","source":"Wiktionary"},"memoryHint":"","source":{"kellyId":"1485","wiktionarySenseId":"en-vidta-sv-verb-TuaAS407"}},{"id":"kelly-1486","lemma":"reda","displayWord":"reda","marker":"","partOfSpeech":"noun","cefr":"A2","rank":1486,"frequencyPerMillion":59.02,"meaning":"a state with things in order, order, orderliness","ipa":"/ˈreːˌda/","forms":[{"value":"redan","label":"definite · singular"},{"value":"-","label":"indefinite · plural"}],"example":{"sv":"Inte förrän då fick han reda på sanningen.","en":"It was not until then that he learned the truth.","surface":"reda","source":"Tatoeba","swedishId":910672,"englishId":46971,"swedishContributor":"Tximist","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"1486","wiktionarySenseId":"en-reda-sv-noun-paCdvGAs"}},{"id":"kelly-1488","lemma":"väljare","displayWord":"en väljare","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1488,"frequencyPerMillion":58.84,"meaning":"a selector; a mechanism that performs a selection","ipa":"","forms":[{"value":"väljaren","label":"definite · singular"},{"value":"väljarna","label":"definite · plural"}],"example":{"sv":"Den väljaren, Mary Johnson, visade sig vara demokrat.","en":"That voter, Mary Johnson, turned out to be a Democrat.","surface":"väljaren","source":"Tatoeba","swedishId":2328217,"englishId":43533,"swedishContributor":"Tximist","englishContributor":"Tatoeba contributor"},"memoryHint":"","source":{"kellyId":"1488","wiktionarySenseId":"en-väljare-sv-noun-TUuOO8FN"}},{"id":"kelly-1489","lemma":"uppmana","displayWord":"att uppmana","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1489,"frequencyPerMillion":58.76,"meaning":"to urge, to ask (someone to do something)","ipa":"","forms":[{"value":"uppmanar","label":"present"},{"value":"uppmanat","label":"supine"},{"value":"uppmanats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Han uppmanades att säga upp sig, men vägrade","en":"He was asked to resign, but refused","surface":"uppmana","source":"Wiktionary"},"memoryHint":"","source":{"kellyId":"1489","wiktionarySenseId":"en-uppmana-sv-verb-VAhZOPVA"}},{"id":"kelly-1490","lemma":"publik","displayWord":"en publik","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1490,"frequencyPerMillion":58.71,"meaning":"an audience","ipa":"","forms":[{"value":"publiken","label":"definite · singular"},{"value":"publiker","label":"indefinite · plural"},{"value":"publikerna","label":"definite · plural"}],"example":{"sv":"Ni har varit en jättebra publik.","en":"You've been a great audience.","surface":"publik","source":"Tatoeba","swedishId":6002120,"englishId":3360200,"swedishContributor":"CannedBread","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1490","wiktionarySenseId":"en-publik-sv-noun-8q~G~F4V"}},{"id":"kelly-1491","lemma":"lida","displayWord":"att lida","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1491,"frequencyPerMillion":58.6,"meaning":"to suffer; to feel pain","ipa":"/²liːda/","forms":[{"value":"lider","label":"present"},{"value":"lidit","label":"supine"},{"value":"lid","label":"imperative"},{"value":"lidits","label":"supine"}],"example":{"sv":"Tom ser ut att lida av dåligt samvete.","en":"Tom seems to be suffering from a guilty conscience.","surface":"lida","source":"Tatoeba","swedishId":10069260,"englishId":2401193,"swedishContributor":"morbrorper","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1491","wiktionarySenseId":"en-lida-sv-verb-zAuYcWh5"}},{"id":"kelly-1493","lemma":"lägenhet","displayWord":"en lägenhet","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1493,"frequencyPerMillion":58.56,"meaning":"apartment, flat (domicile occupying part of a building)","ipa":"/²lɛːɡɛnheːt/","forms":[{"value":"lägenheten","label":"definite · singular"},{"value":"lägenheter","label":"indefinite · plural"},{"value":"lägenheterna","label":"definite · plural"}],"example":{"sv":"Lägenheten är försedd med både förråd och balkong.","en":"The apartment has both a storage room and a balcony.","surface":"lägenheten","source":"Tatoeba","swedishId":2027074,"englishId":5131949,"swedishContributor":"herrsilen","englishContributor":"honestlang"},"memoryHint":"","source":{"kellyId":"1493","wiktionarySenseId":"en-lägenhet-sv-noun-cEp7kaFF"}},{"id":"kelly-1495","lemma":"rädd","displayWord":"rädd","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1495,"frequencyPerMillion":58.45,"meaning":"afraid, scared","ipa":"","forms":[{"value":"räddare","label":"indefinite"},{"value":"räddast","label":"indefinite"},{"value":"rätt","label":"indefinite · singular"},{"value":"rädda","label":"indefinite · plural"}],"example":{"sv":"Du har bara en chans att svara rätt.","en":"You have only one chance to answer correctly.","surface":"rätt","source":"Tatoeba","swedishId":1129852,"englishId":1128014,"swedishContributor":"HannesP","englishContributor":"CM"},"memoryHint":"","source":{"kellyId":"1495","wiktionarySenseId":"en-rädd-sv-adj-MvmjTqEf"}},{"id":"kelly-1497","lemma":"inre","displayWord":"inre","marker":"","partOfSpeech":"adjective","cefr":"A2","rank":1497,"frequencyPerMillion":58.31,"meaning":"inner, internal, kept inside","ipa":"","forms":[],"example":{"sv":"Hon blev tvungen att förlita sig på sin inre styrka.","en":"She had to rely upon her inner strength.","surface":"inre","source":"Tatoeba","swedishId":1960943,"englishId":1361684,"swedishContributor":"Coedwig","englishContributor":"GaryM"},"memoryHint":"","source":{"kellyId":"1497","wiktionarySenseId":"en-inre-sv-adj-L5IUhhsv"}},{"id":"kelly-1498","lemma":"avslöja","displayWord":"att avslöja","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1498,"frequencyPerMillion":58.29,"meaning":"reveal; uncover","ipa":"","forms":[{"value":"avslöjar","label":"present"},{"value":"avslöjat","label":"supine"},{"value":"avslöjats","label":"supine"},{"value":"-","label":"imperative"}],"example":{"sv":"Han borde avslöja alltihop och ta konsekvenserna.","en":"He should disclose everything and face the music.","surface":"avslöja","source":"Tatoeba","swedishId":490823,"englishId":490788,"swedishContributor":"herrsilen","englishContributor":"blay_paul"},"memoryHint":"","source":{"kellyId":"1498","wiktionarySenseId":"en-avslöja-sv-verb-d4g3zkdt"}},{"id":"kelly-1499","lemma":"fiende","displayWord":"en fiende","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1499,"frequencyPerMillion":58.26,"meaning":"an enemy (person, etc., opposed to oneself)","ipa":"/²fiːˌɛndɛ/","forms":[{"value":"fienden","label":"definite · singular"},{"value":"fiender","label":"indefinite · plural"},{"value":"fienderna","label":"definite · plural"}],"example":{"sv":"Tom säger att han inte har några fiender.","en":"Tom says he doesn't have any enemies.","surface":"fiender","source":"Tatoeba","swedishId":5118709,"englishId":5115798,"swedishContributor":"herrsilen","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1499","wiktionarySenseId":"en-fiende-sv-noun-cC~Gic~C"}},{"id":"kelly-1500","lemma":"lopp","displayWord":"ett lopp","marker":"ett","partOfSpeech":"noun","cefr":"A2","rank":1500,"frequencyPerMillion":58.2,"meaning":"a course (of time)","ipa":"/lɔpː/","forms":[{"value":"loppet","label":"definite · singular"},{"value":"loppen","label":"definite · plural"}],"example":{"sv":"Kriminalitet lönar sig inte i det långa loppet.","en":"Crime doesn't pay in the long run.","surface":"loppet","source":"Tatoeba","swedishId":2145740,"englishId":2130439,"swedishContributor":"herrsilen","englishContributor":"freddy1"},"memoryHint":"","source":{"kellyId":"1500","wiktionarySenseId":"en-lopp-sv-noun-iezrbhAj"}},{"id":"kelly-1501","lemma":"återvända","displayWord":"att återvända","marker":"att","partOfSpeech":"verb","cefr":"A2","rank":1501,"frequencyPerMillion":58.17,"meaning":"to return (to travel back to a previous place)","ipa":"","forms":[{"value":"återvänder","label":"present"},{"value":"återvänt","label":"supine"},{"value":"återvänd","label":"imperative"},{"value":"-","label":"supine"}],"example":{"sv":"Han kommer att återvända till Japan en dag.","en":"He will return to Japan some day.","surface":"återvända","source":"Tatoeba","swedishId":4396366,"englishId":289025,"swedishContributor":"richke","englishContributor":"CK"},"memoryHint":"","source":{"kellyId":"1501","wiktionarySenseId":"en-återvända-sv-verb-ZrPnajmT"}},{"id":"kelly-1502","lemma":"utmaning","displayWord":"en utmaning","marker":"en","partOfSpeech":"noun","cefr":"A2","rank":1502,"frequencyPerMillion":58.16,"meaning":"a challenge (challenging someone)","ipa":"","forms":[{"value":"utmaningen","label":"definite · singular"},{"value":"utmaningar","label":"indefinite · plural"},{"value":"utmaningarna","label":"definite · plural"}],"example":{"sv":"Detta kommer att bli en utmaning!","en":"This is going to be a challenge!","surface":"utmaning","source":"Tatoeba","swedishId":3830210,"englishId":5118340,"swedishContributor":"herrsilen","englishContributor":"Lindoula"},"memoryHint":"","source":{"kellyId":"1502","wiktionarySenseId":"en-utmaning-sv-noun-rddXSutI"}}];
+
+    </script>
+    <script>
+(function () {
+  "use strict";
+
+  const cards = Array.isArray(window.SWEDISH_CARDS) ? window.SWEDISH_CARDS : [];
+  const STORAGE_KEY = "ord-swedish-progress-v1";
+  const DAY = 24 * 60 * 60 * 1000;
+
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+  const elements = {
+    card: $("#study-card"),
+    front: $("#card-front"),
+    back: $("#card-back"),
+    word: $("#swedish-word"),
+    backWord: $("#back-word"),
+    meaning: $("#english-meaning"),
+    ipa: $("#ipa"),
+    pos: $("#part-of-speech"),
+    backPos: $("#back-part-of-speech"),
+    level: $("#level-badge"),
+    backLevel: $("#back-level-badge"),
+    number: $("#card-number"),
+    backNumber: $("#back-card-number"),
+    svSentence: $("#swedish-sentence"),
+    enSentence: $("#english-sentence"),
+    details: $("#word-details"),
+    forms: $("#form-list"),
+    memoryButton: $("#memory-button"),
+    memoryHint: $("#memory-hint"),
+    sourceLink: $("#source-link"),
+    ratingPanel: $("#rating-panel"),
+    preReveal: $("#pre-reveal-actions"),
+    deckFilter: $("#deck-filter"),
+    progressCount: $("#progress-count"),
+    progressFill: $("#progress-fill"),
+    progressBar: $("#progress-bar"),
+    progressMessage: $("#progress-message"),
+    dailyGoalLabel: $("#daily-goal-label"),
+    todayCount: $("#today-count"),
+    dailyGoal: $("#daily-goal"),
+    theme: $("#theme-select"),
+    settings: $("#settings-dialog"),
+    sources: $("#sources-dialog"),
+    toast: $("#toast"),
+  };
+
+  let saved = loadState();
+  let deck = [];
+  let queue = [];
+  let queueIndex = 0;
+  let currentCard = null;
+  let revealed = false;
+  let toastTimer = null;
+  let voices = [];
+
+  function defaultState() {
+    return {
+      settings: { deck: "all", dailyGoal: 20, theme: "system" },
+      reviews: {},
+      daily: {},
+    };
+  }
+
+  function loadState() {
+    const fallback = defaultState();
+    try {
+      const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+      if (!parsed || typeof parsed !== "object") return fallback;
+      return {
+        settings: { ...fallback.settings, ...(parsed.settings || {}) },
+        reviews: parsed.reviews || {},
+        daily: parsed.daily || {},
+      };
+    } catch (_) {
+      return fallback;
+    }
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    } catch (_) {
+      showToast("Progress could not be saved on this device.");
+    }
+  }
+
+  function todayKey() {
+    const now = new Date();
+    return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, "0"), String(now.getDate()).padStart(2, "0")].join("-");
+  }
+
+  function buildDeck(shuffle) {
+    const filter = saved.settings.deck;
+    deck = cards.filter((card) => filter === "all" || card.cefr === filter);
+    if (shuffle) fisherYates(deck);
+    else deck.sort((a, b) => a.rank - b.rank);
+
+    const now = Date.now();
+    const due = [];
+    const fresh = [];
+    const later = [];
+    deck.forEach((card) => {
+      const review = saved.reviews[card.id];
+      if (!review) fresh.push(card);
+      else if ((review.due || 0) <= now) due.push(card);
+      else later.push(card);
+    });
+    due.sort((a, b) => (saved.reviews[a.id].due || 0) - (saved.reviews[b.id].due || 0));
+    queue = due.concat(fresh, later);
+    queueIndex = 0;
+    showCurrentCard();
+  }
+
+  function fisherYates(list) {
+    for (let i = list.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+  }
+
+  function showCurrentCard() {
+    if (!queue.length) {
+      showEmptyState();
+      return;
+    }
+    if (queueIndex >= queue.length) {
+      queueIndex = 0;
+      showToast("Deck complete — starting a fresh pass.");
+    }
+    currentCard = queue[queueIndex];
+    revealed = false;
+    renderCard(currentCard);
+  }
+
+  function showEmptyState() {
+    elements.word.textContent = "No cards";
+    elements.pos.textContent = "Choose another deck";
+    elements.level.textContent = "—";
+    elements.number.textContent = "0 / 0";
+    elements.ipa.hidden = true;
+    elements.card.removeAttribute("role");
+    elements.card.removeAttribute("tabindex");
+  }
+
+  function renderCard(card) {
+    const position = Math.max(1, deck.findIndex((item) => item.id === card.id) + 1);
+    const countText = `${position} / ${deck.length}`;
+    elements.word.textContent = card.displayWord;
+    elements.backWord.textContent = card.displayWord;
+    elements.meaning.textContent = card.meaning;
+    elements.pos.textContent = card.partOfSpeech;
+    elements.backPos.textContent = card.partOfSpeech;
+    elements.level.textContent = card.cefr;
+    elements.backLevel.textContent = card.cefr;
+    elements.number.textContent = countText;
+    elements.backNumber.textContent = countText;
+    elements.ipa.textContent = card.ipa;
+    elements.ipa.hidden = !card.ipa;
+    elements.enSentence.textContent = card.example.en;
+    renderHighlightedSentence(card.example.sv, card.example.surface || card.lemma);
+    renderForms(card.forms || []);
+    renderMemory(card);
+    renderSource(card);
+
+    elements.front.hidden = false;
+    elements.back.hidden = true;
+    elements.ratingPanel.hidden = true;
+    elements.preReveal.hidden = false;
+    elements.card.classList.remove("is-revealed");
+    elements.card.setAttribute("role", "button");
+    elements.card.setAttribute("tabindex", "0");
+    elements.card.setAttribute("aria-label", `Reveal the meaning of ${card.displayWord}`);
+    elements.card.setAttribute("aria-pressed", "false");
+  }
+
+  function renderHighlightedSentence(sentence, surface) {
+    elements.svSentence.replaceChildren();
+    const lower = sentence.toLocaleLowerCase("sv-SE");
+    const needle = String(surface || "").toLocaleLowerCase("sv-SE");
+    const index = needle ? lower.indexOf(needle) : -1;
+    if (index < 0) {
+      elements.svSentence.textContent = sentence;
+      return;
+    }
+    elements.svSentence.append(document.createTextNode(sentence.slice(0, index)));
+    const mark = document.createElement("mark");
+    mark.textContent = sentence.slice(index, index + needle.length);
+    elements.svSentence.append(mark, document.createTextNode(sentence.slice(index + needle.length)));
+  }
+
+  function renderForms(forms) {
+    elements.forms.replaceChildren();
+    forms.slice(0, 4).forEach((form) => {
+      const chip = document.createElement("span");
+      chip.className = "form-chip";
+      const value = document.createElement("span");
+      value.textContent = form.value;
+      const label = document.createElement("small");
+      label.textContent = form.label;
+      chip.append(value, label);
+      elements.forms.append(chip);
+    });
+    elements.details.hidden = forms.length === 0;
+  }
+
+  function renderMemory(card) {
+    const hint = card.memoryHint || `Make your own link: picture “${card.lemma}” inside the scene from the sentence above, then say it aloud.`;
+    elements.memoryHint.textContent = hint;
+    elements.memoryHint.hidden = true;
+    elements.memoryButton.setAttribute("aria-expanded", "false");
+    elements.memoryButton.querySelector("span:last-child").textContent = "＋";
+  }
+
+  function renderSource(card) {
+    if (card.example.source === "Tatoeba") {
+      elements.sourceLink.href = `https://tatoeba.org/en/sentences/show/${card.example.swedishId}`;
+      elements.sourceLink.textContent = `Tatoeba · ${card.example.swedishContributor} ↗`;
+    } else {
+      elements.sourceLink.href = `https://en.wiktionary.org/wiki/${encodeURIComponent(card.lemma)}#Swedish`;
+      elements.sourceLink.textContent = "Wiktionary example ↗";
+    }
+  }
+
+  function revealCard() {
+    if (!currentCard || revealed) return;
+    revealed = true;
+    elements.front.hidden = true;
+    elements.back.hidden = false;
+    elements.ratingPanel.hidden = false;
+    elements.preReveal.hidden = true;
+    elements.card.classList.add("is-revealed");
+    elements.card.removeAttribute("role");
+    elements.card.setAttribute("aria-pressed", "true");
+    elements.card.setAttribute("aria-label", `Answer: ${currentCard.meaning}`);
+    window.requestAnimationFrame(() => $(".rating.good").focus({ preventScroll: true }));
+  }
+
+  function rateCard(rating) {
+    if (!revealed || !currentCard) return;
+    const existing = saved.reviews[currentCard.id] || { interval: 0, ease: 2.3, reviews: 0, lapses: 0 };
+    let interval = existing.interval || 0;
+    let ease = existing.ease || 2.3;
+
+    if (rating === "again") {
+      interval = 10 / (24 * 60);
+      ease = Math.max(1.3, ease - 0.2);
+      existing.lapses = (existing.lapses || 0) + 1;
+      queue.splice(Math.min(queueIndex + 4, queue.length), 0, currentCard);
+    } else if (rating === "hard") {
+      interval = Math.max(1, interval * 1.25 || 1);
+      ease = Math.max(1.3, ease - 0.08);
+    } else if (rating === "good") {
+      interval = Math.max(1, interval * ease || 1);
+    } else {
+      interval = Math.max(4, interval * (ease + 0.65) || 4);
+      ease = Math.min(3, ease + 0.08);
+    }
+
+    saved.reviews[currentCard.id] = {
+      interval,
+      ease,
+      reviews: (existing.reviews || 0) + 1,
+      lapses: existing.lapses || 0,
+      due: Date.now() + interval * DAY,
+      lastRating: rating,
+      lastReviewed: Date.now(),
+    };
+    const today = todayKey();
+    saved.daily[today] = (saved.daily[today] || 0) + 1;
+    persist();
+    updateProgress();
+    queueIndex += 1;
+    showCurrentCard();
+    elements.card.focus({ preventScroll: true });
+  }
+
+  function updateProgress() {
+    const count = saved.daily[todayKey()] || 0;
+    const goal = Number(saved.settings.dailyGoal) || 20;
+    const shown = Math.min(count, goal);
+    const percent = Math.min(100, (count / goal) * 100);
+    elements.todayCount.textContent = count;
+    elements.progressCount.textContent = shown;
+    elements.dailyGoalLabel.textContent = goal;
+    elements.progressFill.style.width = `${percent}%`;
+    elements.progressBar.setAttribute("aria-valuemax", String(goal));
+    elements.progressBar.setAttribute("aria-valuenow", String(shown));
+    if (count >= goal) elements.progressMessage.textContent = "Daily goal complete — snyggt jobbat!";
+    else if (count >= goal / 2) elements.progressMessage.textContent = "Halfway there. Keep the rhythm.";
+    else elements.progressMessage.textContent = "A small practice is still progress.";
+  }
+
+  function populateVoices() {
+    if ("speechSynthesis" in window) voices = window.speechSynthesis.getVoices();
+  }
+
+  function speak(text) {
+    if (!("speechSynthesis" in window) || typeof window.SpeechSynthesisUtterance === "undefined") {
+      showToast("Speech is not supported in this browser.");
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "sv-SE";
+    utterance.rate = 0.84;
+    const swedishVoice = voices.find((voice) => voice.lang && voice.lang.toLowerCase().startsWith("sv"));
+    if (swedishVoice) utterance.voice = swedishVoice;
+    else showToast("Using your device’s default voice — no Swedish voice was found.");
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function toggleMemory() {
+    const willShow = elements.memoryHint.hidden;
+    elements.memoryHint.hidden = !willShow;
+    elements.memoryButton.setAttribute("aria-expanded", String(willShow));
+    elements.memoryButton.querySelector("span:last-child").textContent = willShow ? "−" : "＋";
+  }
+
+  function showToast(message) {
+    clearTimeout(toastTimer);
+    elements.toast.textContent = message;
+    elements.toast.classList.add("show");
+    toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 2600);
+  }
+
+  function applyTheme() {
+    const theme = saved.settings.theme;
+    if (theme === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", theme);
+  }
+
+  function openDialog(dialog) {
+    if (dialog && typeof dialog.showModal === "function") dialog.showModal();
+  }
+
+  elements.card.addEventListener("click", (event) => {
+    if (!event.target.closest("button, a")) revealCard();
+  });
+  elements.card.addEventListener("keydown", (event) => {
+    if (!revealed && (event.key === " " || event.key === "Enter")) {
+      event.preventDefault();
+      revealCard();
+    }
+  });
+
+  $("#speak-word").addEventListener("click", () => speak(currentCard.displayWord));
+  $("#speak-word-back").addEventListener("click", () => speak(currentCard.displayWord));
+  $("#speak-sentence").addEventListener("click", () => speak(currentCard.example.sv));
+  elements.memoryButton.addEventListener("click", toggleMemory);
+  $$(".rating").forEach((button) => button.addEventListener("click", () => rateCard(button.dataset.rating)));
+
+  elements.deckFilter.addEventListener("change", () => {
+    saved.settings.deck = elements.deckFilter.value;
+    persist();
+    buildDeck(false);
+    showToast(`${elements.deckFilter.options[elements.deckFilter.selectedIndex].text.split(" · ")[0]} loaded.`);
+  });
+
+  $("#shuffle-button").addEventListener("click", () => {
+    buildDeck(true);
+    showToast("Deck shuffled.");
+  });
+
+  $("#settings-button").addEventListener("click", () => openDialog(elements.settings));
+  $("#sources-button").addEventListener("click", () => openDialog(elements.sources));
+  $$(".close-dialog").forEach((button) => button.addEventListener("click", () => button.closest("dialog").close()));
+  $$("dialog").forEach((dialog) => dialog.addEventListener("click", (event) => {
+    if (event.target === dialog) dialog.close();
+  }));
+
+  elements.dailyGoal.addEventListener("change", () => {
+    saved.settings.dailyGoal = Number(elements.dailyGoal.value);
+    persist();
+    updateProgress();
+  });
+
+  elements.theme.addEventListener("change", () => {
+    saved.settings.theme = elements.theme.value;
+    applyTheme();
+    persist();
+  });
+
+  $("#reset-progress").addEventListener("click", () => {
+    if (!window.confirm("Reset all ratings and daily progress? This cannot be undone.")) return;
+    const settings = saved.settings;
+    saved = { ...defaultState(), settings };
+    persist();
+    updateProgress();
+    buildDeck(false);
+    elements.settings.close();
+    showToast("Learning progress reset.");
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.target.matches("select, input, textarea, button") || $("dialog[open]")) return;
+    if ((event.key === " " || event.key === "Enter") && !revealed) {
+      event.preventDefault();
+      revealCard();
+    } else if (event.key.toLowerCase() === "s" && currentCard) {
+      speak(revealed ? currentCard.example.sv : currentCard.displayWord);
+    } else if (revealed && ["1", "2", "3", "4"].includes(event.key)) {
+      rateCard(["again", "hard", "good", "easy"][Number(event.key) - 1]);
+    }
+  });
+
+  if ("speechSynthesis" in window) {
+    populateVoices();
+    window.speechSynthesis.addEventListener("voiceschanged", populateVoices);
+  }
+
+  if (!cards.length) {
+    showEmptyState();
+    showToast("The card deck could not be loaded.");
+    return;
+  }
+
+  elements.deckFilter.value = saved.settings.deck;
+  elements.dailyGoal.value = String(saved.settings.dailyGoal);
+  elements.theme.value = saved.settings.theme;
+  applyTheme();
+  updateProgress();
+  buildDeck(false);
+})();
+
+    </script>
+  </body>
+</html>
