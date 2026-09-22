@@ -884,7 +884,7 @@ noscript { display: block; padding: 20px; color: white; background: #8d2c20; tex
               </div>
               <button class="sentence-reveal" id="sentence-reveal" type="button" aria-expanded="false" aria-controls="word-breakdown">
                 <span class="swedish-sentence" id="swedish-sentence"></span>
-                <span class="sentence-cue"><span>Tap for word-by-word meaning</span><span aria-hidden="true">⌄</span></span>
+                <span class="sentence-cue"><span>Tap for full translation + word-by-word meaning</span><span aria-hidden="true">⌄</span></span>
               </button>
               <div class="word-breakdown" id="word-breakdown" hidden>
                 <p class="word-by-word-label">Word by word · tap any word</p>
@@ -899,10 +899,10 @@ noscript { display: block; padding: 20px; color: white; background: #8d2c20; tex
                     <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9H5Zm12.5-.5a5 5 0 0 1 0 7"/></svg>
                   </button>
                 </div>
-              </div>
-              <div class="full-translation">
-                <span>Full translation</span>
-                <p class="english-sentence" id="english-sentence"></p>
+                <div class="full-translation">
+                  <span>Full translation</span>
+                  <p class="english-sentence" id="english-sentence"></p>
+                </div>
               </div>
             </div>
 
@@ -1223,7 +1223,7 @@ window.SWEDISH_CARDS=[{"id":"kelly-87","lemma":"och","displayWord":"och","marker
     elements.wordGrid.replaceChildren();
     elements.breakdown.hidden = true;
     elements.sentenceReveal.setAttribute("aria-expanded", "false");
-    elements.sentenceReveal.querySelector(".sentence-cue span:first-child").textContent = "Tap for word-by-word meaning";
+    elements.sentenceReveal.querySelector(".sentence-cue span:first-child").textContent = "Tap for full translation + word-by-word meaning";
     elements.wordFocus.hidden = true;
     selectedSentenceWord = null;
 
@@ -1249,8 +1249,8 @@ window.SWEDISH_CARDS=[{"id":"kelly-87","lemma":"och","displayWord":"och","marker
     elements.breakdown.hidden = !willShow;
     elements.sentenceReveal.setAttribute("aria-expanded", String(willShow));
     elements.sentenceReveal.querySelector(".sentence-cue span:first-child").textContent = willShow
-      ? "Hide word-by-word meaning"
-      : "Tap for word-by-word meaning";
+      ? "Hide translation and word meanings"
+      : "Tap for full translation + word-by-word meaning";
     if (willShow && elements.wordGrid.firstElementChild) {
       window.requestAnimationFrame(() => elements.wordGrid.firstElementChild.focus({ preventScroll: true }));
     }
