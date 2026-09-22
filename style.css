@@ -52,6 +52,7 @@ a {
 /* ================= HERO ================= */
 
 .hero {
+  position: relative;
   min-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -252,9 +253,9 @@ footer {
 /* ================= VISITOR COUNTER ================= */
 
 .visitor-counter {
-  position: fixed;
+  position: absolute;
+  top: 1rem;
   right: 1rem;
-  bottom: 1rem;
   z-index: 10;
   display: flex;
   padding: 0.35rem;
@@ -278,7 +279,7 @@ footer {
 
 @media (max-width: 600px) {
   .visitor-counter {
+    top: 0.75rem;
     right: 0.75rem;
-    bottom: 0.75rem;
   }
 }
