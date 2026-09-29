@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Swedish Words</title>
+<style>
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #ffffff;
+    color: #111111;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+  }
+
+  body {
+    display: grid;
+    place-items: center;
+  }
+
+  #deckSelector {
+    position: fixed;
+    top: max(14px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+    z-index: 10;
+    max-width: 180px;
+    border: 0;
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: #f3f3f3;
+    color: #222;
+    font: inherit;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  #card {
+    width: min(90vw, 760px);
+    min-height: 52vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  #word {
+    font-size: clamp(42px, 10vw, 86px);
+    font-weight: 700;
+    line-height: 1.05;
+    overflow-wrap: anywhere;
+  }
+
+  #meaning {
+    margin-top: 28px;
+    font-size: clamp(24px, 5vw, 42px);
+    line-height: 1.25;
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+
+  #meaning.show {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+  <select id="deckSelector" aria-label="Choose dictionary">
+    <option value="verbs">My verbs</option>
+    <option value="core">A1–B1 core (3000)</option>
+  </select>
+
+  <main id="card" aria-label="Swedish flashcard">
+    <div id="word"></div>
+    <div id="meaning"></div>
+  </main>
+
+<script>
+/*
+  Sources for the optional 3,000-word learner deck:
+  - Swedish Kelly list (CEFR-ranked learner vocabulary), Språkbanken / Kelly Project.
+  - Folkets Lexikon Swedish-English translations.
+  The core deck is downloaded on first use and then cached locally when the browser permits it.
+*/
+
+const myVerbs = [["Anteckna", "take notes / write down"], ["Arbeta", "work"], ["Bada", "bathe / swim"], ["Banta", "diet / lose weight"], ["Berätta", "tell / narrate"], ["Betala", "pay"], ["Betona", "emphasize / stress"], ["Bilda", "form / create"], ["Blinka", "blink"], ["Bädda", "make the bed"], ["Börja", "begin / start"], ["Cykla", "cycle / ride a bike"], ["Dansa", "dance"], ["Deklarera", "declare / file a tax return"], ["Dela", "share / divide"], ["Diska", "wash the dishes"], ["Diskutera", "discuss"], ["Duscha", "shower"], ["Fastna", "get stuck"], ["Fiska", "fish"], ["Flytta", "move"], ["Fråga", "ask"], ["Förklara", "explain"], ["Förlova (sig)", "get engaged"], ["Gratulera", "congratulate"], ["Gräla", "argue / quarrel"], ["Hata", "hate"], ["Hosta", "cough"], ["Hälsa (på)", "greet / visit"], ["Hämta", "fetch / pick up"], ["Intervjua", "interview"], ["Kasta", "throw"], ["Klara (sig)", "manage / cope"], ["Kontrollera", "check / control"], ["Krama", "hug"], ["Laga", "repair / cook"], ["Likna", "resemble"], ["Ljusna", "become lighter / brighten"], ["Lukta", "smell"], ["Lyssna", "listen"], ["Låna", "borrow / lend"], ["Längta", "long for / miss"], ["Meddela", "inform / notify"], ["Mena", "mean"], ["Närma (sig)", "approach / get closer"], ["Parkera", "park"], ["Passa", "fit / suit / look after"], ["Posta", "post / mail"], ["Promenera", "walk / take a walk"], ["Regna", "rain"], ["Rita", "draw"], ["Ropa", "shout / call out"], ["Räkna", "count / calculate"], ["Sakna", "miss / lack"], ["Samarbeta", "cooperate"], ["Samla", "collect / gather"], ["Servera", "serve"], ["Simma", "swim"], ["Skada", "injure / damage"], ["Skicka", "send"], ["Sluta", "stop / end / quit"], ["Smaka", "taste"], ["Snöa", "snow"], ["Spela", "play"], ["Stanna", "stay / stop"], ["Studera", "study"], ["Svara", "answer / reply"], ["Somna", "fall asleep"], ["Städa", "clean / tidy"], ["Tacka", "thank"], ["Tala", "speak"], ["Titta", "look / watch"], ["Träffa", "meet / hit"], ["Tvätta", "wash"], ["Vakna", "wake up"], ["Vänta", "wait"], ["Växla", "change / exchange / shift"], ["Älska", "love"], ["Önska", "wish"], ["Öppna", "open"], ["Anmäla", "report / register / sign up"], ["Använda", "use"], ["Behöva", "need"], ["Beställa", "order / book"], ["Bestämma", "decide / determine"], ["Bygga", "build"], ["Böja", "bend"], ["Drömma", "dream"], ["Fylla", "fill"], ["Föda", "give birth / feed"], ["Följa", "follow / accompany"], ["Glömma", "forget"], ["Gräva", "dig"], ["Gömma", "hide"], ["Hyra", "rent / hire"], ["Höra", "hear"], ["Hända", "happen"], ["Köra", "drive"], ["Lära", "teach / learn"], ["Känna", "feel / know / recognize"], ["Ringa", "call / ring"], ["Sjukanmäla (sig)", "report oneself sick / call in sick"], ["Skilja (sig)", "separate / get divorced"], ["Slänga", "throw away / toss"], ["Smälla", "bang / slam"], ["Ställa", "put / place / set"], ["Stänga", "close / shut"], ["Tända", "light / turn on"], ["Ärva", "inherit"], ["Besöka", "visit"], ["Blåsa", "blow"], ["Byta", "change / exchange"], ["Gifta (sig)", "get married"], ["Hjälpa", "help"], ["Klippa", "cut / clip"], ["Köpa", "buy"], ["Leka", "play"], ["Lyfta", "lift"], ["Läsa", "read / study"], ["Lösa", "solve"], ["Möta", "meet"], ["Resa", "travel / raise"], ["Röka", "smoke"], ["Sköta", "manage / take care of"], ["Släcka", "extinguish / turn off"], ["Släppa", "let go / release"], ["Steka", "fry"], ["Söka", "search / apply"], ["Trycka", "press / print"], ["Tycka", "think / have an opinion"], ["Tänka", "think / intend"], ["Upptäcka", "discover"], ["Väcka", "wake someone up"], ["Värka", "ache"], ["Åka", "go / travel / ride"], ["Bo", "live / reside"], ["Klä", "dress / clothe"], ["Bre", "spread"], ["Bry (sig om)", "care about"], ["Må", "feel / be"], ["Strö", "sprinkle"], ["Sy", "sew"], ["Fly", "flee"], ["Gry", "dawn / begin to get light"], ["Spy", "vomit / throw up"], ["Gny", "whine / whimper"], ["Tro", "believe / think"], ["Glo", "stare"], ["Så", "sow"], ["Spå", "predict / tell fortunes"], ["Bli", "become"], ["Bita", "bite"], ["Skina", "shine"], ["Skriva", "write"], ["Skrika", "scream / shout"], ["Stiga", "rise / step"], ["Dricka", "drink"], ["Brinna", "burn"], ["Finna", "find"], ["Försvinna", "disappear"], ["Hinna", "have time / manage to"], ["Rinna", "flow / run"], ["Sitta", "sit"], ["Slippa", "avoid / not have to"], ["Springa", "run"], ["Vinna", "win"], ["Bryta", "break"], ["Flyga", "fly"], ["Frysa", "freeze / feel cold"], ["Knyta", "tie / knot"], ["Snyta", "blow one's nose"], ["Stryka", "iron / stroke / cross out"], ["Lägga", "put / lay"], ["Sätta", "put / set / seat"], ["Välja", "choose"], ["Vänja", "accustom / get used to"], ["Be", "ask / pray"], ["Bjuda", "invite / offer / treat"], ["Bära", "carry / wear"], ["Falla", "fall"], ["Få", "get / receive / be allowed to"], ["Ge", "give"], ["Gråta", "cry / weep"], ["Gå", "go / walk"], ["Göra", "do / make"], ["Ha", "have"], ["Komma", "come"], ["Kunna", "can / be able to / know how to"], ["Ligga", "lie / be located"], ["Måste", "must / have to"], ["Se", "see"], ["Skola", "shall / be going to"], ["Skära", "cut / slice"], ["Slå", "hit / beat"], ["Sova", "sleep"], ["Stjäla", "steal"], ["Stå", "stand"], ["Säga", "say / tell"], ["Ta", "take"], ["Vara", "be"], ["Veta", "know"], ["Vilja", "want"], ["Äta", "eat"]];
+
+const KELLY_URLS = [
+  "https://cdn.jsdelivr.net/gh/kotoshu/frequency-list-kelly@main/data/sv.json",
+  "https://raw.githubusercontent.com/kotoshu/frequency-list-kelly/main/data/sv.json"
+];
+
+const FOLKETS_URLS = [
+  "https://cdn.jsdelivr.net/gh/antonlisq/convert-dict@main/folkets_sv_en_public.json",
+  "https://raw.githubusercontent.com/antonlisq/convert-dict/main/folkets_sv_en_public.json"
+];
+
+const CACHE_KEY = "swedish_a1_b1_core_3000_v1";
+
+let decks = { verbs: myVerbs };
+let currentDeck = "verbs";
+let order = [];
+let pos = 0;
+let revealed = false;
+let loadingCore = false;
+
+const selector = document.getElementById("deckSelector");
+const word = document.getElementById("word");
+const meaning = document.getElementById("meaning");
+const card = document.getElementById("card");
+
+function shuffleIndexes(length) {
+  const a = Array.from({length}, (_, i) => i);
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function setDeck(name) {
+  currentDeck = name;
+  const deck = decks[name] || [];
+  order = shuffleIndexes(deck.length);
+  pos = 0;
+  render();
+}
+
+function render() {
+  const deck = decks[currentDeck] || [];
+
+  if (!deck.length) {
+    word.textContent = "";
+    meaning.textContent = "";
+    meaning.classList.remove("show");
+    return;
+  }
+
+  const item = deck[order[pos]];
+  word.textContent = item[0];
+  meaning.textContent = item[1];
+  revealed = false;
+  meaning.classList.remove("show");
+}
+
+function reveal() {
+  if (!(decks[currentDeck] || []).length) return;
+  revealed = !revealed;
+  meaning.classList.toggle("show", revealed);
+}
+
+function next() {
+  if (!order.length) return;
+  pos = (pos + 1) % order.length;
+  render();
+}
+
+function prev() {
+  if (!order.length) return;
+  pos = (pos - 1 + order.length) % order.length;
+  render();
+}
+
+async function fetchJSONWithFallback(urls) {
+  let lastError;
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, { cache: "force-cache" });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return await response.json();
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error("Could not load data");
+}
+
+function cleanKellyWord(value) {
+  return String(value || "")
+    .replace(/\s*\([^)]*\)\s*/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function lookupForms(word) {
+  const base = cleanKellyWord(word).toLowerCase();
+  const forms = [base];
+
+  if (base.startsWith("att ")) forms.push(base.slice(4));
+  if (base.startsWith("en ")) forms.push(base.slice(3));
+  if (base.startsWith("ett ")) forms.push(base.slice(4));
+
+  const slash = base.split("/")[0].trim();
+  if (slash && !forms.includes(slash)) forms.push(slash);
+
+  return [...new Set(forms.filter(Boolean))];
+}
+
+function translationsFromEntry(entry) {
+  const found = [];
+
+  function collect(x) {
+    if (!x) return;
+
+    if (Array.isArray(x)) {
+      x.forEach(collect);
+      return;
+    }
+
+    if (typeof x === "object") {
+      const t = x.t;
+      if (typeof t === "string") found.push(t);
+      else if (Array.isArray(t)) {
+        for (const item of t) {
+          if (typeof item === "string") found.push(item);
+          else if (item && typeof item === "object" && typeof item.t === "string") found.push(item.t);
+        }
+      }
+    }
+  }
+
+  collect(entry);
+
+  const cleaned = [];
+  const seen = new Set();
+
+  for (const text of found) {
+    const v = String(text).replace(/\s+/g, " ").trim();
+    const key = v.toLowerCase();
+    if (v && !seen.has(key)) {
+      seen.add(key);
+      cleaned.push(v);
+    }
+    if (cleaned.length >= 3) break;
+  }
+
+  return cleaned;
+}
+
+function makeCoreDeck(kelly, dictionary) {
+  let entries = [];
+
+  if (Array.isArray(kelly.full_list)) {
+    entries = kelly.full_list;
+  } else if (Array.isArray(kelly)) {
+    entries = kelly;
+  }
+
+  entries = entries
+    .filter(item => {
+      const level = String(item.cefr || item.cefr_level || "").toUpperCase();
+      return level === "A1" || level === "A2" || level === "B1";
+    })
+    .sort((a, b) => Number(a.rank || a.id || 999999) - Number(b.rank || b.id || 999999));
+
+  const result = [];
+  const seenWords = new Set();
+
+  for (const item of entries) {
+    const original = cleanKellyWord(item.word || item.lemma || item.item);
+    if (!original) continue;
+
+    const display = original.toLowerCase();
+    if (seenWords.has(display)) continue;
+
+    let translations = [];
+    for (const form of lookupForms(original)) {
+      if (dictionary && Object.prototype.hasOwnProperty.call(dictionary, form)) {
+        translations = translationsFromEntry(dictionary[form]);
+        if (translations.length) break;
+      }
+    }
+
+    if (!translations.length) continue;
+
+    seenWords.add(display);
+    result.push([display, translations.join(" / ")]);
+
+    if (result.length >= 3000) break;
+  }
+
+  return result;
+}
+
+async function loadCoreDeck() {
+  if (decks.core && decks.core.length) return decks.core;
+  if (loadingCore) return null;
+
+  loadingCore = true;
+
+  try {
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length >= 1000) {
+          decks.core = parsed;
+          return decks.core;
+        }
+      }
+    } catch (_) {}
+
+    word.textContent = "Loading…";
+    meaning.textContent = "";
+    meaning.classList.remove("show");
+
+    const [kelly, dictionary] = await Promise.all([
+      fetchJSONWithFallback(KELLY_URLS),
+      fetchJSONWithFallback(FOLKETS_URLS)
+    ]);
+
+    const core = makeCoreDeck(kelly, dictionary);
+
+    if (!core.length) throw new Error("No matching learner vocabulary was found.");
+
+    decks.core = core;
+
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(core));
+    } catch (_) {}
+
+    return core;
+  } finally {
+    loadingCore = false;
+  }
+}
+
+selector.addEventListener("change", async () => {
+  const chosen = selector.value;
+
+  if (chosen === "verbs") {
+    setDeck("verbs");
+    return;
+  }
+
+  try {
+    const core = await loadCoreDeck();
+    if (core && core.length) {
+      selector.options[1].textContent =
+        core.length >= 3000 ? "A1–B1 core (3000)" : `A1–B1 core (${core.length})`;
+      setDeck("core");
+    }
+  } catch (err) {
+    word.textContent = "Couldn’t load";
+    meaning.textContent = "Open this page with an internet connection and try again.";
+    meaning.classList.add("show");
+  }
+});
+
+card.addEventListener("click", reveal);
+
+let startX = null;
+let startY = null;
+
+card.addEventListener("touchstart", e => {
+  const t = e.changedTouches[0];
+  startX = t.clientX;
+  startY = t.clientY;
+}, { passive: true });
+
+card.addEventListener("touchend", e => {
+  if (startX === null) return;
+
+  const t = e.changedTouches[0];
+  const dx = t.clientX - startX;
+  const dy = t.clientY - startY;
+
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    dx < 0 ? next() : prev();
+  }
+
+  startX = null;
+  startY = null;
+}, { passive: true });
+
+let mouseDownX = null;
+let dragged = false;
+
+card.addEventListener("mousedown", e => {
+  mouseDownX = e.clientX;
+  dragged = false;
+});
+
+card.addEventListener("mousemove", e => {
+  if (mouseDownX !== null && Math.abs(e.clientX - mouseDownX) > 12) {
+    dragged = true;
+  }
+});
+
+card.addEventListener("mouseup", e => {
+  if (mouseDownX === null) return;
+
+  const dx = e.clientX - mouseDownX;
+
+  if (Math.abs(dx) > 70) {
+    dx < 0 ? next() : prev();
+  }
+
+  mouseDownX = null;
+});
+
+card.addEventListener("click", e => {
+  if (dragged) {
+    e.stopImmediatePropagation();
+    dragged = false;
+  }
+}, true);
+
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") next();
+  else if (e.key === "ArrowLeft") prev();
+  else if (e.key === " " || e.key === "Enter") {
+    e.preventDefault();
+    reveal();
+  }
+});
+
+setDeck("verbs");
+</script>
+</body>
+</html>
