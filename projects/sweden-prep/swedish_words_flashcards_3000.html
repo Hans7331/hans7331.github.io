@@ -71,6 +71,17 @@
   #meaning.show {
     opacity: 1;
   }
+
+  .meaning-base {
+    font-weight: 600;
+  }
+
+  .meaning-form {
+    margin-top: 8px;
+    font-size: 0.62em;
+    line-height: 1.3;
+    opacity: 0.72;
+  }
 </style>
 </head>
 <body>
@@ -112,6 +123,8 @@ let order = [];
 let pos = 0;
 let revealed = false;
 let loadingCore = false;
+let folketsDictionary = null;
+let loadingDictionary = null;
 
 const selector = document.getElementById("deckSelector");
 const word = document.getElementById("word");
@@ -152,10 +165,97 @@ function render() {
   meaning.classList.remove("show");
 }
 
-function reveal() {
-  if (!(decks[currentDeck] || []).length) return;
+async function ensureDictionary() {
+  if (folketsDictionary) return folketsDictionary;
+  if (loadingDictionary) return loadingDictionary;
+
+  loadingDictionary = fetchJSONWithFallback(FOLKETS_URLS)
+    .then(data => {
+      folketsDictionary = data;
+      return data;
+    })
+    .catch(() => null)
+    .finally(() => { loadingDictionary = null; });
+
+  return loadingDictionary;
+}
+
+function getDictionaryEntry(sw) {
+  if (!folketsDictionary) return null;
+  for (const form of lookupForms(sw)) {
+    if (Object.prototype.hasOwnProperty.call(folketsDictionary, form)) {
+      return folketsDictionary[form];
+    }
+  }
+  return null;
+}
+
+function getInflections(entry) {
+  if (!entry) return [];
+  const candidates = Array.isArray(entry) ? entry : [entry];
+
+  for (const candidate of candidates) {
+    if (!candidate || typeof candidate !== "object") continue;
+    const values = Array.isArray(candidate.i) ? candidate.i : [];
+    const forms = values
+      .map(v => typeof v === "string" ? v : (v && typeof v.v === "string" ? v.v : ""))
+      .map(v => v.trim())
+      .filter(Boolean);
+    if (forms.length) return forms;
+  }
+  return [];
+}
+
+function verbRevealHTML(item) {
+  const swedish = item[0];
+  const english = item[1];
+  const entry = getDictionaryEntry(swedish);
+  const forms = getInflections(entry);
+
+  const rows = [`<div class="meaning-base">${escapeHTML(swedish.toLowerCase())} — ${escapeHTML(english)}</div>`];
+  const labels = [
+    ["present", "present of"],
+    ["past", "past of"],
+    ["perfect / supine", "perfect of"]
+  ];
+
+  forms.slice(0, 3).forEach((form, i) => {
+    const label = labels[i] || [`form ${i + 1}`, "form of"];
+    rows.push(`<div class="meaning-form">${escapeHTML(form)} — ${label[1]} “${escapeHTML(english)}” (${label[0]})</div>`);
+  });
+
+  return rows.join("");
+}
+
+function escapeHTML(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+async function reveal() {
+  const deck = decks[currentDeck] || [];
+  if (!deck.length) return;
+
   revealed = !revealed;
   meaning.classList.toggle("show", revealed);
+  if (!revealed) return;
+
+  const item = deck[order[pos]];
+  if (currentDeck !== "verbs") {
+    meaning.textContent = item[1];
+    return;
+  }
+
+  meaning.innerHTML = `<div class="meaning-base">${escapeHTML(item[0].toLowerCase())} — ${escapeHTML(item[1])}</div>`;
+  await ensureDictionary();
+
+  // The user may have moved to another card while the dictionary was loading.
+  if (!revealed || currentDeck !== "verbs" || deck[order[pos]] !== item) return;
+  meaning.innerHTML = verbRevealHTML(item);
 }
 
 function next() {
@@ -339,6 +439,7 @@ selector.addEventListener("change", async () => {
 
   if (chosen === "verbs") {
     setDeck("verbs");
+ensureDictionary();
     return;
   }
 
@@ -425,6 +526,7 @@ document.addEventListener("keydown", e => {
 });
 
 setDeck("verbs");
+ensureDictionary();
 </script>
 </body>
 </html>
