@@ -21,6 +21,9 @@
   body {
     display: grid;
     place-items: center;
+    box-sizing: border-box;
+    padding: calc(108px + env(safe-area-inset-top)) 0 calc(96px + env(safe-area-inset-bottom));
+    height: 100dvh;
   }
 
   #topbar {
@@ -78,7 +81,9 @@
 
   #card {
     width: min(90vw, 760px);
-    min-height: 52vh;
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -119,6 +124,57 @@
     opacity: 0.72;
   }
 
+  #ratings {
+    position: fixed;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  #ratings button {
+    flex: 1;
+    max-width: 180px;
+    min-height: 52px;
+    padding: 12px 8px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #f3f3f3;
+    color: #222;
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  #ratings button:last-child {
+    background: #e8f5e9;
+    border-color: #a5d6a7;
+    color: #256428;
+  }
+
+  #ratings button:disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  #ratings button:focus-visible {
+    outline: 3px solid #1565c0;
+    outline-offset: 3px;
+  }
+
+  @media (max-height: 500px) {
+    body { padding-top: calc(86px + env(safe-area-inset-top)); }
+    #hint { display: none; }
+    #word { font-size: 36px; }
+    #meaning { margin-top: 12px; font-size: 24px; }
+    #card { padding: 12px; }
+  }
+
   #done {
     display: none;
     text-align: center;
@@ -142,7 +198,8 @@
         <option value="core">A1–B1 core</option>
       </select>
       <div id="hint">
-        Space = show / hide meaning<br>
+        Tap card / Space = show or hide<br>
+        Swipe / arrows = next or previous<br>
         1 = not sure · 2 = sure · 3 = mastered
       </div>
     </div>
@@ -153,6 +210,12 @@
     <div id="meaning"></div>
     <div id="done">All mastered ✓</div>
   </main>
+
+  <nav id="ratings" aria-label="Rate this word">
+    <button type="button" data-rating="1">1 · Not sure</button>
+    <button type="button" data-rating="2">2 · Sure</button>
+    <button type="button" data-rating="3">3 · Mastered</button>
+  </nav>
 
 <script>
 /*
@@ -191,6 +254,18 @@ const meaning = document.getElementById("meaning");
 const done = document.getElementById("done");
 const card = document.getElementById("card");
 const status = document.getElementById("status");
+const ratingButtons = document.querySelectorAll("#ratings button");
+
+function updateRatingButtons(disabled = !currentItem()) {
+  ratingButtons.forEach(button => { button.disabled = disabled; });
+}
+
+ratingButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    rateCurrent(Number(button.dataset.rating));
+    button.blur();
+  });
+});
 
 function loadProgress() {
   try {
@@ -289,6 +364,7 @@ function currentItem() {
 
 function render() {
   updateStatus();
+  updateRatingButtons();
 
   const item = currentItem();
 
@@ -580,6 +656,7 @@ async function loadCoreDeck() {
       }
     } catch (_) {}
 
+    updateRatingButtons(true);
     word.textContent = "Loading…";
     meaning.textContent = "";
     done.classList.remove("show");
@@ -622,6 +699,8 @@ selector.addEventListener("change", async () => {
     }
   } catch (err) {
     currentDeck = "core";
+    order = [];
+    updateRatingButtons(true);
     word.textContent = "Couldn’t load";
     meaning.textContent = "Open this page with an internet connection and try again.";
     meaning.classList.add("show");
@@ -655,12 +734,19 @@ card.addEventListener("touchend", e => {
   const dy = t.clientY - startY;
 
   if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+    // Cancel the synthetic tap after a swipe so the new answer stays hidden.
+    e.preventDefault();
     dx < 0 ? next() : prev();
   }
 
   startX = null;
   startY = null;
-}, { passive: true });
+}, { passive: false });
+
+card.addEventListener("touchcancel", () => {
+  startX = null;
+  startY = null;
+});
 
 let mouseDownX = null;
 let dragged = false;
