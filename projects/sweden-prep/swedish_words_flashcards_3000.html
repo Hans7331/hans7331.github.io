@@ -23,12 +23,40 @@
     place-items: center;
   }
 
-  #deckSelector {
+  #topbar {
     position: fixed;
-    top: max(14px, env(safe-area-inset-top));
-    right: max(14px, env(safe-area-inset-right));
+    top: max(12px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
     z-index: 10;
-    max-width: 180px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    pointer-events: none;
+  }
+
+  #status {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #666;
+    pointer-events: none;
+  }
+
+  #status .mastered {
+    color: #2e7d32;
+  }
+
+  #controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    pointer-events: auto;
+  }
+
+  #deckSelector {
+    max-width: 190px;
     border: 0;
     border-radius: 10px;
     padding: 8px 10px;
@@ -38,6 +66,14 @@
     font-size: 14px;
     outline: none;
     cursor: pointer;
+  }
+
+  #hint {
+    font-size: 11px;
+    line-height: 1.35;
+    color: #777;
+    text-align: right;
+    max-width: 240px;
   }
 
   #card {
@@ -72,35 +108,46 @@
     opacity: 1;
   }
 
-  .meaning-base {
-    font-weight: 600;
+  #done {
+    display: none;
+    text-align: center;
+    padding: 24px;
+    font-size: clamp(28px, 6vw, 52px);
+    font-weight: 650;
   }
 
-  .meaning-form {
-    margin-top: 8px;
-    font-size: 0.62em;
-    line-height: 1.3;
-    opacity: 0.72;
+  #done.show {
+    display: block;
   }
 </style>
 </head>
 <body>
-  <select id="deckSelector" aria-label="Choose dictionary">
-    <option value="verbs">My verbs</option>
-    <option value="core">A1–B1 core (3000)</option>
-  </select>
+  <div id="topbar">
+    <div id="status"></div>
+
+    <div id="controls">
+      <select id="deckSelector" aria-label="Choose dictionary">
+        <option value="verbs">My Words</option>
+        <option value="core">A1–B1 core</option>
+      </select>
+      <div id="hint">
+        Space = meaning<br>
+        1 = not sure · 2 = sure · 3 = mastered
+      </div>
+    </div>
+  </div>
 
   <main id="card" aria-label="Swedish flashcard">
     <div id="word"></div>
     <div id="meaning"></div>
+    <div id="done">All mastered ✓</div>
   </main>
 
 <script>
 /*
-  Sources for the optional 3,000-word learner deck:
-  - Swedish Kelly list (CEFR-ranked learner vocabulary), Språkbanken / Kelly Project.
-  - Folkets Lexikon Swedish-English translations.
-  The core deck is downloaded on first use and then cached locally when the browser permits it.
+  My Words is embedded in this file.
+  A1–B1 core is downloaded once, then cached locally when the browser permits it.
+  Study progress is stored in localStorage on this browser/device.
 */
 
 const myVerbs = [["Anteckna", "take notes / write down"], ["Arbeta", "work"], ["Bada", "bathe / swim"], ["Banta", "diet / lose weight"], ["Berätta", "tell / narrate"], ["Betala", "pay"], ["Betona", "emphasize / stress"], ["Bilda", "form / create"], ["Blinka", "blink"], ["Bädda", "make the bed"], ["Börja", "begin / start"], ["Cykla", "cycle / ride a bike"], ["Dansa", "dance"], ["Deklarera", "declare / file a tax return"], ["Dela", "share / divide"], ["Diska", "wash the dishes"], ["Diskutera", "discuss"], ["Duscha", "shower"], ["Fastna", "get stuck"], ["Fiska", "fish"], ["Flytta", "move"], ["Fråga", "ask"], ["Förklara", "explain"], ["Förlova (sig)", "get engaged"], ["Gratulera", "congratulate"], ["Gräla", "argue / quarrel"], ["Hata", "hate"], ["Hosta", "cough"], ["Hälsa (på)", "greet / visit"], ["Hämta", "fetch / pick up"], ["Intervjua", "interview"], ["Kasta", "throw"], ["Klara (sig)", "manage / cope"], ["Kontrollera", "check / control"], ["Krama", "hug"], ["Laga", "repair / cook"], ["Likna", "resemble"], ["Ljusna", "become lighter / brighten"], ["Lukta", "smell"], ["Lyssna", "listen"], ["Låna", "borrow / lend"], ["Längta", "long for / miss"], ["Meddela", "inform / notify"], ["Mena", "mean"], ["Närma (sig)", "approach / get closer"], ["Parkera", "park"], ["Passa", "fit / suit / look after"], ["Posta", "post / mail"], ["Promenera", "walk / take a walk"], ["Regna", "rain"], ["Rita", "draw"], ["Ropa", "shout / call out"], ["Räkna", "count / calculate"], ["Sakna", "miss / lack"], ["Samarbeta", "cooperate"], ["Samla", "collect / gather"], ["Servera", "serve"], ["Simma", "swim"], ["Skada", "injure / damage"], ["Skicka", "send"], ["Sluta", "stop / end / quit"], ["Smaka", "taste"], ["Snöa", "snow"], ["Spela", "play"], ["Stanna", "stay / stop"], ["Studera", "study"], ["Svara", "answer / reply"], ["Somna", "fall asleep"], ["Städa", "clean / tidy"], ["Tacka", "thank"], ["Tala", "speak"], ["Titta", "look / watch"], ["Träffa", "meet / hit"], ["Tvätta", "wash"], ["Vakna", "wake up"], ["Vänta", "wait"], ["Växla", "change / exchange / shift"], ["Älska", "love"], ["Önska", "wish"], ["Öppna", "open"], ["Anmäla", "report / register / sign up"], ["Använda", "use"], ["Behöva", "need"], ["Beställa", "order / book"], ["Bestämma", "decide / determine"], ["Bygga", "build"], ["Böja", "bend"], ["Drömma", "dream"], ["Fylla", "fill"], ["Föda", "give birth / feed"], ["Följa", "follow / accompany"], ["Glömma", "forget"], ["Gräva", "dig"], ["Gömma", "hide"], ["Hyra", "rent / hire"], ["Höra", "hear"], ["Hända", "happen"], ["Köra", "drive"], ["Lära", "teach / learn"], ["Känna", "feel / know / recognize"], ["Ringa", "call / ring"], ["Sjukanmäla (sig)", "report oneself sick / call in sick"], ["Skilja (sig)", "separate / get divorced"], ["Slänga", "throw away / toss"], ["Smälla", "bang / slam"], ["Ställa", "put / place / set"], ["Stänga", "close / shut"], ["Tända", "light / turn on"], ["Ärva", "inherit"], ["Besöka", "visit"], ["Blåsa", "blow"], ["Byta", "change / exchange"], ["Gifta (sig)", "get married"], ["Hjälpa", "help"], ["Klippa", "cut / clip"], ["Köpa", "buy"], ["Leka", "play"], ["Lyfta", "lift"], ["Läsa", "read / study"], ["Lösa", "solve"], ["Möta", "meet"], ["Resa", "travel / raise"], ["Röka", "smoke"], ["Sköta", "manage / take care of"], ["Släcka", "extinguish / turn off"], ["Släppa", "let go / release"], ["Steka", "fry"], ["Söka", "search / apply"], ["Trycka", "press / print"], ["Tycka", "think / have an opinion"], ["Tänka", "think / intend"], ["Upptäcka", "discover"], ["Väcka", "wake someone up"], ["Värka", "ache"], ["Åka", "go / travel / ride"], ["Bo", "live / reside"], ["Klä", "dress / clothe"], ["Bre", "spread"], ["Bry (sig om)", "care about"], ["Må", "feel / be"], ["Strö", "sprinkle"], ["Sy", "sew"], ["Fly", "flee"], ["Gry", "dawn / begin to get light"], ["Spy", "vomit / throw up"], ["Gny", "whine / whimper"], ["Tro", "believe / think"], ["Glo", "stare"], ["Så", "sow"], ["Spå", "predict / tell fortunes"], ["Bli", "become"], ["Bita", "bite"], ["Skina", "shine"], ["Skriva", "write"], ["Skrika", "scream / shout"], ["Stiga", "rise / step"], ["Dricka", "drink"], ["Brinna", "burn"], ["Finna", "find"], ["Försvinna", "disappear"], ["Hinna", "have time / manage to"], ["Rinna", "flow / run"], ["Sitta", "sit"], ["Slippa", "avoid / not have to"], ["Springa", "run"], ["Vinna", "win"], ["Bryta", "break"], ["Flyga", "fly"], ["Frysa", "freeze / feel cold"], ["Knyta", "tie / knot"], ["Snyta", "blow one's nose"], ["Stryka", "iron / stroke / cross out"], ["Lägga", "put / lay"], ["Sätta", "put / set / seat"], ["Välja", "choose"], ["Vänja", "accustom / get used to"], ["Be", "ask / pray"], ["Bjuda", "invite / offer / treat"], ["Bära", "carry / wear"], ["Falla", "fall"], ["Få", "get / receive / be allowed to"], ["Ge", "give"], ["Gråta", "cry / weep"], ["Gå", "go / walk"], ["Göra", "do / make"], ["Ha", "have"], ["Komma", "come"], ["Kunna", "can / be able to / know how to"], ["Ligga", "lie / be located"], ["Måste", "must / have to"], ["Se", "see"], ["Skola", "shall / be going to"], ["Skära", "cut / slice"], ["Slå", "hit / beat"], ["Sova", "sleep"], ["Stjäla", "steal"], ["Stå", "stand"], ["Säga", "say / tell"], ["Ta", "take"], ["Vara", "be"], ["Veta", "know"], ["Vilja", "want"], ["Äta", "eat"]];
@@ -115,7 +162,8 @@ const FOLKETS_URLS = [
   "https://raw.githubusercontent.com/antonlisq/convert-dict/main/folkets_sv_en_public.json"
 ];
 
-const CACHE_KEY = "swedish_a1_b1_core_3000_v1";
+const CORE_CACHE_KEY = "swedish_a1_b1_core_3000_v1";
+const PROGRESS_KEY = "swedish_flashcard_progress_v2";
 
 let decks = { verbs: myVerbs };
 let currentDeck = "verbs";
@@ -123,144 +171,143 @@ let order = [];
 let pos = 0;
 let revealed = false;
 let loadingCore = false;
-let folketsDictionary = null;
-let loadingDictionary = null;
 
 const selector = document.getElementById("deckSelector");
 const word = document.getElementById("word");
 const meaning = document.getElementById("meaning");
+const done = document.getElementById("done");
 const card = document.getElementById("card");
+const status = document.getElementById("status");
 
-function shuffleIndexes(length) {
-  const a = Array.from({length}, (_, i) => i);
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    if (!raw) return { verbs: {}, core: {} };
+    const p = JSON.parse(raw);
+    return {
+      verbs: p.verbs || {},
+      core: p.core || {}
+    };
+  } catch (_) {
+    return { verbs: {}, core: {} };
   }
-  return a;
+}
+
+let progress = loadProgress();
+
+function saveProgress() {
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+  } catch (_) {}
+}
+
+function itemKey(item) {
+  return String(item[0] || "").trim().toLowerCase();
+}
+
+function getRating(deckName, item) {
+  return Number((progress[deckName] || {})[itemKey(item)] || 0);
+}
+
+function setRating(deckName, item, rating) {
+  if (!progress[deckName]) progress[deckName] = {};
+  progress[deckName][itemKey(item)] = rating;
+  saveProgress();
+}
+
+function activeIndexes(deckName) {
+  const deck = decks[deckName] || [];
+  return deck
+    .map((item, i) => ({ item, i }))
+    .filter(x => getRating(deckName, x.item) !== 3)
+    .map(x => x.i);
+}
+
+function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function counts(deckName) {
+  const deck = decks[deckName] || [];
+  let mastered = 0;
+  for (const item of deck) {
+    if (getRating(deckName, item) === 3) mastered++;
+  }
+  return {
+    total: deck.length,
+    mastered,
+    remaining: deck.length - mastered
+  };
+}
+
+function updateStatus() {
+  const c = counts(currentDeck);
+  status.innerHTML =
+    `Total: ${c.total}<br>` +
+    `Remaining: ${c.remaining}<br>` +
+    `<span class="mastered">Mastered: ${c.mastered}</span>`;
+
+  const label = currentDeck === "verbs" ? "My Words" : "A1–B1 core";
+  const opt = selector.querySelector(`option[value="${currentDeck}"]`);
+  if (opt) opt.textContent = `${label} (${c.total})`;
+}
+
+function resetOrder() {
+  order = shuffle(activeIndexes(currentDeck));
+  pos = 0;
 }
 
 function setDeck(name) {
   currentDeck = name;
-  const deck = decks[name] || [];
-  order = shuffleIndexes(deck.length);
-  pos = 0;
+  resetOrder();
   render();
 }
 
-function render() {
+function currentItem() {
   const deck = decks[currentDeck] || [];
+  if (!order.length) return null;
+  return deck[order[pos]] || null;
+}
 
-  if (!deck.length) {
+function render() {
+  updateStatus();
+
+  const item = currentItem();
+
+  if (!item) {
     word.textContent = "";
     meaning.textContent = "";
     meaning.classList.remove("show");
+    done.classList.add("show");
+    revealed = false;
     return;
   }
 
-  const item = deck[order[pos]];
+  done.classList.remove("show");
   word.textContent = item[0];
   meaning.textContent = item[1];
   revealed = false;
   meaning.classList.remove("show");
 }
 
-async function ensureDictionary() {
-  if (folketsDictionary) return folketsDictionary;
-  if (loadingDictionary) return loadingDictionary;
-
-  loadingDictionary = fetchJSONWithFallback(FOLKETS_URLS)
-    .then(data => {
-      folketsDictionary = data;
-      return data;
-    })
-    .catch(() => null)
-    .finally(() => { loadingDictionary = null; });
-
-  return loadingDictionary;
-}
-
-function getDictionaryEntry(sw) {
-  if (!folketsDictionary) return null;
-  for (const form of lookupForms(sw)) {
-    if (Object.prototype.hasOwnProperty.call(folketsDictionary, form)) {
-      return folketsDictionary[form];
-    }
-  }
-  return null;
-}
-
-function getInflections(entry) {
-  if (!entry) return [];
-  const candidates = Array.isArray(entry) ? entry : [entry];
-
-  for (const candidate of candidates) {
-    if (!candidate || typeof candidate !== "object") continue;
-    const values = Array.isArray(candidate.i) ? candidate.i : [];
-    const forms = values
-      .map(v => typeof v === "string" ? v : (v && typeof v.v === "string" ? v.v : ""))
-      .map(v => v.trim())
-      .filter(Boolean);
-    if (forms.length) return forms;
-  }
-  return [];
-}
-
-function verbRevealHTML(item) {
-  const swedish = item[0];
-  const english = item[1];
-  const entry = getDictionaryEntry(swedish);
-  const forms = getInflections(entry);
-
-  const rows = [`<div class="meaning-base">${escapeHTML(swedish.toLowerCase())} — ${escapeHTML(english)}</div>`];
-  const labels = [
-    ["present", "present of"],
-    ["past", "past of"],
-    ["perfect / supine", "perfect of"]
-  ];
-
-  forms.slice(0, 3).forEach((form, i) => {
-    const label = labels[i] || [`form ${i + 1}`, "form of"];
-    rows.push(`<div class="meaning-form">${escapeHTML(form)} — ${label[1]} “${escapeHTML(english)}” (${label[0]})</div>`);
-  });
-
-  return rows.join("");
-}
-
-function escapeHTML(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-async function reveal() {
-  const deck = decks[currentDeck] || [];
-  if (!deck.length) return;
-
-  revealed = !revealed;
-  meaning.classList.toggle("show", revealed);
-  if (!revealed) return;
-
-  const item = deck[order[pos]];
-  if (currentDeck !== "verbs") {
-    meaning.textContent = item[1];
-    return;
-  }
-
-  meaning.innerHTML = `<div class="meaning-base">${escapeHTML(item[0].toLowerCase())} — ${escapeHTML(item[1])}</div>`;
-  await ensureDictionary();
-
-  // The user may have moved to another card while the dictionary was loading.
-  if (!revealed || currentDeck !== "verbs" || deck[order[pos]] !== item) return;
-  meaning.innerHTML = verbRevealHTML(item);
+function reveal() {
+  const item = currentItem();
+  if (!item) return;
+  revealed = true;
+  meaning.classList.add("show");
 }
 
 function next() {
   if (!order.length) return;
-  pos = (pos + 1) % order.length;
+  pos++;
+  if (pos >= order.length) {
+    resetOrder();
+  }
   render();
 }
 
@@ -268,6 +315,27 @@ function prev() {
   if (!order.length) return;
   pos = (pos - 1 + order.length) % order.length;
   render();
+}
+
+function rateCurrent(rating) {
+  const item = currentItem();
+  if (!item) return;
+
+  setRating(currentDeck, item, rating);
+
+  if (rating === 3) {
+    order.splice(pos, 1);
+
+    if (!order.length) {
+      render();
+      return;
+    }
+
+    if (pos >= order.length) pos = 0;
+    render();
+  } else {
+    next();
+  }
 }
 
 async function fetchJSONWithFallback(urls) {
@@ -291,8 +359,8 @@ function cleanKellyWord(value) {
     .trim();
 }
 
-function lookupForms(word) {
-  const base = cleanKellyWord(word).toLowerCase();
+function lookupForms(wordValue) {
+  const base = cleanKellyWord(wordValue).toLowerCase();
   const forms = [base];
 
   if (base.startsWith("att ")) forms.push(base.slice(4));
@@ -322,7 +390,9 @@ function translationsFromEntry(entry) {
       else if (Array.isArray(t)) {
         for (const item of t) {
           if (typeof item === "string") found.push(item);
-          else if (item && typeof item === "object" && typeof item.t === "string") found.push(item.t);
+          else if (item && typeof item === "object" && typeof item.t === "string") {
+            found.push(item.t);
+          }
         }
       }
     }
@@ -336,10 +406,12 @@ function translationsFromEntry(entry) {
   for (const text of found) {
     const v = String(text).replace(/\s+/g, " ").trim();
     const key = v.toLowerCase();
+
     if (v && !seen.has(key)) {
       seen.add(key);
       cleaned.push(v);
     }
+
     if (cleaned.length >= 3) break;
   }
 
@@ -349,18 +421,18 @@ function translationsFromEntry(entry) {
 function makeCoreDeck(kelly, dictionary) {
   let entries = [];
 
-  if (Array.isArray(kelly.full_list)) {
-    entries = kelly.full_list;
-  } else if (Array.isArray(kelly)) {
-    entries = kelly;
-  }
+  if (Array.isArray(kelly.full_list)) entries = kelly.full_list;
+  else if (Array.isArray(kelly)) entries = kelly;
 
   entries = entries
     .filter(item => {
       const level = String(item.cefr || item.cefr_level || "").toUpperCase();
       return level === "A1" || level === "A2" || level === "B1";
     })
-    .sort((a, b) => Number(a.rank || a.id || 999999) - Number(b.rank || b.id || 999999));
+    .sort((a, b) =>
+      Number(a.rank || a.id || 999999) -
+      Number(b.rank || b.id || 999999)
+    );
 
   const result = [];
   const seenWords = new Set();
@@ -373,6 +445,7 @@ function makeCoreDeck(kelly, dictionary) {
     if (seenWords.has(display)) continue;
 
     let translations = [];
+
     for (const form of lookupForms(original)) {
       if (dictionary && Object.prototype.hasOwnProperty.call(dictionary, form)) {
         translations = translationsFromEntry(dictionary[form]);
@@ -399,7 +472,7 @@ async function loadCoreDeck() {
 
   try {
     try {
-      const cached = localStorage.getItem(CACHE_KEY);
+      const cached = localStorage.getItem(CORE_CACHE_KEY);
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed) && parsed.length >= 1000) {
@@ -411,7 +484,7 @@ async function loadCoreDeck() {
 
     word.textContent = "Loading…";
     meaning.textContent = "";
-    meaning.classList.remove("show");
+    done.classList.remove("show");
 
     const [kelly, dictionary] = await Promise.all([
       fetchJSONWithFallback(KELLY_URLS),
@@ -420,12 +493,14 @@ async function loadCoreDeck() {
 
     const core = makeCoreDeck(kelly, dictionary);
 
-    if (!core.length) throw new Error("No matching learner vocabulary was found.");
+    if (!core.length) {
+      throw new Error("No matching learner vocabulary was found.");
+    }
 
     decks.core = core;
 
     try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify(core));
+      localStorage.setItem(CORE_CACHE_KEY, JSON.stringify(core));
     } catch (_) {}
 
     return core;
@@ -439,25 +514,27 @@ selector.addEventListener("change", async () => {
 
   if (chosen === "verbs") {
     setDeck("verbs");
-ensureDictionary();
     return;
   }
 
   try {
     const core = await loadCoreDeck();
     if (core && core.length) {
-      selector.options[1].textContent =
-        core.length >= 3000 ? "A1–B1 core (3000)" : `A1–B1 core (${core.length})`;
       setDeck("core");
     }
   } catch (err) {
+    currentDeck = "core";
     word.textContent = "Couldn’t load";
     meaning.textContent = "Open this page with an internet connection and try again.";
     meaning.classList.add("show");
+    done.classList.remove("show");
+    updateStatus();
   }
 });
 
-card.addEventListener("click", reveal);
+card.addEventListener("click", () => {
+  reveal();
+});
 
 let startX = null;
 let startY = null;
@@ -509,24 +586,27 @@ card.addEventListener("mouseup", e => {
   mouseDownX = null;
 });
 
-card.addEventListener("click", e => {
-  if (dragged) {
-    e.stopImmediatePropagation();
-    dragged = false;
-  }
-}, true);
-
 document.addEventListener("keydown", e => {
-  if (e.key === "ArrowRight") next();
-  else if (e.key === "ArrowLeft") prev();
-  else if (e.key === " " || e.key === "Enter") {
+  if (e.key === "ArrowRight") {
+    next();
+  } else if (e.key === "ArrowLeft") {
+    prev();
+  } else if (e.key === " ") {
     e.preventDefault();
     reveal();
+  } else if (e.key === "1") {
+    e.preventDefault();
+    rateCurrent(1);
+  } else if (e.key === "2") {
+    e.preventDefault();
+    rateCurrent(2);
+  } else if (e.key === "3") {
+    e.preventDefault();
+    rateCurrent(3);
   }
 });
 
 setDeck("verbs");
-ensureDictionary();
 </script>
 </body>
 </html>
